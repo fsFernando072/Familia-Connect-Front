@@ -1,0 +1,15 @@
+.login{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #F5F5F5;
+}
+
+.logo{
+    width: 175px;
+    height: 150px;
+    margin-bottom: 20px;
+}
