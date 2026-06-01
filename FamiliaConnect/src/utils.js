@@ -1,4 +1,4 @@
-export function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, idCargo, foto, navigate) {
+export function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, navigate) {
 
     if (!nome || !cpf || !senha || !senhaConfirmada || !idCargo) {
         console.error("Todos os campos são obrigatórios");
@@ -108,4 +108,10 @@ export function buscarCargo() {
         .catch((error) => {
             console.error('Erro:', error)
         });
+}
+
+export function sair() {
+    setTimeout(() => {
+        navigate("/");
+    }, 2000);
 }

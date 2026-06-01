@@ -17,16 +17,15 @@ function Cadastro() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        buscarCargo
+        buscarCargo()
     }, [])
 
     const handleLogin = () => {
-        cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, idCargo, foto, navigate);
+        cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, navigate);
     };
 
     return (
         <div className={styles.login}>
-            <img src={logo} className={styles.logo} alt="Logo" />
             <Input nomeCampo="Nome do Funcionário" tipo="text" mensagem="Funcionário" value={nome} onChange={(e) => setNome(e.target.value)} />
             <Input nomeCampo="CPF do Funcionário" tipo="number" mensagem="222.222.222-22" value={cpf} onChange={(e) => setCpf(e.target.value)} />
             <Input nomeCampo="Senha do Funcionário" tipo="password" mensagem="********" value={senha} onChange={(e) => setSenha(e.target.value)} />

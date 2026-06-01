@@ -1,0 +1,16 @@
+.header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 100vw;
+    height: 10%;
+}
+
+.logoTitulo{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: fit-content;
+}

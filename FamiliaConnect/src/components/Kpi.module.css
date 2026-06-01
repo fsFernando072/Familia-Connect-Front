@@ -1,0 +1,21 @@
+.kpi{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border-radius: 20px;
+    background-color: antiquewhite;
+}
+
+.titulo{
+    margin: 0;
+}
+
+.valor{
+    margin: 0;
+}
+
+.descricao{
+    margin: 0;
+}
