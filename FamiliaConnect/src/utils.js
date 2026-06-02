@@ -12,6 +12,7 @@ export function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, navigate
 
     fetch('http://localhost:8080/funcionarios', {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -55,6 +56,7 @@ export function entrar(cpf, senha, navigate) {
 
     fetch('http://localhost:8080/funcionarios/login', {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -85,29 +87,33 @@ export function entrar(cpf, senha, navigate) {
 }
 
 export function buscarCargo() {
-    fetch('http://localhost:8080/cargos', {
+
+    return fetch('http://localhost:8080/cargos', {
         method: 'GET',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
     })
-        .then((response) => {
+    .then((response) => {
+        if (response.status == 200) {
+            return response.json();
+        } else if (response.status == 204) {
+            console.log("Usuário não encontrado");
+            return []; 
+        } else if (response.status == 401) {
+            console.log("Não autorizado");
+            return null;
+        }
+    })
+    .then((data) => {
+        if (!data) return null;
 
-            if (response.status == 200) {
-                return response.json()
-            } else if (response.status == 204) {
-                console.log("Usuário não encontrado")
-            } else if (response.status == 401) {
-                console.log("Não autorizado")
-            }
-
-        })
-        .then((data) => {
-            console.log('Sucesso:', data)
-        })
-        .catch((error) => {
-            console.error('Erro:', error)
-        });
+        return data;
+    })
+    .catch((error) => {
+        console.error('Erro:', error);
+    });
 }
 
 export function sair() {

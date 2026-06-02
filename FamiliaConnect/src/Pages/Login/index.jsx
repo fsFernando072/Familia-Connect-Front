@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Botao from "../../components/Botao";
-import Input from "../../components/Input";
-import logo from "../../assets/logo.png"
+import Botao from "../../components/Botao/Botao";
+import Input from "../../components/Input/Input";
+import logo from "../../assets/logo.png";
 import styles from '../../App.module.css';
 import { entrar } from "../../utils";
 

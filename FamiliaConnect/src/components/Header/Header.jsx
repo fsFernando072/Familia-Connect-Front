@@ -1,7 +1,7 @@
-import logo from "../assets/logo.png"
-import styles from '../App.module.css';
-import Botao from "./Botao";
-import { sair } from "../utils";
+import logo from "../../assets/logo.png"
+import styles from '../../App.module.css';
+import Botao from "../Botao/Botao";
+import { sair } from "../../utils";
 import stylesHeader from "./Header.module.css"
 
 function Header(props) {
