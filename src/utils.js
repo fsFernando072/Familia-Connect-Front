@@ -1,13 +1,13 @@
-export function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, idCargo, imagem, navigate) {
+export function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, idCargo, foto, navigate) {
 
     console.log(nome)
     console.log(cpf)
     console.log(senha)
     console.log(senhaConfirmada)
     console.log(idCargo)
-    console.log(imagem)
+    console.log(foto)
 
-    if (!nome || !cpf || !senha || !senhaConfirmada || !idCargo || !imagem) {
+    if (!nome || !cpf || !senha || !senhaConfirmada || !idCargo || !foto) {
         console.error("Todos os campos são obrigatórios");
         return;
     }
@@ -28,7 +28,7 @@ export function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, idCargo,
             cpf: cpf,
             senha: senha,
             idCargo: idCargo,
-            foto: foto
+            fotoFuncionario: foto
         })
     })
         .then((response) => {
@@ -123,8 +123,12 @@ export function buscarCargo() {
     });
 }
 
-export function sair() {
-    setTimeout(() => {
-        navigate("/");
-    }, 2000);
-}
+export const mascaraCpf = (valor) => {
+    valor = valor.replace(/\D/g, "").slice(0, 11);
+
+    valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+    valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+    valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+    return valor;
+};

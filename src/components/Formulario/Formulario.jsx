@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Botao from '../Botao/Botao';
 import upload from '../../assets/upload.png'
 
-function Formulario({ campos, nomeBotao, corBotao, acaoBotao, listaCargos, imagem, setIdCargo }) {
+function Formulario({ campos, nomeBotao, corBotao, acaoBotao, listaCargos, imagem, setIdCargo, setFoto }) {
 
     const [fotoPreview, setFotoPreview] = useState(null);
 
@@ -15,6 +15,23 @@ function Formulario({ campos, nomeBotao, corBotao, acaoBotao, listaCargos, image
 
     if (campos.length > 3 && listaCargos && imagem) {
         segundaColuna = true;
+    }
+
+    function handleFoto(e) {
+        const file = e.target.files[0];
+
+        if (file) {
+            setFotoPreview(URL.createObjectURL(file));
+
+            const reader = new FileReader();
+
+            reader.onload = () => {
+                const base64 = reader.result.split(',')[1];
+                setFoto(base64);
+            };
+
+            reader.readAsDataURL(file);
+        }
     }
 
     return (
@@ -47,7 +64,7 @@ function Formulario({ campos, nomeBotao, corBotao, acaoBotao, listaCargos, image
                             <div className='flex gap-2 items-center'>
                                 <select
                                     onChange={(e) => setIdCargo(e.target.value)}
-                                    className='flex-1 min-w-0 px-3 py-2.5 border border-gray-300 rounded-md text-sm bg-white text-gray-400 focus:outline-none'
+                                    className='flex-1 min-w-0 px-3 py-2.5 border border-gray-800 rounded-md text-sm bg-white text-black focus:outline-none'
                                 >
                                     <option value="">Selecionar</option>
                                     {listaCargos.map((item) => (

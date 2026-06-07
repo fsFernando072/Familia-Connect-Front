@@ -5,6 +5,7 @@ import logo from '../../assets/logo.png';
 import Header from "../../components/Header/Header";
 import Navegabilidade from "../../components/Navegabilidade/Navegabilidade";
 import Formulario from "../../components/Formulario/Formulario";
+// import { mascaraCpf } from "../../utils";
 
 function Cadastro() {
 
@@ -67,11 +68,11 @@ function Cadastro() {
     }, []);
 
     const handleCadastrarFuncionario = () => {
-        cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, navigate);
+        cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, idCargo, foto, navigate);
     };
 
     return (
-        <div className='w-full min-h-screen overflow-x-hidden'>
+        <div className='w-full min-h-screen overflow-x-hidden bg-gray-100'>
             <Header nomeTela='Cadastro de Funcionário' />
             <Navegabilidade />
             <div className='px-6 py-6'>
@@ -83,6 +84,7 @@ function Cadastro() {
                     listaCargos={cargos}
                     imagem
                     setIdCargo={setIdCargo}
+                    setFoto={setFoto}
                 />
             </div>
         </div>
