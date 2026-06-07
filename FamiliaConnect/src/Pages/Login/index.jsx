@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Botao from "../../components/Botao/Botao";
-import Input from "../../components/Input/Input";
 import logo from "../../assets/logo.png";
-import styles from '../../App.module.css';
 import { entrar } from "../../utils";
+import Formulario from "../../components/Formulario/Formulario";
 
 function Login() {
 
@@ -12,16 +10,33 @@ function Login() {
     const [senha, setSenha] = useState("");
     const navigate = useNavigate();
 
+    const campos = [
+        {
+            id: 'cpf',
+            label: 'CPF',
+            type: 'number',
+            value: cpf,
+            onChange: (e) => setCpf(e.target.value),
+            placeholder: '000.000.000-00'
+        },
+        {
+            id: 'senha',
+            label: 'Senha',
+            type: 'password',
+            value: senha,
+            onChange: (e) => setSenha(e.target.value),
+            placeholder: '********'
+        }
+    ]
+
     const handleLogin = () => {
         entrar(cpf, senha, navigate);
     };
 
     return (
-        <div className={styles.login}>
-            <img src={logo} className={styles.logo} alt="Logo" />
-            <Input nomeCampo="CPF" tipo="number" mensagem="000.000.000-00" value={cpf} onChange={(e) => setCpf(e.target.value)} />
-            <Input nomeCampo="Senha" tipo="password" mensagem="*****" value={senha} onChange={(e) => setSenha(e.target.value)} />
-            <Botao nome="Entrar" cor="#167AFA" acao={handleLogin}/>
+        <div className='w-full min-h-screen overflow-x-hidden flex flex-col justify-center items-center'>
+            <img src={logo} className="h-45 w-auto" alt="Logo" />
+            <Formulario campos = {campos} nomeBotao = 'Entrar' corBotao = '#167AFA'/>
         </div>
     )
 }

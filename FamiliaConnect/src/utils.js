@@ -1,6 +1,13 @@
-export function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, navigate) {
+export function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, idCargo, imagem, navigate) {
 
-    if (!nome || !cpf || !senha || !senhaConfirmada || !idCargo) {
+    console.log(nome)
+    console.log(cpf)
+    console.log(senha)
+    console.log(senhaConfirmada)
+    console.log(idCargo)
+    console.log(imagem)
+
+    if (!nome || !cpf || !senha || !senhaConfirmada || !idCargo || !imagem) {
         console.error("Todos os campos são obrigatórios");
         return;
     }
@@ -108,7 +115,7 @@ export function buscarCargo() {
     })
     .then((data) => {
         if (!data) return null;
-
+        console.log(data)
         return data;
     })
     .catch((error) => {
