@@ -86,10 +86,12 @@ function Cadastro() {
                     nomeBotao="Cadastrar"
                     corBotao="#34C759"
                     acaoBotao={handleCadastrarFuncionario}
+                    larguraBotao="w-1/4"
                     listaCargos={cargos}
                     imagem
                     setIdCargo={setIdCargo}
                     setFoto={setFoto}
+                    posicionamentoBotao="flex justify-start"
                 />
             </div>
             <Feedback tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} />

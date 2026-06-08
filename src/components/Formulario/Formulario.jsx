@@ -4,7 +4,7 @@ import upload from '../../assets/upload.png'
 import Feedback from '../Feedback/Feedback';
 import { Eye, EyeOff } from 'lucide-react';
 
-function Formulario({ campos, nomeBotao, corBotao, acaoBotao, listaCargos, imagem, setIdCargo, setFoto }) {
+function Formulario({ campos, nomeBotao, corBotao, acaoBotao, larguraBotao, listaCargos, imagem, setIdCargo, setFoto, posicionamentoBotao }) {
 
     const [fotoPreview, setFotoPreview] = useState(null);
 
@@ -43,7 +43,7 @@ function Formulario({ campos, nomeBotao, corBotao, acaoBotao, listaCargos, image
                 {campos.map((campo) => (
                     <div key={campo.id}>
                         <label className='block text-lg font-bold text-gray-900 mb-1'>{campo.label}</label>
-                        <div className='relative'>  {/* ← envolve input + ícone */}
+                        <div className='relative'> 
                             <input
                                 type={campo.type}
                                 value={campo.value}
@@ -64,8 +64,8 @@ function Formulario({ campos, nomeBotao, corBotao, acaoBotao, listaCargos, image
                     </div>
                 ))}
 
-                <div className='mt-4'>
-                    <Botao nome={nomeBotao} cor={corBotao} acao={acaoBotao} />
+                <div className={`mt-4 ${posicionamentoBotao}`}>
+                    <Botao nome={nomeBotao} cor={corBotao} acao={acaoBotao} larguraBotao={larguraBotao}/>
                 </div>
             </div>
 

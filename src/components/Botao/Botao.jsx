@@ -1,13 +1,15 @@
-function Botao(props) {
+function Botao({ cor, acao, nome, larguraBotao }) {
     return (
-        <div
-            style={{ backgroundColor: props.cor }}
-            onClick={props.acao}
-            className="px-6 py-2.5 rounded-xl cursor-pointer whitespace-nowrap hover:scale-104 transition duration-500 ease-in-out"
+        <button
+            style={{ backgroundColor: cor }}
+            onClick={acao}
+            className={`flex items-center justify-center px-6 py-2.5 rounded-xl cursor-pointer hover:scale-104 transition duration-500 ease-in-out ${larguraBotao}`}
         >
-            <h1 className="text-lg text-white text-base font-bold">{props.nome}</h1>
-        </div>
-    )
+            <span className="text-lg text-white font-bold">
+                {nome}
+            </span>
+        </button>
+    );
 }
 
-export default Botao
+export default Botao;
