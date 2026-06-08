@@ -5,7 +5,8 @@ import logo from '../../assets/logo.png';
 import Header from "../../components/Header/Header";
 import Navegabilidade from "../../components/Navegabilidade/Navegabilidade";
 import Formulario from "../../components/Formulario/Formulario";
-// import { mascaraCpf } from "../../utils";
+import { mascaraCpf } from "../../utils";
+import Feedback from "../../components/Feedback/Feedback";
 
 function Cadastro() {
 
@@ -17,6 +18,8 @@ function Cadastro() {
     const [foto, setFoto] = useState("");
     const [cargos, setCargos] = useState([]);
     const navigate = useNavigate();
+    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
+    const [mostrarSenha, setMostrarSenha] = useState(false);
 
     const campos = [
         {
@@ -32,16 +35,18 @@ function Cadastro() {
             label: 'CPF do Funcionário',
             type: 'text',
             value: cpf,
-            onChange: (e) => setCpf(e.target.value),
+            onChange: (e) => setCpf(mascaraCpf(e.target.value)),
             placeholder: '000.000.000-00'
         },
         {
             id: 'senha',
-            label: 'Senha do Funcionário',
-            type: 'password',
+            label: 'Senha',
+            type: mostrarSenha ? 'text' : 'password',
             value: senha,
             onChange: (e) => setSenha(e.target.value),
-            placeholder: '********'
+            placeholder: '********',
+            toggle: () => setMostrarSenha(v => !v),
+            mostrar: mostrarSenha
         },
         {
             id: 'senha_confirmada',
@@ -68,7 +73,7 @@ function Cadastro() {
     }, []);
 
     const handleCadastrarFuncionario = () => {
-        cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, idCargo, foto, navigate);
+        cadastrarFuncionario(nome, cpf.replace(/\D/g, ""), senha, senhaConfirmada, idCargo, foto, navigate, setFeedback);
     };
 
     return (
@@ -87,6 +92,7 @@ function Cadastro() {
                     setFoto={setFoto}
                 />
             </div>
+            <Feedback tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} />
         </div>
     );
 }

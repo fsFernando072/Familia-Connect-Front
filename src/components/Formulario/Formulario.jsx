@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import Botao from '../Botao/Botao';
 import upload from '../../assets/upload.png'
+import Feedback from '../Feedback/Feedback';
+import { Eye, EyeOff } from 'lucide-react';
 
 function Formulario({ campos, nomeBotao, corBotao, acaoBotao, listaCargos, imagem, setIdCargo, setFoto }) {
 
@@ -41,13 +43,24 @@ function Formulario({ campos, nomeBotao, corBotao, acaoBotao, listaCargos, image
                 {campos.map((campo) => (
                     <div key={campo.id}>
                         <label className='block text-lg font-bold text-gray-900 mb-1'>{campo.label}</label>
-                        <input
-                            type={campo.type}
-                            value={campo.value}
-                            placeholder={campo.placeholder}
-                            onChange={campo.onChange}
-                            className='w-full px-3 py-2.5 border border-gray-800 rounded-md text-base bg-white placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400'
-                        />
+                        <div className='relative'>  {/* ← envolve input + ícone */}
+                            <input
+                                type={campo.type}
+                                value={campo.value}
+                                placeholder={campo.placeholder}
+                                onChange={campo.onChange}
+                                className='w-full px-3 py-2.5 border border-gray-800 rounded-md text-base bg-white placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                            />
+                            {campo.toggle && ( 
+                                <button
+                                    type='button'
+                                    onClick={campo.toggle}
+                                    className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800'
+                                >
+                                    {campo.mostrar ? <EyeOff size={20} /> : <Eye size={20} />}
+                                </button>
+                            )}
+                        </div>
                     </div>
                 ))}
 

@@ -10,7 +10,7 @@ function Navegabilidade() {
 
     return (
         <div className="px-6 py-4 text-[#1E66F5] font-medium">
-            <Link to="/">Página Inicial</Link>
+            <Link to="/" className="underline hover:text-blue-800">Página Inicial</Link>
 
             {caminhos.map((caminho, index) => {
                 const rota = "/" + caminhos.slice(0, index + 1).join("/");
@@ -18,7 +18,7 @@ function Navegabilidade() {
                 return (
                     <span key={rota}>
                         {" > "}
-                        <Link to={rota}>
+                        <Link to={rota} className="underline hover:text-blue-800">
                             {nomesRotas[caminho] || caminho}
                         </Link>
                     </span>
