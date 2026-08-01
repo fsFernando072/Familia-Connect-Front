@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { cadastrarFuncionario, buscarCargo } from "../../utils";
+import { cadastrarFuncionario } from "../../services/funcionarioService";
+import { buscarCargo } from "../../services/cargoService";
 import logo from '../../assets/logo.png';
 import Header from "../../components/Header/Header";
 import Navegabilidade from "../../components/Navegabilidade/Navegabilidade";
 import Formulario from "../../components/Formulario/Formulario";
-import { mascaraCpf } from "../../utils";
-import Feedback from "../../components/Feedback/Feedback";
+import { mascaraCpf } from "../../utils/mascaras";
+import FeedbackToast from "../../components/FeedbackToast/FeedbackToast";
 
 function Cadastro() {
 
@@ -20,6 +21,8 @@ function Cadastro() {
     const navigate = useNavigate();
     const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
     const [mostrarSenha, setMostrarSenha] = useState(false);
+
+    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
     const campos = [
         {
@@ -94,7 +97,7 @@ function Cadastro() {
                     posicionamentoBotao="flex justify-start"
                 />
             </div>
-            <Feedback tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} />
+            <FeedbackToast tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} onClose={fecharFeedback} />
         </div>
     );
 }

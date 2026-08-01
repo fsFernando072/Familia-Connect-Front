@@ -1,39 +1,17 @@
 import { useState } from 'react';
 import Botao from '../Botao/Botao';
-import upload from '../../assets/upload.png'
-import Feedback from '../Feedback/Feedback';
+import UploadImagem from "../../components/UploadImagem/UploadImagem";
+import FeedbackToast from '../FeedbackToast/FeedbackToast';
 import { Eye, EyeOff } from 'lucide-react';
 
 function Formulario({ campos, nomeBotao, corBotao, acaoBotao, larguraBotao, listaCargos, imagem, setIdCargo, setFoto, posicionamentoBotao }) {
 
     const [fotoPreview, setFotoPreview] = useState(null);
 
-    function handleFoto(e) {
-        const file = e.target.files[0];
-        if (file) setFotoPreview(URL.createObjectURL(file));
-    }
-
     let segundaColuna = false;
 
     if (campos.length > 3 && listaCargos && imagem) {
         segundaColuna = true;
-    }
-
-    function handleFoto(e) {
-        const file = e.target.files[0];
-
-        if (file) {
-            setFotoPreview(URL.createObjectURL(file));
-
-            const reader = new FileReader();
-
-            reader.onload = () => {
-                const base64 = reader.result.split(',')[1];
-                setFoto(base64);
-            };
-
-            reader.readAsDataURL(file);
-        }
     }
 
     return (
@@ -89,21 +67,7 @@ function Formulario({ campos, nomeBotao, corBotao, acaoBotao, larguraBotao, list
                         </div>
                     )}
 
-                    {imagem && (
-                        <div className='flex items-center gap-4'>
-                            <div className='w-20 h-20 border-2 border-gray-800 rounded flex-shrink-0 overflow-hidden'>
-                                <img
-                                    src={fotoPreview || upload}
-                                    alt="Foto do funcionário"
-                                    className='w-full h-full object-cover'
-                                />
-                            </div>
-                            <label className='hover:scale-104 transition duration-500 ease-in-out px-6 py-2.5 rounded-xl cursor-pointer whitespace-nowrap bg-[#2C2C2C] text-white font-bold'>
-                                Imagem do funcionário
-                                <input type="file" accept="image/*" className='hidden' onChange={handleFoto} />
-                            </label>
-                        </div>
-                    )}
+                    {<UploadImagem label='Imagem do Funcionário' setImagem={setFotoPreview} />}
                 </div>
             )}
         </div>
