@@ -1,3 +1,5 @@
+import api from "./apiClient";
+
 export async function entrar(cpf, senha, navigate, setFeedback) {
 
     if (!cpf || !senha) {
@@ -8,16 +10,11 @@ export async function entrar(cpf, senha, navigate, setFeedback) {
     setFeedback({ tipo: '', msg: 'Verificando...', loading: true });
 
     try {
-        const response = await fetch('http://localhost:8080/funcionarios/login', {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cpf, senha })
-        });
+        const response = await api.post('/funcionarios/login', { cpf, senha });
 
         if (response.status === 200) {
             setFeedback({ tipo: 'sucesso', msg: 'Login realizado! Entrando...', loading: false });
-            setTimeout(() => navigate("/cadastro"), 2000);
+            setTimeout(() => navigate("/pagina-inicial"), 2000);
         } else if (response.status === 404) {
             setFeedback({ tipo: 'erro', msg: 'Usuário não encontrado.', loading: false });
         } else {

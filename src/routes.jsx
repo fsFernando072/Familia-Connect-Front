@@ -1,14 +1,16 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Login from "./Pages/Login";
-import Cadastro from "./Pages/Cadastro";
-import CadastroFamilia from "./Pages/CadastroFamilia";
+import Login from "./pages/Login";
+import CadastroFuncionario from "./pages/CadastroFuncionario";
+import CadastroFamilia from "./pages/CadastroFamilia";
+import PaginaInicial from "./pages/PaginaInicial";
 
 function AppRoutes(){
     return(
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Login />}/>
-                <Route path="/cadastro" element={<Cadastro />}/>
+                <Route path="/pagina-inicial" element={<PaginaInicial />}/>
+                <Route path="/cadastro-funcionario" element={<CadastroFuncionario />}/>
                 <Route path="/cadastro-familia" element={<CadastroFamilia />}/>
             </Routes>
         </BrowserRouter>

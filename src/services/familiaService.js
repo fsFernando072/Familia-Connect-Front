@@ -1,3 +1,4 @@
+import api from "./apiClient";
 import { validarCpf, validarRg, validarTelefone } from "../utils/validadores";
 import { converterDataParaIso } from "../utils/formatadores";
 
@@ -81,16 +82,11 @@ export async function cadastrarFamilia(responsavel, endereco, dependentes, navig
     };
 
     try {
-        const response = await fetch('http://localhost:8080/familias/completo', {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+        const response = await api.post('/familias/completo', payload);
 
         if (response.status === 201) {
             setFeedback({ tipo: 'sucesso', msg: 'Família cadastrada com sucesso!', loading: false });
-            setTimeout(() => navigate("/"), 2000);
+            setTimeout(() => navigate("/pagina-inicial"), 2000);
         } else if (response.status === 409) {
             setFeedback({ tipo: 'erro', msg: 'Endereço ou pessoa (CPF) já cadastrados. Nenhum dado foi salvo.', loading: false });
         } else if (response.status === 404) {

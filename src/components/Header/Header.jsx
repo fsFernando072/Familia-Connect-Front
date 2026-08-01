@@ -7,9 +7,7 @@ function Header(props) {
     const navigate = useNavigate();
 
     const handleSair = () => {
-        setTimeout(() => {
-            navigate("/");
-        }, 2000);
+        navigate("/");
     };
 
     return (
