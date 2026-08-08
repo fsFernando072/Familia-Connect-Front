@@ -1,6 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import nomesRotas from "../../routes/nomesRotas";
 
+// Segmentos que representam um identificador (ex: /familias/12) não devem
+// aparecer "crus" na navegabilidade.
+const ehIdentificador = (segmento) => /^\d+$/.test(segmento);
+
 function Navegabilidade() {
     const location = useLocation();
 
@@ -14,6 +18,23 @@ function Navegabilidade() {
 
             {caminhos.map((caminho, index) => {
                 const rota = "/" + caminhos.slice(0, index + 1).join("/");
+                const ehUltimo = index === caminhos.length - 1;
+
+                if (ehIdentificador(caminho)) {
+                    // Segmento intermediário (ex: entre "familias" e "editar-familia"):
+                    // não exibe nada, só faz parte do caminho.
+                    if (!ehUltimo) return null;
+
+                    // Último segmento sendo um id (ex: /familias/12): é a tela de detalhes.
+                    return (
+                        <span key={rota}>
+                            {" > "}
+                            <Link to={rota} className="underline hover:text-blue-800">
+                                Detalhes Família
+                            </Link>
+                        </span>
+                    );
+                }
 
                 return (
                     <span key={rota}>

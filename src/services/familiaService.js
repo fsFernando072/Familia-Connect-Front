@@ -14,52 +14,76 @@ export async function listarFamilias(page = 0, size = 100) {
     }
 }
 
-export async function cadastrarFamilia(responsavel, endereco, dependentes, navigate, setFeedback) {
+export async function buscarFamiliaPorId(id) {
+    try {
+        const response = await api.get(`/familias/${id}`);
 
+        if (response.status === 200) return response.data;
+        return null;
+    } catch (error) {
+        console.error('Erro ao buscar família:', error);
+        return null;
+    }
+}
+
+export async function deletarFamilia(id) {
+    try {
+        const response = await api.delete(`/familias/${id}`);
+
+        return response.status === 204;
+    } catch (error) {
+        console.error('Erro ao apagar família:', error);
+        return false;
+    }
+}
+
+function validarDadosFamilia(responsavel, endereco, dependentes, setFeedback) {
     if (!responsavel.nome || !responsavel.rg || !responsavel.cpf || !responsavel.telefone || !responsavel.dataNascimento) {
         setFeedback({ tipo: 'erro', msg: 'Preencha todos os campos obrigatórios do responsável.', loading: false });
-        return;
+        return false;
     }
     if (!validarCpf(responsavel.cpf)) {
         setFeedback({ tipo: 'erro', msg: 'O CPF do responsável é inválido.', loading: false });
-        return;
+        return false;
     }
     if (!validarRg(responsavel.rg)) {
         setFeedback({ tipo: 'erro', msg: 'O RG do responsável é inválido.', loading: false });
-        return;
+        return false;
     }
     if (!validarTelefone(responsavel.telefone)) {
         setFeedback({ tipo: 'erro', msg: 'O telefone do responsável é inválido.', loading: false });
-        return;
+        return false;
     }
 
     if (!endereco.rua || !endereco.numero || !endereco.cidade || !endereco.estadoId) {
         setFeedback({ tipo: 'erro', msg: 'Preencha todos os campos obrigatórios do endereço.', loading: false });
-        return;
+        return false;
     }
 
     for (const dep of dependentes) {
         if (!dep.nome || !dep.rg || !dep.cpf || !dep.telefone || !dep.dataNascimento) {
             setFeedback({ tipo: 'erro', msg: 'Preencha todos os campos obrigatórios dos dependentes.', loading: false });
-            return;
+            return false;
         }
         if (!validarCpf(dep.cpf)) {
             setFeedback({ tipo: 'erro', msg: `O CPF do dependente "${dep.nome}" é inválido.`, loading: false });
-            return;
+            return false;
         }
         if (!validarRg(dep.rg)) {
             setFeedback({ tipo: 'erro', msg: `O RG do dependente "${dep.nome}" é inválido.`, loading: false });
-            return;
+            return false;
         }
         if (!validarTelefone(dep.telefone)) {
             setFeedback({ tipo: 'erro', msg: `O telefone do dependente "${dep.nome}" é inválido.`, loading: false });
-            return;
+            return false;
         }
     }
 
-    setFeedback({ tipo: '', msg: 'Cadastrando família...', loading: true });
+    return true;
+}
 
-    const payload = {
+function montarPayloadFamilia(responsavel, endereco, dependentes) {
+    return {
         dataCadastro: new Date().toISOString().slice(0, 10),
         possuiPrioridade: responsavel.possuiPne,
         endereco: {
@@ -92,13 +116,22 @@ export async function cadastrarFamilia(responsavel, endereco, dependentes, navig
             isResponsavel: false
         }))
     };
+}
+
+export async function cadastrarFamilia(responsavel, endereco, dependentes, navigate, setFeedback) {
+
+    if (!validarDadosFamilia(responsavel, endereco, dependentes, setFeedback)) return;
+
+    setFeedback({ tipo: '', msg: 'Cadastrando família...', loading: true });
+
+    const payload = montarPayloadFamilia(responsavel, endereco, dependentes);
 
     try {
-        const response = await api.post('/familias/completo', payload);
+        const response = await api.post('/familias', payload);
 
         if (response.status === 201) {
             setFeedback({ tipo: 'sucesso', msg: 'Família cadastrada com sucesso!', loading: false });
-            setTimeout(() => navigate("/pagina-inicial"), 2000);
+            setTimeout(() => navigate("/familias"), 2000);
         } else if (response.status === 409) {
             setFeedback({ tipo: 'erro', msg: 'Endereço ou pessoa (CPF) já cadastrados. Nenhum dado foi salvo.', loading: false });
         } else if (response.status === 404) {
@@ -107,6 +140,34 @@ export async function cadastrarFamilia(responsavel, endereco, dependentes, navig
             setFeedback({ tipo: 'erro', msg: 'Ação não autorizada.', loading: false });
         } else {
             setFeedback({ tipo: 'erro', msg: 'Não foi possível cadastrar a família. Nenhum dado foi salvo.', loading: false });
+        }
+    } catch {
+        setFeedback({ tipo: 'erro', msg: 'Erro de conexão. Nenhum dado foi salvo.', loading: false });
+    }
+}
+
+export async function atualizarFamilia(id, responsavel, endereco, dependentes, navigate, setFeedback) {
+
+    if (!validarDadosFamilia(responsavel, endereco, dependentes, setFeedback)) return;
+
+    setFeedback({ tipo: '', msg: 'Atualizando família...', loading: true });
+
+    const payload = montarPayloadFamilia(responsavel, endereco, dependentes);
+
+    try {
+        const response = await api.put(`/familias/${id}`, payload);
+
+        if (response.status === 200) {
+            setFeedback({ tipo: 'sucesso', msg: 'Família atualizada com sucesso!', loading: false });
+            setTimeout(() => navigate(`/familias/${id}`), 2000);
+        } else if (response.status === 409) {
+            setFeedback({ tipo: 'erro', msg: 'CPF já cadastrado para outra pessoa. Nenhum dado foi salvo.', loading: false });
+        } else if (response.status === 404) {
+            setFeedback({ tipo: 'erro', msg: 'Família, endereço ou estado não encontrados.', loading: false });
+        } else if (response.status === 401) {
+            setFeedback({ tipo: 'erro', msg: 'Ação não autorizada.', loading: false });
+        } else {
+            setFeedback({ tipo: 'erro', msg: 'Não foi possível atualizar a família.', loading: false });
         }
     } catch {
         setFeedback({ tipo: 'erro', msg: 'Erro de conexão. Nenhum dado foi salvo.', loading: false });

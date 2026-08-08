@@ -4,6 +4,8 @@ import CadastroFuncionario from "./pages/CadastroFuncionario";
 import CadastroFamilia from "./pages/CadastroFamilia";
 import PaginaInicial from "./pages/PaginaInicial";
 import ListaFamilias from "./pages/ListaFamilias";
+import DetalhesFamilia from "./pages/DetalhesFamilia";
+import EditarFamilia from "./pages/EditarFamilia";
 
 function AppRoutes(){
     return(
@@ -14,6 +16,8 @@ function AppRoutes(){
                 <Route path="/cadastro-funcionario" element={<CadastroFuncionario />}/>
                 <Route path="/cadastro-familia" element={<CadastroFamilia />}/>
                 <Route path="/familias" element={<ListaFamilias />}/>
+                <Route path="/familias/:id" element={<DetalhesFamilia />}/>
+                <Route path="/familias/:id/editar-familia" element={<EditarFamilia />}/>
             </Routes>
         </BrowserRouter>
     )

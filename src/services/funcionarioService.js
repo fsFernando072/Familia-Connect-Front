@@ -19,7 +19,7 @@ export async function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, id
 
         if (response.status === 201) {
             setFeedback({ tipo: 'sucesso', msg: 'Usuário cadastrado com sucesso!', loading: false });
-            setTimeout(() => navigate("/pagina-inicial"), 2000);
+            setTimeout(() => navigate("/funcionarios"), 2000);
         } else if (response.status === 404) {
             setFeedback({ tipo: 'erro', msg: 'Cargo não encontrado.', loading: false });
         } else if (response.status === 401) {
