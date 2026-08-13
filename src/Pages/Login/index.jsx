@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
-import { entrar, mascaraCpf } from "../../utils";
+import { entrar } from "../../services/authService";
+import { mascaraCpf } from "../../utils/mascaras";
 import Formulario from "../../components/Formulario/Formulario";
-import Feedback from "../../components/Feedback/Feedback";
+import FeedbackToast from "../../components/FeedbackToast/FeedbackToast";
 
 function Login() {
     
@@ -12,6 +13,8 @@ function Login() {
     const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
     const navigate = useNavigate();
     const [mostrarSenha, setMostrarSenha] = useState(false);
+
+    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
     const campos = [
         {
@@ -44,7 +47,7 @@ function Login() {
                 <img src={logo} className="w-32 h-auto" alt="Logo" />
             </div>
             <Formulario campos={campos} nomeBotao='Entrar' corBotao='#167AFA' acaoBotao={handleLogin} larguraBotao="w-1/3" posicionamentoBotao="flex justify-center"/>
-            <Feedback tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} />
+            <FeedbackToast tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} onClose={fecharFeedback} />
         </div>
     );
 }

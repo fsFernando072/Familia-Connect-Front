@@ -7,11 +7,7 @@ const nomesRotas = {
     "dashboard": "Dashboard",
     "familias": "Lista de Famílias",
     "funcionarios": "Funcionários",
-    "produtos": "Produtos",
-    "editar-funcionario": "Editar Funcionário",
-    "editar-familia": "Editar Família",
-    "editar-produto": "Editar Produto",
-    "editar-cargo": "Editar Cargo"
+    "produtos": "Produtos"
 };
 
 export default nomesRotas;
