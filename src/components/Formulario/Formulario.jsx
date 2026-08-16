@@ -2,7 +2,7 @@ import Botao from '../Botao/Botao';
 import CampoTexto from '../CampoTexto/CampoTexto';
 import UploadImagem from '../UploadImagem/UploadImagem';
 
-function Formulario({ campos, nomeBotao, corBotao, acaoBotao, larguraBotao, listaCargos, imagem, setIdCargo, setFoto, posicionamentoBotao }) {
+function Formulario({ campos, nomeBotao, corBotao, acaoBotao, larguraBotao, listaCargos, imagem, setIdCargo, idCargoSelecionado, setFoto, fotoInicial, posicionamentoBotao }) {
 
     const segundaColuna = campos.length > 3 && listaCargos && imagem;
 
@@ -38,6 +38,7 @@ function Formulario({ campos, nomeBotao, corBotao, acaoBotao, larguraBotao, list
                                 <label className='block text-lg font-bold text-gray-900 mb-1'>Cargo do Funcionário</label>
                                 <div className='flex gap-2 items-center'>
                                     <select
+                                        value={idCargoSelecionado ?? ""}
                                         onChange={(e) => setIdCargo(e.target.value)}
                                         className='flex-1 min-w-0 px-3 py-2.5 border border-gray-800 rounded-md text-sm bg-white text-black focus:outline-none'
                                     >
@@ -51,7 +52,7 @@ function Formulario({ campos, nomeBotao, corBotao, acaoBotao, larguraBotao, list
                             </div>
                         )}
 
-                        <UploadImagem label='Imagem do Funcionário' setImagem={setFoto} />
+                        <UploadImagem label='Imagem do Funcionário' setImagem={setFoto} imagemInicial={fotoInicial} />
                     </div>
                 )}
             </div>

@@ -1,8 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { UploadCloud } from 'lucide-react';
 
-function UploadImagem({ label, setImagem }) {
-    const [preview, setPreview] = useState(null);
+function UploadImagem({ label, setImagem, imagemInicial }) {
+    const [preview, setPreview] = useState(
+        imagemInicial ? `data:image/png;base64,${imagemInicial}` : null
+    );
+
+    useEffect(() => {
+        if (imagemInicial) {
+            setPreview(`data:image/png;base64,${imagemInicial}`);
+        }
+    }, [imagemInicial]);
 
     function handleChange(e) {
         const file = e.target.files[0];

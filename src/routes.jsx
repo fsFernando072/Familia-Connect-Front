@@ -6,6 +6,8 @@ import PaginaInicial from "./pages/PaginaInicial";
 import ListaFamilias from "./pages/ListaFamilias";
 import DetalhesFamilia from "./pages/DetalhesFamilia";
 import EditarFamilia from "./pages/EditarFamilia";
+import ListaFuncionarios from "./pages/ListaFuncionarios";
+import EditarFuncionario from "./pages/EditarFuncionario";
 
 function AppRoutes(){
     return(
@@ -18,6 +20,8 @@ function AppRoutes(){
                 <Route path="/familias" element={<ListaFamilias />}/>
                 <Route path="/familias/:id" element={<DetalhesFamilia />}/>
                 <Route path="/familias/:id/editar-familia" element={<EditarFamilia />}/>
+                <Route path="/funcionarios" element={<ListaFuncionarios />}/>
+                <Route path="/funcionarios/:id/editar-funcionario" element={<EditarFuncionario />}/>
             </Routes>
         </BrowserRouter>
     )

@@ -5,7 +5,7 @@ import nomesRotas from "../../routes/nomesRotas";
 // aparecer "crus" na navegabilidade.
 const ehIdentificador = (segmento) => /^\d+$/.test(segmento);
 
-function Navegabilidade() {
+function Navegabilidade({ sufixoUltimo }) {
     const location = useLocation();
 
     const caminhos = location.pathname
@@ -40,7 +40,7 @@ function Navegabilidade() {
                     <span key={rota}>
                         {" > "}
                         <Link to={rota} className="underline hover:text-blue-800">
-                            {nomesRotas[caminho] || caminho}
+                            {nomesRotas[caminho] || caminho}{ehUltimo && sufixoUltimo ? ` ${sufixoUltimo}` : ''}
                         </Link>
                     </span>
                 );

@@ -6,7 +6,7 @@ const nomesRotas = {
     "historico-entrega": "Histórico de Entrega",
     "dashboard": "Dashboard",
     "familias": "Lista de Famílias",
-    "funcionarios": "Funcionários",
+    "funcionarios": "Lista de Funcionários",
     "produtos": "Produtos",
     "editar-funcionario": "Editar Funcionário",
     "editar-familia": "Editar Família",
