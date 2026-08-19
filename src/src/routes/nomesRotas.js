@@ -6,8 +6,13 @@ const nomesRotas = {
     "historico-entrega": "Histórico de Entrega",
     "dashboard": "Dashboard",
     "familias": "Lista de Famílias",
+    "cargos": "Lista de Cargos",
     "funcionarios": "Funcionários",
-    "produtos": "Produtos"
+    "produtos": "Produtos",
+    "editar-funcionario": "Editar Funcionário",
+    "editar-familia": "Editar Família",
+    "editar-produto": "Editar Produto",
+    "editar-cargo": "Editar Cargo"
 };
 
 export default nomesRotas;
