@@ -7,6 +7,8 @@ import PaginaInicial from "./pages/PaginaInicial";
 import ListaFamilias from "./pages/ListaFamilias";
 import DetalhesFamilia from "./pages/DetalhesFamilia";
 import EditarFamilia from "./pages/EditarFamilia";
+import ListaFuncionarios from "./pages/ListaFuncionarios";
+import EditarFuncionario from "./pages/EditarFuncionario";
 import ListaCargos from "./Pages/ListaCargos";
 import EditarCargo from "./Pages/EditarCargo";
 
@@ -14,19 +16,18 @@ function AppRoutes() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Login />} />
-                <Route path="/pagina-inicial" element={<PaginaInicial />} />
-                <Route path="/cadastro-funcionario" element={<CadastroFuncionario />} />
-                <Route path="/cadastro-familia" element={<CadastroFamilia />} />
+                <Route path="/" element={<Login />}/>
+                <Route path="/pagina-inicial" element={<PaginaInicial />}/>
+                <Route path="/cadastro-familia" element={<CadastroFamilia />}/>
+                <Route path="/familias" element={<ListaFamilias />}/>
+                <Route path="/familias/:id" element={<DetalhesFamilia />}/>
+                <Route path="/familias/:id/editar-familia" element={<EditarFamilia />}/>
+                <Route path="/cadastro-funcionario" element={<CadastroFuncionario />}/>
+                <Route path="/funcionarios" element={<ListaFuncionarios />}/>
+                <Route path="/funcionarios/:id/editar-funcionario" element={<EditarFuncionario />}/>
                 <Route path="/cadastro-cargo" element={<CadastroCargo />} />
                 <Route path="/cargos" element={<ListaCargos />} />
                 <Route path="/cargos/:id/editar" element={<EditarCargo />} />
-                <Route path="/familias" element={<ListaFamilias />} />
-                <Route path="/familias/:id" element={<DetalhesFamilia />} />
-                <Route path="/familias/:id/editar-familia" element={<EditarFamilia />} />
-                <Route path="/familias" element={<ListaFamilias />} />
-                <Route path="/familias/:id" element={<DetalhesFamilia />} />
-                <Route path="/familias/:id/editar-familia" element={<EditarFamilia />} />
             </Routes>
         </BrowserRouter>
     )
