@@ -18,12 +18,7 @@ function UploadImagem({ label, setImagem, imagemInicial }) {
 
         setPreview(URL.createObjectURL(file));
 
-        const reader = new FileReader();
-        reader.onload = () => {
-            const base64 = reader.result.split(',')[1];
-            setImagem(base64);
-        };
-        reader.readAsDataURL(file);
+        setImagem(file)
     }
 
     return (

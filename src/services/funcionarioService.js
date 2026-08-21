@@ -49,8 +49,22 @@ export async function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, id
 
     setFeedback({ tipo: '', msg: 'Verificando...', loading: true });
 
+    const payload = { nome, cpf, senha, cargoId: idCargo }
+
+    const formData = new FormData();
+
+    formData.append(
+        "funcionarioRequestDto",
+        new Blob(
+            [JSON.stringify(payload)],
+            { type: "application/json" }
+        )
+    );
+
+    formData.append("arquivo", foto);
+
     try {
-        const response = await api.post('/funcionarios', { nome, cpf, senha, fotoFuncionario: foto, cargoId: idCargo });
+        const response = await api.post('/funcionarios', formData);
 
         if (response.status === 201) {
             setFeedback({ tipo: 'sucesso', msg: 'Usuário cadastrado com sucesso!', loading: false });
@@ -81,8 +95,22 @@ export async function atualizarFuncionario(id, nome, cpf, senha, senhaConfirmada
 
     setFeedback({ tipo: '', msg: 'Atualizando...', loading: true });
 
+    const payload = { nome, cpf, senha, cargoId: idCargo }
+
+    const formData = new FormData();
+
+    formData.append(
+        "funcionarioRequestDto",
+        new Blob(
+            [JSON.stringify(payload)],
+            { type: "application/json" }
+        )
+    );
+
+    formData.append("arquivo", foto);
+
     try {
-        const response = await api.put(`/funcionarios/${id}`, { nome, cpf, senha, fotoFuncionario: foto, cargoId: idCargo });
+        const response = await api.put(`/funcionarios/${id}`, formData);
 
         if (response.status === 200) {
             setFeedback({ tipo: 'sucesso', msg: 'Funcionário atualizado com sucesso!', loading: false });

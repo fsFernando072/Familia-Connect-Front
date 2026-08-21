@@ -51,7 +51,7 @@ function EditarFuncionario() {
             setNomeFuncionario(funcionario.nome || "");
             setCpf(funcionario.cpf ? mascaraCpf(funcionario.cpf) : "");
             setIdCargo(funcionario.cargo?.id ? String(funcionario.cargo.id) : "");
-            setFotoInicial(funcionario.fotoFuncionario || "");
+            setFotoInicial("");
 
             setCarregando(false);
         }
@@ -102,7 +102,7 @@ function EditarFuncionario() {
     return (
         <div className='w-full min-h-screen overflow-x-hidden bg-gray-100'>
             <Header nomeTela='Editar Funcionário' />
-            <Navegabilidade sufixoUltimo={nomeFuncionario ? `(${nomeFuncionario})` : ''} />
+            <Navegabilidade />
             <FeedbackToast tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} onClose={fecharFeedback} />
 
             {carregando && (

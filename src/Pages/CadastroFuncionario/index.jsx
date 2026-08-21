@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cadastrarFuncionario } from "../../services/funcionarioService";
 import { buscarCargo } from "../../services/cargoService";
-import logo from '../../assets/logo.png';
 import Header from "../../components/Header/Header";
 import Navegabilidade from "../../components/Navegabilidade/Navegabilidade";
 import Formulario from "../../components/Formulario/Formulario";

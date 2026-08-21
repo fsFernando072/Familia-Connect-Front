@@ -115,7 +115,15 @@ function ListaFamilias() {
                         >
                             <div className='flex items-center gap-4 min-w-0'>
                                 <div className='w-20 h-20 rounded-md bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0'>
-                                    <Users size={28} className='text-gray-400' />
+                                    {familia.fotoFamilia ? (
+                                        <img
+                                            src={`http://localhost:8080${familia.fotoFamilia}`}
+                                            alt={`Foto da família ${familia.nomeFamilia}`}
+                                            className='w-full h-full object-cover'
+                                        />
+                                    ) : (
+                                        <Users size={28} className='text-gray-400' />
+                                    )}
                                 </div>
                                 <div className='min-w-0'>
                                     <p className='truncate'><span className='font-bold text-gray-900'>Família: </span><span className='text-gray-500'>{familia.nomeFamilia}</span></p>
