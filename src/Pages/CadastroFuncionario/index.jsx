@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cadastrarFuncionario } from "../../services/funcionarioService";
 import { buscarCargo } from "../../services/cargoService";
-import Header from "../../components/Header/Header";
-import Navegabilidade from "../../components/Navegabilidade/Navegabilidade";
+import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import { mascaraCpf } from "../../utils/mascaras";
-import FeedbackToast from "../../components/FeedbackToast/FeedbackToast";
 
 function Cadastro() {
 
@@ -22,43 +20,6 @@ function Cadastro() {
     const [mostrarSenha, setMostrarSenha] = useState(false);
 
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
-
-    const campos = [
-        {
-            id: 'nome',
-            label: 'Nome do Funcionário',
-            type: 'text',
-            value: nome,
-            onChange: (e) => setNome(e.target.value),
-            placeholder: 'Digite o nome'
-        },
-        {
-            id: 'cpf',
-            label: 'CPF do Funcionário',
-            type: 'text',
-            value: cpf,
-            onChange: (e) => setCpf(mascaraCpf(e.target.value)),
-            placeholder: '000.000.000-00'
-        },
-        {
-            id: 'senha',
-            label: 'Senha',
-            type: mostrarSenha ? 'text' : 'password',
-            value: senha,
-            onChange: (e) => setSenha(e.target.value),
-            placeholder: '********',
-            toggle: () => setMostrarSenha(v => !v),
-            mostrar: mostrarSenha
-        },
-        {
-            id: 'senha_confirmada',
-            label: 'Confirmar Senha',
-            type: 'password',
-            value: senhaConfirmada,
-            onChange: (e) => setSenhaConfirmada(e.target.value),
-            placeholder: '********'
-        },
-    ]
 
     useEffect(() => {
         async function obterCargos() {
@@ -78,26 +39,77 @@ function Cadastro() {
         cadastrarFuncionario(nome, cpf.replace(/\D/g, ""), senha, senhaConfirmada, idCargo, foto, navigate, setFeedback);
     };
 
+    const campos = [
+        {
+            id: 'nome',
+            tipo: 'texto',
+            coluna: 1,
+            label: 'Nome do Funcionário',
+            value: nome,
+            onChange: (e) => setNome(e.target.value),
+            placeholder: 'Digite o nome'
+        },
+        {
+            id: 'cpf',
+            tipo: 'texto',
+            coluna: 1,
+            label: 'CPF do Funcionário',
+            value: cpf,
+            onChange: (e) => setCpf(mascaraCpf(e.target.value)),
+            placeholder: '000.000.000-00'
+        },
+        {
+            id: 'senha',
+            tipo: 'texto',
+            coluna: 1,
+            label: 'Senha',
+            type: mostrarSenha ? 'text' : 'password',
+            value: senha,
+            onChange: (e) => setSenha(e.target.value),
+            placeholder: '********',
+            toggle: () => setMostrarSenha(v => !v),
+            mostrar: mostrarSenha
+        },
+        {
+            id: 'senha_confirmada',
+            tipo: 'texto',
+            coluna: 1,
+            label: 'Confirmar Senha',
+            type: 'password',
+            value: senhaConfirmada,
+            onChange: (e) => setSenhaConfirmada(e.target.value),
+            placeholder: '********'
+        },
+        {
+            id: 'cargo',
+            tipo: 'select-com-acao',
+            coluna: 2,
+            label: 'Cargo do Funcionário',
+            value: idCargo,
+            onChange: (e) => setIdCargo(e.target.value),
+            opcoes: cargos,
+            acao: { nome: 'Criar cargo', cor: '#2C2C2C' }
+        },
+        {
+            id: 'foto',
+            tipo: 'imagem',
+            coluna: 2,
+            label: 'Imagem do Funcionário',
+            setImagem: setFoto,
+        },
+    ];
+
     return (
-        <div className='w-full min-h-screen overflow-x-hidden bg-gray-100'>
-            <Header nomeTela='Cadastro de Funcionário' />
-            <Navegabilidade />
-            <div className='px-6 py-6'>
-                <Formulario
-                    campos={campos}
-                    nomeBotao="Cadastrar"
-                    corBotao="#34C759"
-                    acaoBotao={handleCadastrarFuncionario}
-                    larguraBotao="w-1/4"
-                    listaCargos={cargos}
-                    imagem
-                    setIdCargo={setIdCargo}
-                    setFoto={setFoto}
-                    posicionamentoBotao="flex justify-start"
-                />
-            </div>
-            <FeedbackToast tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} onClose={fecharFeedback} />
-        </div>
+        <PaginaFormulario nomeTela='Cadastro de Funcionário' feedback={feedback} onFecharFeedback={fecharFeedback}>
+            <Formulario
+                campos={campos}
+                colunas={2}
+                nomeBotao="Cadastrar"
+                corBotao="#34C759"
+                acaoBotao={handleCadastrarFuncionario}
+                alinhamentoBotao="end"
+            />
+        </PaginaFormulario>
     );
 }
 

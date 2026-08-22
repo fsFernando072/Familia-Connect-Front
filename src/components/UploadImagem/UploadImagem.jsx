@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react';
 import { UploadCloud } from 'lucide-react';
+import { montarUrlFoto } from '../../utils/arquivos';
 
 function UploadImagem({ label, setImagem, imagemInicial }) {
-    const [preview, setPreview] = useState(
-        imagemInicial ? `data:image/png;base64,${imagemInicial}` : null
-    );
+    const [preview, setPreview] = useState(montarUrlFoto(imagemInicial));
 
     useEffect(() => {
-        if (imagemInicial) {
-            setPreview(`data:image/png;base64,${imagemInicial}`);
-        }
+        setPreview(montarUrlFoto(imagemInicial));
     }, [imagemInicial]);
 
     function handleChange(e) {

@@ -1,14 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Plus, Trash2 } from "lucide-react";
-import Header from "../../components/Header/Header";
-import Navegabilidade from "../../components/Navegabilidade/Navegabilidade";
-import Botao from "../../components/Botao/Botao";
-import FeedbackToast from "../../components/FeedbackToast/FeedbackToast";
-import CampoTexto from "../../components/CampoTexto/CampoTexto";
-import CampoRadio from "../../components/CampoRadio/CampoRadio";
-import CampoSelect from "../../components/CampoSelect/CampoSelect";
-import UploadImagem from "../../components/UploadImagem/UploadImagem";
+import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
+import Formulario from "../../components/Formulario/Formulario";
 import Carrossel from "../../components/Carrossel/Carrossel";
 import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, mascaraData, mascaraMoeda } from "../../utils/mascaras";
 import { validarCpf, validarRg } from "../../utils/validadores";
@@ -17,7 +11,6 @@ import { buscarEnderecoPorCep } from "../../services/cepService";
 import { buscarEstados } from "../../services/estadoService";
 import { buscarProfissoes } from "../../services/profissaoService";
 import { buscarFamiliaPorId, atualizarFamilia } from "../../services/familiaService";
-import CampoProfissao from "../../components/CampoProfissao/CampoProfissao";
 
 function dependenteVazio() {
     return {
@@ -65,6 +58,7 @@ function EditarFamilia() {
     const [profissaoNova, setProfissaoNova] = useState("");
     const [rendaFamiliar, setRendaFamiliar] = useState("");
     const [imagemFamilia, setImagemFamilia] = useState("");
+    const [fotoInicial, setFotoInicial] = useState("");
     const [erroRg, setErroRg] = useState("");
     const [erroCpf, setErroCpf] = useState("");
 
@@ -113,6 +107,7 @@ function EditarFamilia() {
             setPossuiPne(familia.possuiPrioridade ? "Sim" : "Não");
             setProfissaoSelecionada(responsavel.profissao ? (profissaoConhecida ? responsavel.profissao : 'outra') : "");
             setProfissaoNova(responsavel.profissao && !profissaoConhecida ? responsavel.profissao : "");
+            setFotoInicial(familia.fotoFamilia || "");
 
             const endereco = familia.endereco || {};
             setCep(endereco.cep ? mascaraCep(endereco.cep) : "");
@@ -250,59 +245,80 @@ function EditarFamilia() {
 
     const opcoesEstado = estados.map((uf) => ({ value: String(uf.id), label: `${uf.sigla} - ${uf.nome}` }));
 
+    const camposResponsavel = [
+        { id: 'nome', tipo: 'texto', coluna: 1, label: 'Nome do Responsável', value: nome, onChange: (e) => setNome(e.target.value), placeholder: 'Digite o nome' },
+        { id: 'rg', tipo: 'texto', coluna: 1, label: 'RG do Responsável', value: rg, onChange: (e) => setRg(mascaraRg(e.target.value)), onBlur: handleBlurRg, placeholder: '22.222.222-2', erro: erroRg },
+        { id: 'cpf', tipo: 'texto', coluna: 1, label: 'CPF do Responsável', value: cpf, onChange: (e) => setCpf(mascaraCpf(e.target.value)), onBlur: handleBlurCpf, placeholder: '444.444.444-44', erro: erroCpf },
+        { id: 'telefone', tipo: 'texto', coluna: 1, label: 'Telefone do Responsável', value: telefone, onChange: (e) => setTelefone(mascaraTelefone(e.target.value)), placeholder: '(11) 99999-9999' },
+        { id: 'dataNascimento', tipo: 'texto', coluna: 1, label: 'Data de Nascimento do Responsável', value: dataNascimento, onChange: (e) => setDataNascimento(mascaraData(e.target.value)), placeholder: '__/__/____' },
+        { id: 'sexo', tipo: 'radio', coluna: 1, label: 'Sexo do Responsável', name: 'sexoResponsavel', opcoes: ['Masculino', 'Feminino', 'Outro'], value: sexo, onChange: setSexo },
+        { id: 'possuiPne', tipo: 'radio', coluna: 2, label: 'A Família possui PNE?', name: 'possuiPne', opcoes: ['Não', 'Sim'], value: possuiPne, onChange: setPossuiPne },
+        {
+            id: 'profissao', tipo: 'profissao', coluna: 2, label: 'Profissão', profissoes: profissoes,
+            selecionada: profissaoSelecionada, onChangeSelecionada: (e) => setProfissaoSelecionada(e.target.value),
+            nova: profissaoNova, onChangeNova: (e) => setProfissaoNova(e.target.value)
+        },
+        { id: 'rendaFamiliar', tipo: 'texto', coluna: 2, label: 'Renda familiar', value: rendaFamiliar, onChange: (e) => setRendaFamiliar(mascaraMoeda(e.target.value)), placeholder: '2.000,00' },
+        { id: 'imagemFamilia', tipo: 'imagem', coluna: 2, label: 'Trocar imagem', setImagem: setImagemFamilia, imagemInicial: fotoInicial },
+    ];
+
+    const camposEndereco = [
+        { id: 'cep', tipo: 'texto', coluna: 1, label: 'CEP', value: cep, onChange: (e) => setCep(mascaraCep(e.target.value)), onBlur: handleBuscarCep, placeholder: '02141-140' },
+        { id: 'rua', tipo: 'texto', coluna: 1, label: 'Rua', value: rua, onChange: (e) => setRua(e.target.value), placeholder: 'Rua Macapá' },
+        { id: 'numero', tipo: 'texto', coluna: 1, label: 'Número', value: numero, onChange: (e) => setNumero(e.target.value.replace(/\D/g, "")), placeholder: '1290' },
+        { id: 'complemento', tipo: 'texto', coluna: 1, label: 'Complemento', value: complemento, onChange: (e) => setComplemento(e.target.value), placeholder: 'Apartamento 20' },
+        { id: 'bairro', tipo: 'texto', coluna: 1, label: 'Bairro', value: bairro, onChange: (e) => setBairro(e.target.value), placeholder: 'Itaquera' },
+        { id: 'cidade', tipo: 'texto', coluna: 2, label: 'Cidade', value: cidade, onChange: (e) => setCidade(e.target.value), placeholder: 'São Paulo' },
+        { id: 'estado', tipo: 'select', coluna: 2, label: 'Estado', value: estadoId, onChange: (e) => setEstadoId(e.target.value), opcoes: opcoesEstado },
+        {
+            id: 'buscandoCep', tipo: 'custom', coluna: 2,
+            render: () => buscandoCep ? <span className='text-sm text-gray-500'>Buscando endereço...</span> : null
+        },
+    ];
+
+    const camposDependente = (dep) => ([
+        { id: 'nome', tipo: 'texto', coluna: 1, label: 'Nome do Dependente', value: dep.nome, onChange: (e) => atualizarDependente(dep.id, 'nome', e.target.value), placeholder: 'Maria Ferreira' },
+        { id: 'parentesco', tipo: 'texto', coluna: 1, label: 'Parentesco', value: dep.parentesco, onChange: (e) => atualizarDependente(dep.id, 'parentesco', e.target.value), placeholder: 'Filha(o)' },
+        { id: 'rg', tipo: 'texto', coluna: 1, label: 'RG do Dependente', value: dep.rg, onChange: (e) => atualizarDependente(dep.id, 'rg', mascaraRg(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, 'rg'), placeholder: '22.222.222-2', erro: dep.erroRg },
+        { id: 'cpf', tipo: 'texto', coluna: 1, label: 'CPF do Dependente', value: dep.cpf, onChange: (e) => atualizarDependente(dep.id, 'cpf', mascaraCpf(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, 'cpf'), placeholder: '444.444.444-44', erro: dep.erroCpf },
+        { id: 'dataNascimento', tipo: 'texto', coluna: 2, label: 'Data de Nascimento do Dependente', value: dep.dataNascimento, onChange: (e) => atualizarDependente(dep.id, 'dataNascimento', mascaraData(e.target.value)), placeholder: '__/__/____' },
+        { id: 'sexo', tipo: 'radio', coluna: 2, label: 'Sexo do Dependente', name: `sexoDependente-${dep.id}`, opcoes: ['Masculino', 'Feminino', 'Outro'], value: dep.sexo, onChange: (valor) => atualizarDependente(dep.id, 'sexo', valor) },
+        { id: 'telefone', tipo: 'texto', coluna: 2, label: 'Telefone do Dependente', value: dep.telefone, onChange: (e) => atualizarDependente(dep.id, 'telefone', mascaraTelefone(e.target.value)), placeholder: '(11) 99999-9999' },
+        {
+            id: 'profissao', tipo: 'profissao', coluna: 2, label: 'Profissão do Dependente', profissoes: profissoes,
+            selecionada: dep.profissaoSelecionada, onChangeSelecionada: (e) => atualizarDependente(dep.id, 'profissaoSelecionada', e.target.value),
+            nova: dep.profissaoNova, onChangeNova: (e) => atualizarDependente(dep.id, 'profissaoNova', e.target.value)
+        },
+    ]);
+
     const passos = [
         {
             titulo: "Responsável",
             conteudo: (
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4'>
-                    <div className='flex flex-col gap-4 min-w-0'>
-                        <CampoTexto label='Nome do Responsável' value={nome} onChange={(e) => setNome(e.target.value)} placeholder='Digite o nome' />
-                        <CampoTexto label='RG do Responsável' value={rg} onChange={(e) => setRg(mascaraRg(e.target.value))} onBlur={handleBlurRg} placeholder='22.222.222-2' erro={erroRg} />
-                        <CampoTexto label='CPF do Responsável' value={cpf} onChange={(e) => setCpf(mascaraCpf(e.target.value))} onBlur={handleBlurCpf} placeholder='444.444.444-44' erro={erroCpf} />
-                        <CampoTexto label='Telefone do Responsável' value={telefone} onChange={(e) => setTelefone(mascaraTelefone(e.target.value))} placeholder='(11) 99999-9999' />
-                        <CampoTexto label='Data de Nascimento do Responsável' value={dataNascimento} onChange={(e) => setDataNascimento(mascaraData(e.target.value))} placeholder='__/__/____' />
-                        <CampoRadio label='Sexo do Responsável' name='sexoResponsavel' opcoes={['Masculino', 'Feminino', 'Outro']} value={sexo} onChange={setSexo} />
-                    </div>
-                    <div className='flex flex-col gap-4 min-w-0'>
-                        <CampoRadio label='A Família possui PNE?' name='possuiPne' opcoes={['Não', 'Sim']} value={possuiPne} onChange={setPossuiPne} />
-                        <CampoProfissao
-                            label='Profissão'
-                            profissoes={profissoes}
-                            selecionada={profissaoSelecionada}
-                            onChangeSelecionada={(e) => setProfissaoSelecionada(e.target.value)}
-                            nova={profissaoNova}
-                            onChangeNova={(e) => setProfissaoNova(e.target.value)}
-                        />
-                        <CampoTexto label='Renda familiar' value={rendaFamiliar} onChange={(e) => setRendaFamiliar(mascaraMoeda(e.target.value))} placeholder='2.000,00' />
-                        <UploadImagem label='Trocar imagem' setImagem={setImagemFamilia} />
-                    </div>
-                    <div className='md:col-span-2 flex justify-end mt-2'>
-                        <Botao nome='Próximo' cor='#167AFA' acao={handleProximo} larguraBotao='' />
-                    </div>
-                </div>
+                <Formulario
+                    campos={camposResponsavel}
+                    colunas={2}
+                    nomeBotao='Próximo'
+                    corBotao='#167AFA'
+                    acaoBotao={handleProximo}
+                    larguraBotao='w-full sm:w-auto'
+                    alinhamentoBotao='end'
+                />
             )
         },
         {
             titulo: "Endereço",
             conteudo: (
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4'>
-                    <div className='flex flex-col gap-4 min-w-0'>
-                        <CampoTexto label='CEP' value={cep} onChange={(e) => setCep(mascaraCep(e.target.value))} onBlur={handleBuscarCep} placeholder='02141-140' />
-                        <CampoTexto label='Rua' value={rua} onChange={(e) => setRua(e.target.value)} placeholder='Rua Macapá' />
-                        <CampoTexto label='Número' value={numero} onChange={(e) => setNumero(e.target.value.replace(/\D/g, ""))} placeholder='1290' />
-                        <CampoTexto label='Complemento' value={complemento} onChange={(e) => setComplemento(e.target.value)} placeholder='Apartamento 20' />
-                        <CampoTexto label='Bairro' value={bairro} onChange={(e) => setBairro(e.target.value)} placeholder='Itaquera' />
-                    </div>
-                    <div className='flex flex-col gap-4 min-w-0'>
-                        <CampoTexto label='Cidade' value={cidade} onChange={(e) => setCidade(e.target.value)} placeholder='São Paulo' />
-                        <CampoSelect label='Estado' value={estadoId} onChange={(e) => setEstadoId(e.target.value)} opcoes={opcoesEstado} />
-                        {buscandoCep && <span className='text-sm text-gray-500'>Buscando endereço...</span>}
-                    </div>
-                    <div className='md:col-span-2 flex justify-end items-center gap-4 mt-2'>
-                        <button onClick={handleVoltar} className='text-gray-600 font-medium hover:underline cursor-pointer'>Voltar</button>
-                        <Botao nome='Próximo' cor='#167AFA' acao={handleProximo} larguraBotao='' />
-                    </div>
-                </div>
+                <Formulario
+                    campos={camposEndereco}
+                    colunas={2}
+                    nomeBotao='Próximo'
+                    corBotao='#167AFA'
+                    acaoBotao={handleProximo}
+                    larguraBotao='w-full sm:w-auto'
+                    alinhamentoBotao='end'
+                    botaoVoltar={{ onClick: handleVoltar }}
+                />
             )
         },
         {
@@ -320,67 +336,7 @@ function EditarFamilia() {
                                     <Trash2 size={18} />
                                 </button>
                             )}
-                            <div className='grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4'>
-                                <div className='flex flex-col gap-4 min-w-0'>
-                                    <CampoTexto
-                                        label='Nome do Dependente'
-                                        value={dep.nome}
-                                        onChange={(e) => atualizarDependente(dep.id, 'nome', e.target.value)}
-                                        placeholder='Maria Ferreira'
-                                    />
-                                    <CampoTexto
-                                        label='Parentesco'
-                                        value={dep.parentesco}
-                                        onChange={(e) => atualizarDependente(dep.id, 'parentesco', e.target.value)}
-                                        placeholder='Filha(o)'
-                                    />
-                                    <CampoTexto
-                                        label='RG do Dependente'
-                                        value={dep.rg}
-                                        onChange={(e) => atualizarDependente(dep.id, 'rg', mascaraRg(e.target.value))}
-                                        onBlur={() => validarDependenteCampo(dep.id, 'rg')}
-                                        placeholder='22.222.222-2'
-                                        erro={dep.erroRg}
-                                    />
-                                    <CampoTexto
-                                        label='CPF do Dependente'
-                                        value={dep.cpf}
-                                        onChange={(e) => atualizarDependente(dep.id, 'cpf', mascaraCpf(e.target.value))}
-                                        onBlur={() => validarDependenteCampo(dep.id, 'cpf')}
-                                        placeholder='444.444.444-44'
-                                        erro={dep.erroCpf}
-                                    />
-                                </div>
-                                <div className='flex flex-col gap-4 min-w-0'>
-                                    <CampoTexto
-                                        label='Data de Nascimento do Dependente'
-                                        value={dep.dataNascimento}
-                                        onChange={(e) => atualizarDependente(dep.id, 'dataNascimento', mascaraData(e.target.value))}
-                                        placeholder='__/__/____'
-                                    />
-                                    <CampoRadio
-                                        label='Sexo do Dependente'
-                                        name={`sexoDependente-${dep.id}`}
-                                        opcoes={['Masculino', 'Feminino', 'Outro']}
-                                        value={dep.sexo}
-                                        onChange={(valor) => atualizarDependente(dep.id, 'sexo', valor)}
-                                    />
-                                    <CampoTexto
-                                        label='Telefone do Dependente'
-                                        value={dep.telefone}
-                                        onChange={(e) => atualizarDependente(dep.id, 'telefone', mascaraTelefone(e.target.value))}
-                                        placeholder='(11) 99999-9999'
-                                    />
-                                    <CampoProfissao
-                                        label='Profissão do Dependente'
-                                        profissoes={profissoes}
-                                        selecionada={dep.profissaoSelecionada}
-                                        onChangeSelecionada={(e) => atualizarDependente(dep.id, 'profissaoSelecionada', e.target.value)}
-                                        nova={dep.profissaoNova}
-                                        onChangeNova={(e) => atualizarDependente(dep.id, 'profissaoNova', e.target.value)}
-                                    />
-                                </div>
-                            </div>
+                            <Formulario campos={camposDependente(dep)} colunas={2} />
                         </div>
                     ))}
 
@@ -391,35 +347,32 @@ function EditarFamilia() {
                         <Plus size={18} /> Adicionar
                     </button>
 
-                    <div className='flex justify-end items-center gap-4 mt-2'>
-                        <button onClick={handleVoltar} className='text-gray-600 font-medium hover:underline cursor-pointer'>Voltar</button>
-                        <Botao nome='Salvar' cor='#34C759' acao={handleAtualizar} larguraBotao='' />
-                    </div>
+                    <Formulario
+                        campos={[]}
+                        nomeBotao='Salvar'
+                        corBotao='#34C759'
+                        acaoBotao={handleAtualizar}
+                        larguraBotao='w-full sm:w-auto'
+                        alinhamentoBotao='end'
+                        botaoVoltar={{ onClick: handleVoltar }}
+                    />
                 </div>
             )
         }
     ];
 
     return (
-        <div className='w-full min-h-screen overflow-x-hidden bg-gray-100'>
-            <Header nomeTela='Editar Família' />
-            <Navegabilidade />
-            <FeedbackToast tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} onClose={fecharFeedback} />
-
-            {carregando && (
-                <p className='text-gray-500 text-center mt-10'>Carregando família...</p>
-            )}
-
-            {!carregando && !familiaEncontrada && (
-                <p className='text-gray-500 text-center mt-10'>Família não encontrada.</p>
-            )}
-
-            {!carregando && familiaEncontrada && (
-                <div className='px-6 py-6'>
-                    <Carrossel passos={passos} passoAtual={passoAtual} />
-                </div>
-            )}
-        </div>
+        <PaginaFormulario
+            nomeTela='Editar Família'
+            carregando={carregando}
+            carregandoTexto='Carregando família...'
+            encontrado={familiaEncontrada}
+            naoEncontradoTexto='Família não encontrada.'
+            feedback={feedback}
+            onFecharFeedback={fecharFeedback}
+        >
+            <Carrossel passos={passos} passoAtual={passoAtual} />
+        </PaginaFormulario>
     );
 }
 

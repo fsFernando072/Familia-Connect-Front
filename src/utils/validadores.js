@@ -1,6 +1,3 @@
-// Valida o CPF pelo algoritmo oficial de dígito verificador (mesma regra que o
-// back-end aplica com @CPF do Hibernate Validator), evitando que um CPF inválido
-// só seja descoberto quando o back-end já rejeitou a requisição.
 export function validarCpf(cpf) {
     const cpfLimpo = (cpf || "").replace(/\D/g, "");
 
@@ -26,14 +23,11 @@ export function validarCpf(cpf) {
     return true;
 }
 
-// O RG não tem um dígito verificador padrão nacional; o back-end só exige
-// entre 7 e 9 caracteres (@Size), então validamos o mesmo aqui.
 export function validarRg(rg) {
     const rgLimpo = (rg || "").replace(/\D/g, "");
     return rgLimpo.length >= 7 && rgLimpo.length <= 9;
 }
 
-// O back-end exige telefone com exatamente 11 dígitos (DDD + 9 dígitos).
 export function validarTelefone(telefone) {
     const telefoneLimpo = (telefone || "").replace(/\D/g, "");
     return telefoneLimpo.length === 11;

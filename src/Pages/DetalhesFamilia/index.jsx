@@ -4,6 +4,7 @@ import { Users } from "lucide-react";
 import Header from "../../components/Header/Header";
 import Navegabilidade from "../../components/Navegabilidade/Navegabilidade";
 import Botao from "../../components/Botao/Botao";
+import FotoAvatar from "../../components/FotoAvatar/FotoAvatar";
 import { mascaraCpf, mascaraRg, mascaraTelefone } from "../../utils/mascaras";
 import { converterDataParaBr } from "../../utils/formatadores";
 import { buscarFamiliaPorId } from "../../services/familiaService";
@@ -46,16 +47,13 @@ function DetalhesFamilia() {
                 {!carregando && familia && (
                     <>
                         <div className='flex flex-col sm:flex-row items-start gap-6'>
-                            <div className='w-28 h-28 rounded-md bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0'>
-                                {familia.fotoFamilia ? (
-                                    <img
-                                        src={`http://localhost:8080${familia.fotoFamilia}`}
-                                        alt={`Foto da família ${familia.nomeFamilia}`}
-                                        className='w-full h-full object-cover'
-                                    />
-                                ) : (
-                                    <Users size={36} className='text-gray-400' />
-                                )}
+                            <div className='w-28 h-28 rounded-md bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden'>
+                                <FotoAvatar
+                                    caminho={familia.fotoFamilia}
+                                    alt={`Foto da família ${familia.nomeFamilia}`}
+                                    Icone={Users}
+                                    tamanhoIcone={36}
+                                />
                             </div>
 
                             <div className='flex-1 min-w-0 w-full'>

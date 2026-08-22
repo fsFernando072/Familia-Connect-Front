@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { atualizarFuncionario, buscarFuncionarioPorId } from "../../services/funcionarioService";
 import { buscarCargo } from "../../services/cargoService";
-import Header from "../../components/Header/Header";
-import Navegabilidade from "../../components/Navegabilidade/Navegabilidade";
+import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import { mascaraCpf } from "../../utils/mascaras";
-import FeedbackToast from "../../components/FeedbackToast/FeedbackToast";
 
 function EditarFuncionario() {
 
@@ -51,32 +49,40 @@ function EditarFuncionario() {
             setNomeFuncionario(funcionario.nome || "");
             setCpf(funcionario.cpf ? mascaraCpf(funcionario.cpf) : "");
             setIdCargo(funcionario.cargo?.id ? String(funcionario.cargo.id) : "");
-            setFotoInicial("");
+            setFotoInicial(funcionario.fotoFuncionario || "");
 
             setCarregando(false);
         }
         carregarDadosIniciais();
     }, [id]);
 
+    const handleAtualizarFuncionario = () => {
+        atualizarFuncionario(id, nome, cpf.replace(/\D/g, ""), senha, senhaConfirmada, idCargo, foto, navigate, setFeedback);
+    };
+
     const campos = [
         {
             id: 'nome',
+            tipo: 'texto',
+            coluna: 1,
             label: 'Nome do Funcionário',
-            type: 'text',
             value: nome,
             onChange: (e) => setNome(e.target.value),
             placeholder: 'Digite o nome'
         },
         {
             id: 'cpf',
+            tipo: 'texto',
+            coluna: 1,
             label: 'CPF do Funcionário',
-            type: 'text',
             value: cpf,
             onChange: (e) => setCpf(mascaraCpf(e.target.value)),
             placeholder: '000.000.000-00'
         },
         {
             id: 'senha',
+            tipo: 'texto',
+            coluna: 1,
             label: 'Senha do Funcionário',
             type: mostrarSenha ? 'text' : 'password',
             value: senha,
@@ -87,51 +93,53 @@ function EditarFuncionario() {
         },
         {
             id: 'senha_confirmada',
+            tipo: 'texto',
+            coluna: 1,
             label: 'Confirmar Senha',
             type: 'password',
             value: senhaConfirmada,
             onChange: (e) => setSenhaConfirmada(e.target.value),
             placeholder: '********'
         },
-    ]
-
-    const handleAtualizarFuncionario = () => {
-        atualizarFuncionario(id, nome, cpf.replace(/\D/g, ""), senha, senhaConfirmada, idCargo, foto || fotoInicial, navigate, setFeedback);
-    };
+        {
+            id: 'cargo',
+            tipo: 'select-com-acao',
+            coluna: 2,
+            label: 'Cargo do Funcionário',
+            value: idCargo,
+            onChange: (e) => setIdCargo(e.target.value),
+            opcoes: cargos,
+            acao: { nome: 'Criar cargo', cor: '#2C2C2C' }
+        },
+        {
+            id: 'foto',
+            tipo: 'imagem',
+            coluna: 2,
+            label: 'Imagem do Funcionário',
+            setImagem: setFoto,
+            imagemInicial: fotoInicial,
+        },
+    ];
 
     return (
-        <div className='w-full min-h-screen overflow-x-hidden bg-gray-100'>
-            <Header nomeTela='Editar Funcionário' />
-            <Navegabilidade />
-            <FeedbackToast tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} onClose={fecharFeedback} />
-
-            {carregando && (
-                <p className='text-gray-500 text-center mt-10'>Carregando funcionário...</p>
-            )}
-
-            {!carregando && !funcionarioEncontrado && (
-                <p className='text-gray-500 text-center mt-10'>Funcionário não encontrado.</p>
-            )}
-
-            {!carregando && funcionarioEncontrado && (
-                <div className='px-6 py-6'>
-                    <Formulario
-                        campos={campos}
-                        nomeBotao="Confirmar"
-                        corBotao="#34C759"
-                        acaoBotao={handleAtualizarFuncionario}
-                        larguraBotao="w-1/4"
-                        listaCargos={cargos}
-                        imagem
-                        setIdCargo={setIdCargo}
-                        idCargoSelecionado={idCargo}
-                        setFoto={setFoto}
-                        fotoInicial={fotoInicial}
-                        posicionamentoBotao="flex justify-start"
-                    />
-                </div>
-            )}
-        </div>
+        <PaginaFormulario
+            nomeTela='Editar Funcionário'
+            carregando={carregando}
+            carregandoTexto='Carregando funcionário...'
+            encontrado={funcionarioEncontrado}
+            naoEncontradoTexto='Funcionário não encontrado.'
+            feedback={feedback}
+            onFecharFeedback={fecharFeedback}
+        >
+            <Formulario
+                campos={campos}
+                colunas={2}
+                nomeBotao="Confirmar"
+                corBotao="#34C759"
+                acaoBotao={handleAtualizarFuncionario}
+                alinhamentoBotao="end"
+            />
+        </PaginaFormulario>
     );
 }
 

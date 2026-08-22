@@ -7,6 +7,7 @@ import CampoBusca from "../../components/CampoBusca/CampoBusca";
 import Botao from "../../components/Botao/Botao";
 import FeedbackToast from "../../components/FeedbackToast/FeedbackToast";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
+import FotoAvatar from "../../components/FotoAvatar/FotoAvatar";
 import { mascaraCpf } from "../../utils/mascaras";
 import { listarFuncionarios, deletarFuncionario } from "../../services/funcionarioService";
 
@@ -116,15 +117,11 @@ function ListaFuncionarios() {
                         >
                             <div className='flex items-center gap-4 min-w-0'>
                                 <div className='w-20 h-20 rounded-md bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden'>
-                                    {funcionario.fotoFuncionario ? (
-                                        <img
-                                            src={`http://localhost:8080${funcionario.fotoFuncionario}`}
-                                            alt={`Foto da funcionário ${funcionario.nome}`}
-                                            className='w-full h-full object-cover'
-                                        />
-                                    ) : (
-                                        <UserRound size={28} className='text-gray-400' />
-                                    )}
+                                    <FotoAvatar
+                                        caminho={funcionario.fotoFuncionario}
+                                        alt={`Foto do funcionário ${funcionario.nome}`}
+                                        Icone={UserRound}
+                                    />
                                 </div>
                                 <div className='min-w-0'>
                                     <p className='truncate'><span className='font-bold text-gray-900'>Nome: </span><span className='text-gray-500'>{funcionario.nome}</span></p>

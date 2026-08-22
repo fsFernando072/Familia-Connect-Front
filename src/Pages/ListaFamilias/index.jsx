@@ -7,6 +7,7 @@ import CampoBusca from "../../components/CampoBusca/CampoBusca";
 import Botao from "../../components/Botao/Botao";
 import FeedbackToast from "../../components/FeedbackToast/FeedbackToast";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
+import FotoAvatar from "../../components/FotoAvatar/FotoAvatar";
 import { listarFamilias, deletarFamilia } from "../../services/familiaService";
 
 function ListaFamilias() {
@@ -114,16 +115,12 @@ function ListaFamilias() {
                             className='flex items-center justify-between gap-4 bg-white border border-gray-200 rounded-xl shadow-sm p-4'
                         >
                             <div className='flex items-center gap-4 min-w-0'>
-                                <div className='w-20 h-20 rounded-md bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0'>
-                                    {familia.fotoFamilia ? (
-                                        <img
-                                            src={`http://localhost:8080${familia.fotoFamilia}`}
-                                            alt={`Foto da família ${familia.nomeFamilia}`}
-                                            className='w-full h-full object-cover'
-                                        />
-                                    ) : (
-                                        <Users size={28} className='text-gray-400' />
-                                    )}
+                                <div className='w-20 h-20 rounded-md bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden'>
+                                    <FotoAvatar
+                                        caminho={familia.fotoFamilia}
+                                        alt={`Foto da família ${familia.nomeFamilia}`}
+                                        Icone={Users}
+                                    />
                                 </div>
                                 <div className='min-w-0'>
                                     <p className='truncate'><span className='font-bold text-gray-900'>Família: </span><span className='text-gray-500'>{familia.nomeFamilia}</span></p>
