@@ -51,8 +51,8 @@ function montarPayloadProduto(produto) {
     return {
         nome: produto.nome,
         descricao: produto.descricao || null,
-        quantidade: produto.quantidadeProduto,
-        idCategoria: Number(produto.categoriaId),
+        quantidade: 19,
+        idCategoria: Number(produto.categoriaId)
     };
 }
 
@@ -65,7 +65,6 @@ export async function cadastrarProduto(produto, navigate, setFeedback) {
     const payload = montarPayloadProduto(produto);
 
     try {
-        console.log(payload)
         const response = await api.post('/produtos', payload);
 
         if (response.status === 201) {
