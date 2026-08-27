@@ -100,6 +100,7 @@ function montarPayloadFamilia(responsavel, endereco, dependentes) {
             rg: responsavel.rg,
             cpf: responsavel.cpf,
             dataNascimento: converterDataParaIso(responsavel.dataNascimento),
+            sexo: responsavel.sexo.toUpperCase(),
             profissao: responsavel.profissao || null,
             telefone: responsavel.telefone,
             grauParentesco: 'Responsável',
@@ -110,6 +111,7 @@ function montarPayloadFamilia(responsavel, endereco, dependentes) {
             rg: dep.rg,
             cpf: dep.cpf,
             dataNascimento: converterDataParaIso(dep.dataNascimento),
+            sexo: dep.sexo.toUpperCase(),
             profissao: dep.profissao || null,
             telefone: dep.telefone,
             grauParentesco: dep.parentesco,
@@ -126,8 +128,20 @@ export async function cadastrarFamilia(responsavel, endereco, dependentes, navig
 
     const payload = montarPayloadFamilia(responsavel, endereco, dependentes);
 
+    const formData = new FormData();
+
+    formData.append(
+        "familiaRequestDto",
+        new Blob(
+            [JSON.stringify(payload)],
+            { type: "application/json" }
+        )
+    );
+
+    formData.append("arquivo", responsavel.imagem);
+
     try {
-        const response = await api.post('/familias', payload);
+        const response = await api.post('/familias', formData);
 
         if (response.status === 201) {
             setFeedback({ tipo: 'sucesso', msg: 'Família cadastrada com sucesso!', loading: false });
@@ -154,8 +168,20 @@ export async function atualizarFamilia(id, responsavel, endereco, dependentes, n
 
     const payload = montarPayloadFamilia(responsavel, endereco, dependentes);
 
+    const formData = new FormData();
+
+    formData.append(
+        "familiaRequestDto",
+        new Blob(
+            [JSON.stringify(payload)],
+            { type: "application/json" }
+        )
+    );
+
+    formData.append("arquivo", responsavel.imagem);
+
     try {
-        const response = await api.put(`/familias/${id}`, payload);
+        const response = await api.put(`/familias/${id}`, formData);
 
         if (response.status === 200) {
             setFeedback({ tipo: 'sucesso', msg: 'Família atualizada com sucesso!', loading: false });

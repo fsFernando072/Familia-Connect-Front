@@ -1,12 +1,19 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { cadastrarFuncionario } from "../../services/funcionarioService";
+import { useNavigate, useParams } from "react-router-dom";
+import { atualizarFuncionario, buscarFuncionarioPorId } from "../../services/funcionarioService";
 import { buscarCargo } from "../../services/cargoService";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import { mascaraCpf } from "../../utils/mascaras";
 
-function Cadastro() {
+function EditarFuncionario() {
+
+    const { id } = useParams();
+    const navigate = useNavigate();
+
+    const [carregando, setCarregando] = useState(true);
+    const [funcionarioEncontrado, setFuncionarioEncontrado] = useState(true);
+    const [nomeFuncionario, setNomeFuncionario] = useState("");
 
     const [nome, setNome] = useState("");
     const [cpf, setCpf] = useState("");
@@ -14,29 +21,43 @@ function Cadastro() {
     const [senhaConfirmada, setSenhaConfirmada] = useState("");
     const [idCargo, setIdCargo] = useState("");
     const [foto, setFoto] = useState("");
+    const [fotoInicial, setFotoInicial] = useState("");
     const [cargos, setCargos] = useState([]);
-    const navigate = useNavigate();
     const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
     const [mostrarSenha, setMostrarSenha] = useState(false);
 
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
     useEffect(() => {
-        async function obterCargos() {
-            try {
-                const dados = await buscarCargo();
-                if (dados) {
-                    setCargos(dados);
-                }
-            } catch (error) {
-                console.error("Erro ao carregar cargos:", error);
-            }
-        }
-        obterCargos();
-    }, []);
+        async function carregarDadosIniciais() {
+            setCarregando(true);
 
-    const handleCadastrarFuncionario = () => {
-        cadastrarFuncionario(nome, cpf.replace(/\D/g, ""), senha, senhaConfirmada, idCargo, foto, navigate, setFeedback);
+            const [dadosCargos, funcionario] = await Promise.all([
+                buscarCargo(),
+                buscarFuncionarioPorId(id)
+            ]);
+
+            setCargos(dadosCargos || []);
+
+            if (!funcionario) {
+                setFuncionarioEncontrado(false);
+                setCarregando(false);
+                return;
+            }
+
+            setNome(funcionario.nome || "");
+            setNomeFuncionario(funcionario.nome || "");
+            setCpf(funcionario.cpf ? mascaraCpf(funcionario.cpf) : "");
+            setIdCargo(funcionario.cargo?.id ? String(funcionario.cargo.id) : "");
+            setFotoInicial(funcionario.fotoFuncionario || "");
+
+            setCarregando(false);
+        }
+        carregarDadosIniciais();
+    }, [id]);
+
+    const handleAtualizarFuncionario = () => {
+        atualizarFuncionario(id, nome, cpf.replace(/\D/g, ""), senha, senhaConfirmada, idCargo, foto, navigate, setFeedback);
     };
 
     const campos = [
@@ -62,7 +83,7 @@ function Cadastro() {
             id: 'senha',
             tipo: 'texto',
             coluna: 1,
-            label: 'Senha',
+            label: 'Senha do Funcionário',
             type: mostrarSenha ? 'text' : 'password',
             value: senha,
             onChange: (e) => setSenha(e.target.value),
@@ -96,21 +117,30 @@ function Cadastro() {
             coluna: 2,
             label: 'Imagem do Funcionário',
             setImagem: setFoto,
+            imagemInicial: fotoInicial,
         },
     ];
 
     return (
-        <PaginaFormulario nomeTela='Cadastro de Funcionário' feedback={feedback} onFecharFeedback={fecharFeedback}>
+        <PaginaFormulario
+            nomeTela='Editar Funcionário'
+            carregando={carregando}
+            carregandoTexto='Carregando funcionário...'
+            encontrado={funcionarioEncontrado}
+            naoEncontradoTexto='Funcionário não encontrado.'
+            feedback={feedback}
+            onFecharFeedback={fecharFeedback}
+        >
             <Formulario
                 campos={campos}
                 colunas={2}
-                nomeBotao="Cadastrar"
+                nomeBotao="Confirmar"
                 corBotao="#34C759"
-                acaoBotao={handleCadastrarFuncionario}
+                acaoBotao={handleAtualizarFuncionario}
                 alinhamentoBotao="end"
             />
         </PaginaFormulario>
     );
 }
 
-export default Cadastro;
+export default EditarFuncionario;

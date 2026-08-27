@@ -1,8 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { UploadCloud } from 'lucide-react';
+import { montarUrlFoto } from '../../utils/arquivos';
 
-function UploadImagem({ label, setImagem }) {
-    const [preview, setPreview] = useState(null);
+function UploadImagem({ label, setImagem, imagemInicial }) {
+    const [preview, setPreview] = useState(montarUrlFoto(imagemInicial));
+
+    useEffect(() => {
+        setPreview(montarUrlFoto(imagemInicial));
+    }, [imagemInicial]);
 
     function handleChange(e) {
         const file = e.target.files[0];
@@ -10,12 +15,7 @@ function UploadImagem({ label, setImagem }) {
 
         setPreview(URL.createObjectURL(file));
 
-        const reader = new FileReader();
-        reader.onload = () => {
-            const base64 = reader.result.split(',')[1];
-            setImagem(base64);
-        };
-        reader.readAsDataURL(file);
+        setImagem(file)
     }
 
     return (
