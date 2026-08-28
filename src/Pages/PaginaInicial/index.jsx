@@ -20,7 +20,7 @@ const cartoes = [
     { titulo: "Lista de Produtos", rota: "/produtos", icone: iconeListaProdutos },
     { titulo: "Cadastro de Cargo", rota: "/cadastro-cargo", icone: iconeCargo },
     { titulo: "Histórico de Entrega", rota: "/historico-entrega", icone: iconeHistoricoEntrega },
-    { titulo: "Dashboard", rota: "/dashboard", icone: iconeDashboard }
+    { titulo: "Dashboard", rota: "/dashboard", icone: iconeDashboard },
 ];
 
 function PaginaInicial() {
