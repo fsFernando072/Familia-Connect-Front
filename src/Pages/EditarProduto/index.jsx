@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Header from "../../components/Header/Header";
-import Navegabilidade from "../../components/Navegabilidade/Navegabilidade";
-import Botao from "../../components/Botao/Botao";
-import FeedbackToast from "../../components/FeedbackToast/FeedbackToast";
-import CampoTexto from "../../components/CampoTexto/CampoTexto";
-import CampoSelect from "../../components/CampoSelect/CampoSelect";
+import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
+import Formulario from "../../components/Formulario/Formulario";
 import { listarCategorias } from "../../services/categoriaService";
 import { buscarProdutoPorId, atualizarProduto } from "../../services/produtoService";
 
@@ -20,6 +16,7 @@ function EditarProduto() {
 
     const [nomeProduto, setNomeProduto] = useState("");
     const [categoriaId, setCategoriaId] = useState("");
+    const [quantidadeProduto, setQuantidadeProduto] = useState("");
     const [descricao, setDescricao] = useState("");
 
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
@@ -44,6 +41,7 @@ function EditarProduto() {
             setNomeProduto(produto.nome || "");
             setDescricao(produto.descricao || "");
             setCategoriaId(produto.categoriaId != null ? String(produto.categoriaId) : "");
+            setQuantidadeProduto(produto.quantidade != null ? String(produto.quantidade) : "");
 
             setCarregando(false);
         }
@@ -51,75 +49,70 @@ function EditarProduto() {
     }, [id]);
 
     const handleAtualizar = () => {
-        const produto = { nome: nomeProduto, categoriaId, descricao };
+        const produto = { nome: nomeProduto, categoriaId, quantidadeProduto, descricao };
         atualizarProduto(id, produto, navigate, setFeedback);
     };
 
-    const opcoesCategoria = categorias.map((cat) => ({ value: String(cat.id), label: cat.nome }));
+    const campos = [
+        {
+            id: 'nome',
+            tipo: 'texto',
+            coluna: 1,
+            label: 'Nome Produto',
+            value: nomeProduto,
+            onChange: (e) => setNomeProduto(e.target.value),
+            placeholder: 'Cesta Básica'
+        },
+        {
+            id: 'categoria',
+            tipo: 'select-com-acao',
+            coluna: 1,
+            label: 'Categoria',
+            value: categoriaId,
+            onChange: (e) => setCategoriaId(e.target.value),
+            opcoes: categorias,
+            acao: { nome: 'Criar Categoria', cor: '#2C2C2C', onClick: () => navigate('/categorias/cadastro-categoria') }
+        },
+        {
+            id: 'quantidade',
+            tipo: 'texto',
+            coluna: 1,
+            label: 'Quantidade disponível',
+            value: quantidadeProduto,
+            onChange: (e) => setQuantidadeProduto(e.target.value.replace(/\D/g, "")),
+            placeholder: '10'
+        },
+        {
+            id: 'descricao',
+            tipo: 'textarea',
+            coluna: 2,
+            label: 'Descrição do Produto',
+            value: descricao,
+            onChange: (e) => setDescricao(e.target.value),
+            rows: 7,
+            placeholder: 'Descreva o produto'
+        },
+    ];
 
     return (
-        <div className='w-full min-h-screen overflow-x-hidden bg-gray-100'>
-            <Header nomeTela='Editar Produto' />
-            <Navegabilidade />
-            <FeedbackToast tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} onClose={fecharFeedback} />
-
-            {carregando && (
-                <p className='text-gray-500 text-center mt-10'>Carregando produto...</p>
-            )}
-
-            {!carregando && !produtoEncontrado && (
-                <p className='text-gray-500 text-center mt-10'>Produto não encontrado.</p>
-            )}
-
-            {!carregando && produtoEncontrado && (
-                <div className='px-6 py-6'>
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4'>
-                        <div className='flex flex-col gap-4 min-w-0'>
-                            <CampoTexto
-                                label='Nome Produto'
-                                value={nomeProduto}
-                                onChange={(e) => setNomeProduto(e.target.value)}
-                                placeholder='Cesta Básica'
-                            />
-
-                            <div className='flex flex-col gap-2 min-w-0'>
-                                <label className='font-bold text-sm'>Categoria:</label>
-                                <div className='flex items-center gap-3'>
-                                    <div className='flex-1 min-w-0'>
-                                        <CampoSelect
-                                            value={categoriaId}
-                                            onChange={(e) => setCategoriaId(e.target.value)}
-                                            opcoes={opcoesCategoria}
-                                            placeholder='Selecionar'
-                                        />
-                                    </div>
-                                    <button
-                                        onClick={() => navigate('/categorias/cadastro')}
-                                        className='shrink-0 px-4 py-2.5 rounded-md cursor-pointer hover:scale-104 transition duration-500 ease-in-out bg-[#2C2C2C] text-white font-bold text-sm'
-                                    >
-                                        Criar Categoria
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className='flex flex-col gap-2 min-w-0'>
-                            <label className='font-bold text-sm'>Descrição do Produto:</label>
-                            <textarea
-                                value={descricao}
-                                onChange={(e) => setDescricao(e.target.value)}
-                                rows={7}
-                                className='w-full border border-gray-300 rounded-md p-3 bg-white resize-none focus:outline-none focus:ring-1 focus:ring-[#167AFA]'
-                            />
-                        </div>
-
-                        <div className='md:col-span-2 flex justify-start mt-2'>
-                            <Botao nome='Confirmar' cor='#34C759' acao={handleAtualizar} larguraBotao='' />
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
+        <PaginaFormulario
+            nomeTela='Editar Produto'
+            carregando={carregando}
+            carregandoTexto='Carregando produto...'
+            encontrado={produtoEncontrado}
+            naoEncontradoTexto='Produto não encontrado.'
+            feedback={feedback}
+            onFecharFeedback={fecharFeedback}
+        >
+            <Formulario
+                campos={campos}
+                colunas={2}
+                nomeBotao='Confirmar'
+                corBotao='#34C759'
+                acaoBotao={handleAtualizar}
+                alinhamentoBotao='end'
+            />
+        </PaginaFormulario>
     );
 }
 

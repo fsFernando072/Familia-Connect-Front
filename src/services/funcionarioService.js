@@ -42,6 +42,11 @@ export async function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, id
         return;
     }
 
+    if (senha.length < 8 || senhaConfirmada.length < 8) {
+        setFeedback({ tipo: 'erro', msg: 'A senha deve ter no mínimo 8 caracteres', loading: false });
+        return;
+    }
+
     if (senha != senhaConfirmada) {
         setFeedback({ tipo: 'erro', msg: 'As senhas têm que ser iguais', loading: false });
         return;
@@ -67,7 +72,7 @@ export async function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, id
         const response = await api.post('/funcionarios', formData);
 
         if (response.status === 201) {
-            setFeedback({ tipo: 'sucesso', msg: 'Usuário cadastrado com sucesso!', loading: false });
+            setFeedback({ tipo: 'sucesso', msg: 'Funcionário cadastrado com sucesso!', loading: false });
             setTimeout(() => navigate("/funcionarios"), 2000);
         } else if (response.status === 404) {
             setFeedback({ tipo: 'erro', msg: 'Cargo não encontrado.', loading: false });
@@ -85,6 +90,11 @@ export async function atualizarFuncionario(id, nome, cpf, senha, senhaConfirmada
 
     if (!nome || !cpf || !senha || !senhaConfirmada || !idCargo) {
         setFeedback({ tipo: 'erro', msg: 'Os campos são obrigatórios', loading: false });
+        return;
+    }
+
+    if (senha.length < 8 || senhaConfirmada.length < 8) {
+        setFeedback({ tipo: 'erro', msg: 'A senha deve ter no mínimo 8 caracteres', loading: false });
         return;
     }
 

@@ -4,7 +4,7 @@ import { Plus, Trash2 } from "lucide-react";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import Carrossel from "../../components/Carrossel/Carrossel";
-import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, mascaraData, mascaraMoeda } from "../../utils/mascaras";
+import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, mascaraData } from "../../utils/mascaras";
 import { validarCpf, validarRg } from "../../utils/validadores";
 import { buscarEnderecoPorCep } from "../../services/cepService";
 import { buscarEstados } from "../../services/estadoService";
@@ -196,15 +196,14 @@ function CadastroFamilia() {
         { id: 'rg', tipo: 'texto', coluna: 1, label: 'RG do Responsável', value: rg, onChange: (e) => setRg(mascaraRg(e.target.value)), onBlur: handleBlurRg, placeholder: '22.222.222-2', erro: erroRg },
         { id: 'cpf', tipo: 'texto', coluna: 1, label: 'CPF do Responsável', value: cpf, onChange: (e) => setCpf(mascaraCpf(e.target.value)), onBlur: handleBlurCpf, placeholder: '444.444.444-44', erro: erroCpf },
         { id: 'telefone', tipo: 'texto', coluna: 1, label: 'Telefone do Responsável', value: telefone, onChange: (e) => setTelefone(mascaraTelefone(e.target.value)), placeholder: '(11) 99999-9999' },
-        { id: 'dataNascimento', tipo: 'texto', coluna: 1, label: 'Data de Nascimento do Responsável', value: dataNascimento, onChange: (e) => setDataNascimento(mascaraData(e.target.value)), placeholder: '__/__/____' },
-        { id: 'sexo', tipo: 'radio', coluna: 1, label: 'Sexo do Responsável', name: 'sexoResponsavel', opcoes: ['Masculino', 'Feminino', 'Outro'], value: sexo, onChange: setSexo },
-        { id: 'possuiPne', tipo: 'radio', coluna: 2, label: 'A Família possui PNE?', name: 'possuiPne', opcoes: ['Não', 'Sim'], value: possuiPne, onChange: setPossuiPne },
+        { id: 'dataNascimento', tipo: 'texto', coluna: 2, label: 'Data de Nascimento do Responsável', value: dataNascimento, onChange: (e) => setDataNascimento(mascaraData(e.target.value)), placeholder: '__/__/____' },
         {
             id: 'profissao', tipo: 'profissao', coluna: 2, label: 'Profissão', profissoes: profissoes,
             selecionada: profissaoSelecionada, onChangeSelecionada: (e) => setProfissaoSelecionada(e.target.value),
             nova: profissaoNova, onChangeNova: (e) => setProfissaoNova(e.target.value)
         },
-        { id: 'rendaFamiliar', tipo: 'texto', coluna: 2, label: 'Renda familiar', value: rendaFamiliar, onChange: (e) => setRendaFamiliar(mascaraMoeda(e.target.value)), placeholder: '2.000,00' },
+        { id: 'sexo', tipo: 'radio', coluna: 2, label: 'Sexo do Responsável', name: 'sexoResponsavel', opcoes: ['Masculino', 'Feminino', 'Outro'], value: sexo, onChange: setSexo },
+        { id: 'possuiPne', tipo: 'radio', coluna: 2, label: 'A Família possui PNE?', name: 'possuiPne', opcoes: ['Não', 'Sim'], value: possuiPne, onChange: setPossuiPne },
         { id: 'imagemFamilia', tipo: 'imagem', coluna: 2, label: 'Imagem da família', setImagem: setImagemFamilia },
     ];
 
@@ -212,8 +211,8 @@ function CadastroFamilia() {
         { id: 'cep', tipo: 'texto', coluna: 1, label: 'CEP', value: cep, onChange: (e) => setCep(mascaraCep(e.target.value)), onBlur: handleBuscarCep, placeholder: '02141-140' },
         { id: 'rua', tipo: 'texto', coluna: 1, label: 'Rua', value: rua, onChange: (e) => setRua(e.target.value), placeholder: 'Rua Macapá' },
         { id: 'numero', tipo: 'texto', coluna: 1, label: 'Número', value: numero, onChange: (e) => setNumero(e.target.value.replace(/\D/g, "")), placeholder: '1290' },
-        { id: 'complemento', tipo: 'texto', coluna: 1, label: 'Complemento', value: complemento, onChange: (e) => setComplemento(e.target.value), placeholder: 'Apartamento 20' },
-        { id: 'bairro', tipo: 'texto', coluna: 1, label: 'Bairro', value: bairro, onChange: (e) => setBairro(e.target.value), placeholder: 'Itaquera' },
+        { id: 'complemento', tipo: 'texto', coluna: 1, label: 'Complemento (Opcional)', value: complemento, onChange: (e) => setComplemento(e.target.value), placeholder: 'Apartamento 20' },
+        { id: 'bairro', tipo: 'texto', coluna: 2, label: 'Bairro', value: bairro, onChange: (e) => setBairro(e.target.value), placeholder: 'Itaquera' },
         { id: 'cidade', tipo: 'texto', coluna: 2, label: 'Cidade', value: cidade, onChange: (e) => setCidade(e.target.value), placeholder: 'São Paulo' },
         { id: 'estado', tipo: 'select', coluna: 2, label: 'Estado', value: estadoId, onChange: (e) => setEstadoId(e.target.value), opcoes: opcoesEstado },
         {

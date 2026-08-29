@@ -126,10 +126,20 @@ function Formulario({
     const camposColuna2 = duasColunas ? campos.filter((campo) => campo.coluna === 2) : [];
     const temRodape = Boolean(nomeBotao || botaoVoltar);
 
+    const alinhamentos = {
+        start: "sm:justify-start",
+        end: "sm:justify-end",
+        center: "justify-center",
+        between: "justify-between",
+    };
+
+    // Busca a classe inteira ou usa uma padrão caso não encontre
+    const posicaoBotao = alinhamentos[alinhamentoBotao] || "justify-center";
+
     const rodape = temRodape && (
         <div
             className={`mt-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center ${
-                alinhamentoBotao === 'end' ? 'sm:justify-end' : 'sm:justify-start'
+                posicaoBotao
             }`}
         >
             {botaoVoltar && (

@@ -25,6 +25,7 @@ function EditarFuncionario() {
     const [cargos, setCargos] = useState([]);
     const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
     const [mostrarSenha, setMostrarSenha] = useState(false);
+    const [mostrarSenha2, setMostrarSenha2] = useState(false);
 
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
@@ -96,10 +97,12 @@ function EditarFuncionario() {
             tipo: 'texto',
             coluna: 1,
             label: 'Confirmar Senha',
-            type: 'password',
+            type: mostrarSenha2 ? 'text' : 'password',
             value: senhaConfirmada,
             onChange: (e) => setSenhaConfirmada(e.target.value),
-            placeholder: '********'
+            placeholder: '********',
+            toggle: () => setMostrarSenha2(v => !v),
+            mostrar: mostrarSenha2
         },
         {
             id: 'cargo',

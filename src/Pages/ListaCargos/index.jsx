@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Briefcase, ArrowUpDown, SlidersHorizontal } from "lucide-react";
+import { Briefcase, ArrowUpDown, SlidersHorizontal, Plus } from "lucide-react";
 import Header from "../../components/Header/Header";
 import Navegabilidade from "../../components/Navegabilidade/Navegabilidade";
 import CampoBusca from "../../components/CampoBusca/CampoBusca";
@@ -93,6 +93,13 @@ function ListaCargos() {
                     >
                         <SlidersHorizontal size={16} /> Filtrar
                     </button>
+                    <button
+                        onClick={() => navigate('/cargos/cadastro-cargo')}
+                        className='flex items-center gap-2 px-5 py-2.5 rounded-md font-bold text-white cursor-pointer hover:scale-104 transition duration-500 ease-in-out whitespace-nowrap'
+                        style={{ backgroundColor: '#34C759' }}
+                    >
+                        <Plus size={16} /> Cadastrar
+                    </button>
                 </div>
 
                 {carregando && (
@@ -123,7 +130,7 @@ function ListaCargos() {
                                 </div>
 
                                 <div className='flex items-center gap-3 flex-shrink-0'>
-                                    <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/cargos/${cargo.id}/editar-cargo`)} larguraBotao='' />
+                                    <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/cargos/${cargo.id}/editar`)} larguraBotao='' />
                                     <Botao nome='Apagar' cor='#DC2626' acao={() => handleApagar(cargo)} larguraBotao='' />
                                 </div>
                             </div>

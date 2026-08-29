@@ -31,7 +31,7 @@ export async function buscarCargo() {
             return response.data;
         }
         if (response.status === 204) {
-            console.log("Usuário não encontrado");
+            console.log("Cargo não encontrado");
             return [];
         }
         if (response.status === 401) {
