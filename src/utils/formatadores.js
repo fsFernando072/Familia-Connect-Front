@@ -17,3 +17,13 @@ export const converterDataParaBr = (data) => {
     if (!dia || !mes || !ano) return '';
     return `${dia}/${mes}/${ano}`;
 };
+
+// Converte o SexoEnum vindo do back-end ("MASCULINO", "FEMININO", "OUTRO") para o rótulo
+// usado no CampoRadio do formulário ("Masculino", "Feminino", "Outro").
+const SEXO_DO_BACK_PARA_LABEL = {
+    MASCULINO: 'Masculino',
+    FEMININO: 'Feminino',
+    OUTRO: 'Outro',
+};
+
+export const converterSexoParaLabel = (sexo) => SEXO_DO_BACK_PARA_LABEL[sexo] || 'Masculino';

@@ -40,7 +40,7 @@ function EditarProduto() {
 
             setNomeProduto(produto.nome || "");
             setDescricao(produto.descricao || "");
-            setCategoriaId(produto.categoriaId != null ? String(produto.categoriaId) : "");
+            setCategoriaId(produto.produtoCategoria?.id != null ? String(produto.produtoCategoria.id) : "");
             setQuantidadeProduto(produto.quantidade != null ? String(produto.quantidade) : "");
 
             setCarregando(false);

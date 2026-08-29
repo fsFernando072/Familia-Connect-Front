@@ -4,12 +4,14 @@ import { Plus, Trash2 } from "lucide-react";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import Carrossel from "../../components/Carrossel/Carrossel";
+import Botao from "../../components/Botao/Botao";
 import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, mascaraData } from "../../utils/mascaras";
 import { validarCpf, validarRg } from "../../utils/validadores";
-import { converterDataParaBr } from "../../utils/formatadores";
+import { converterDataParaBr, converterSexoParaLabel } from "../../utils/formatadores";
 import { buscarEnderecoPorCep } from "../../services/cepService";
 import { buscarEstados } from "../../services/estadoService";
 import { buscarProfissoes } from "../../services/profissaoService";
+import { buscarGrausParentesco } from "../../services/grauParentescoService";
 import { buscarFamiliaPorId, atualizarFamilia } from "../../services/familiaService";
 
 function dependenteVazio() {
@@ -26,7 +28,7 @@ function dependenteDaApi(dep, profissoes) {
     return {
         id: dep.id ?? (Date.now() + Math.random()),
         nome: dep.nome || "", parentesco: dep.grauParentesco || "",
-        dataNascimento: converterDataParaBr(dep.dataNascimento), sexo: "Masculino",
+        dataNascimento: converterDataParaBr(dep.dataNascimento), sexo: converterSexoParaLabel(dep.sexo),
         rg: dep.rg ? mascaraRg(dep.rg) : "", cpf: dep.cpf ? mascaraCpf(dep.cpf) : "",
         telefone: dep.telefone ? mascaraTelefone(dep.telefone) : "",
         profissaoSelecionada: dep.profissao ? (profissaoConhecida ? dep.profissao : 'outra') : "",
@@ -45,6 +47,7 @@ function EditarFamilia() {
     const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
     const [estados, setEstados] = useState([]);
     const [profissoes, setProfissoes] = useState([]);
+    const [grausParentesco, setGrausParentesco] = useState([]);
 
     // Dados do responsável
     const [nome, setNome] = useState("");
@@ -81,14 +84,16 @@ function EditarFamilia() {
         async function carregarDadosIniciais() {
             setCarregando(true);
 
-            const [dadosEstados, dadosProfissoes, familia] = await Promise.all([
+            const [dadosEstados, dadosProfissoes, dadosGrausParentesco, familia] = await Promise.all([
                 buscarEstados(),
                 buscarProfissoes(),
+                buscarGrausParentesco(),
                 buscarFamiliaPorId(id)
             ]);
 
             setEstados(dadosEstados || []);
             setProfissoes(dadosProfissoes || []);
+            setGrausParentesco(dadosGrausParentesco || []);
 
             if (!familia) {
                 setFamiliaEncontrada(false);
@@ -104,6 +109,7 @@ function EditarFamilia() {
             setCpf(responsavel.cpf ? mascaraCpf(responsavel.cpf) : "");
             setTelefone(responsavel.telefone ? mascaraTelefone(responsavel.telefone) : "");
             setDataNascimento(converterDataParaBr(responsavel.dataNascimento));
+            setSexo(converterSexoParaLabel(responsavel.sexo));
             setPossuiPne(familia.possuiPrioridade ? "Sim" : "Não");
             setProfissaoSelecionada(responsavel.profissao ? (profissaoConhecida ? responsavel.profissao : 'outra') : "");
             setProfissaoNova(responsavel.profissao && !profissaoConhecida ? responsavel.profissao : "");
@@ -244,6 +250,7 @@ function EditarFamilia() {
     };
 
     const opcoesEstado = estados.map((uf) => ({ value: String(uf.id), label: `${uf.sigla} - ${uf.nome}` }));
+    const opcoesGrauParentesco = grausParentesco.map((gp) => ({ value: gp.grau, label: gp.grau }));
 
     const camposResponsavel = [
         { id: 'nome', tipo: 'texto', coluna: 1, label: 'Nome do Responsável', value: nome, onChange: (e) => setNome(e.target.value), placeholder: 'Digite o nome' },
@@ -277,7 +284,7 @@ function EditarFamilia() {
 
     const camposDependente = (dep) => ([
         { id: 'nome', tipo: 'texto', coluna: 1, label: 'Nome do Dependente', value: dep.nome, onChange: (e) => atualizarDependente(dep.id, 'nome', e.target.value), placeholder: 'Maria Ferreira' },
-        { id: 'parentesco', tipo: 'texto', coluna: 1, label: 'Parentesco', value: dep.parentesco, onChange: (e) => atualizarDependente(dep.id, 'parentesco', e.target.value), placeholder: 'Filha(o)' },
+        { id: 'parentesco', tipo: 'select', coluna: 1, label: 'Parentesco', value: dep.parentesco, onChange: (e) => atualizarDependente(dep.id, 'parentesco', e.target.value), opcoes: opcoesGrauParentesco, placeholder: 'Selecionar' },
         { id: 'rg', tipo: 'texto', coluna: 1, label: 'RG do Dependente', value: dep.rg, onChange: (e) => atualizarDependente(dep.id, 'rg', mascaraRg(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, 'rg'), placeholder: '22.222.222-2', erro: dep.erroRg },
         { id: 'cpf', tipo: 'texto', coluna: 1, label: 'CPF do Dependente', value: dep.cpf, onChange: (e) => atualizarDependente(dep.id, 'cpf', mascaraCpf(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, 'cpf'), placeholder: '444.444.444-44', erro: dep.erroCpf },
         { id: 'dataNascimento', tipo: 'texto', coluna: 2, label: 'Data de Nascimento do Dependente', value: dep.dataNascimento, onChange: (e) => atualizarDependente(dep.id, 'dataNascimento', mascaraData(e.target.value)), placeholder: '__/__/____' },
@@ -339,12 +346,7 @@ function EditarFamilia() {
                         </div>
                     ))}
 
-                    <button
-                        onClick={adicionarDependente}
-                        className='flex items-center gap-2 w-fit px-6 py-2.5 rounded-xl cursor-pointer hover:scale-104 transition duration-500 ease-in-out bg-[#2C2C2C] text-white font-bold'
-                    >
-                        <Plus size={18} /> Adicionar
-                    </button>
+                    <Botao nome='Adicionar' icone={Plus} cor='#2C2C2C' acao={adicionarDependente} larguraBotao='w-fit' />
 
                     <Formulario
                         campos={[]}

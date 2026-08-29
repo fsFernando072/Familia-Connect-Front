@@ -1,4 +1,6 @@
 import { AlertTriangle } from "lucide-react";
+import Botao from "../Botao/Botao";
+import BotaoSecundario from "../BotaoSecundario/BotaoSecundario";
 
 function ModalConfirmacao({
     aberto,
@@ -32,21 +34,19 @@ function ModalConfirmacao({
                 </div>
 
                 <div className="flex items-center justify-center gap-3 w-full mt-2">
-                    <button
-                        onClick={onCancelar}
-                        disabled={carregando}
-                        className="flex-1 px-6 py-2.5 rounded-xl font-bold text-gray-900 border border-gray-300 hover:bg-gray-50 cursor-pointer transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {textoCancelar}
-                    </button>
-                    <button
-                        onClick={onConfirmar}
-                        disabled={carregando}
-                        style={{ backgroundColor: corConfirmar }}
-                        className="flex-1 px-6 py-2.5 rounded-xl font-bold text-white hover:opacity-90 cursor-pointer transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {carregando ? "Aguarde..." : textoConfirmar}
-                    </button>
+                    <BotaoSecundario
+                        nome={textoCancelar}
+                        acao={onCancelar}
+                        desabilitado={carregando}
+                        larguraBotao="flex-1"
+                    />
+                    <Botao
+                        nome={carregando ? "Aguarde..." : textoConfirmar}
+                        cor={corConfirmar}
+                        acao={onConfirmar}
+                        desabilitado={carregando}
+                        larguraBotao="flex-1"
+                    />
                 </div>
             </div>
         </div>
