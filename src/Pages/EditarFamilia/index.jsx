@@ -4,12 +4,14 @@ import { Plus, Trash2 } from "lucide-react";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import Carrossel from "../../components/Carrossel/Carrossel";
-import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, mascaraData, mascaraMoeda } from "../../utils/mascaras";
+import Botao from "../../components/Botao/Botao";
+import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, mascaraData } from "../../utils/mascaras";
 import { validarCpf, validarRg } from "../../utils/validadores";
-import { converterDataParaBr } from "../../utils/formatadores";
+import { converterDataParaBr, converterSexoParaLabel } from "../../utils/formatadores";
 import { buscarEnderecoPorCep } from "../../services/cepService";
 import { buscarEstados } from "../../services/estadoService";
 import { buscarProfissoes } from "../../services/profissaoService";
+import { buscarGrausParentesco } from "../../services/grauParentescoService";
 import { buscarFamiliaPorId, atualizarFamilia } from "../../services/familiaService";
 
 function dependenteVazio() {
@@ -26,7 +28,7 @@ function dependenteDaApi(dep, profissoes) {
     return {
         id: dep.id ?? (Date.now() + Math.random()),
         nome: dep.nome || "", parentesco: dep.grauParentesco || "",
-        dataNascimento: converterDataParaBr(dep.dataNascimento), sexo: "Masculino",
+        dataNascimento: converterDataParaBr(dep.dataNascimento), sexo: converterSexoParaLabel(dep.sexo),
         rg: dep.rg ? mascaraRg(dep.rg) : "", cpf: dep.cpf ? mascaraCpf(dep.cpf) : "",
         telefone: dep.telefone ? mascaraTelefone(dep.telefone) : "",
         profissaoSelecionada: dep.profissao ? (profissaoConhecida ? dep.profissao : 'outra') : "",
@@ -45,6 +47,7 @@ function EditarFamilia() {
     const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
     const [estados, setEstados] = useState([]);
     const [profissoes, setProfissoes] = useState([]);
+    const [grausParentesco, setGrausParentesco] = useState([]);
 
     // Dados do responsável
     const [nome, setNome] = useState("");
@@ -56,7 +59,6 @@ function EditarFamilia() {
     const [possuiPne, setPossuiPne] = useState("Não");
     const [profissaoSelecionada, setProfissaoSelecionada] = useState("");
     const [profissaoNova, setProfissaoNova] = useState("");
-    const [rendaFamiliar, setRendaFamiliar] = useState("");
     const [imagemFamilia, setImagemFamilia] = useState("");
     const [fotoInicial, setFotoInicial] = useState("");
     const [erroRg, setErroRg] = useState("");
@@ -81,14 +83,16 @@ function EditarFamilia() {
         async function carregarDadosIniciais() {
             setCarregando(true);
 
-            const [dadosEstados, dadosProfissoes, familia] = await Promise.all([
+            const [dadosEstados, dadosProfissoes, dadosGrausParentesco, familia] = await Promise.all([
                 buscarEstados(),
                 buscarProfissoes(),
+                buscarGrausParentesco(),
                 buscarFamiliaPorId(id)
             ]);
 
             setEstados(dadosEstados || []);
             setProfissoes(dadosProfissoes || []);
+            setGrausParentesco(dadosGrausParentesco || []);
 
             if (!familia) {
                 setFamiliaEncontrada(false);
@@ -104,6 +108,7 @@ function EditarFamilia() {
             setCpf(responsavel.cpf ? mascaraCpf(responsavel.cpf) : "");
             setTelefone(responsavel.telefone ? mascaraTelefone(responsavel.telefone) : "");
             setDataNascimento(converterDataParaBr(responsavel.dataNascimento));
+            setSexo(converterSexoParaLabel(responsavel.sexo));
             setPossuiPne(familia.possuiPrioridade ? "Sim" : "Não");
             setProfissaoSelecionada(responsavel.profissao ? (profissaoConhecida ? responsavel.profissao : 'outra') : "");
             setProfissaoNova(responsavel.profissao && !profissaoConhecida ? responsavel.profissao : "");
@@ -227,7 +232,7 @@ function EditarFamilia() {
             telefone: telefone.replace(/\D/g, ""), dataNascimento, sexo,
             possuiPne: possuiPne === 'Sim',
             profissao: profissaoSelecionada === 'outra' ? profissaoNova.trim() : profissaoSelecionada,
-            rendaFamiliar, imagem: imagemFamilia
+            imagem: imagemFamilia
         };
         const endereco = {
             cep: cep.replace(/\D/g, ""), rua, numero, complemento, bairro, cidade, estadoId
@@ -244,21 +249,21 @@ function EditarFamilia() {
     };
 
     const opcoesEstado = estados.map((uf) => ({ value: String(uf.id), label: `${uf.sigla} - ${uf.nome}` }));
+    const opcoesGrauParentesco = grausParentesco.map((gp) => ({ value: gp.grau, label: gp.grau }));
 
     const camposResponsavel = [
         { id: 'nome', tipo: 'texto', coluna: 1, label: 'Nome do Responsável', value: nome, onChange: (e) => setNome(e.target.value), placeholder: 'Digite o nome' },
         { id: 'rg', tipo: 'texto', coluna: 1, label: 'RG do Responsável', value: rg, onChange: (e) => setRg(mascaraRg(e.target.value)), onBlur: handleBlurRg, placeholder: '22.222.222-2', erro: erroRg },
         { id: 'cpf', tipo: 'texto', coluna: 1, label: 'CPF do Responsável', value: cpf, onChange: (e) => setCpf(mascaraCpf(e.target.value)), onBlur: handleBlurCpf, placeholder: '444.444.444-44', erro: erroCpf },
         { id: 'telefone', tipo: 'texto', coluna: 1, label: 'Telefone do Responsável', value: telefone, onChange: (e) => setTelefone(mascaraTelefone(e.target.value)), placeholder: '(11) 99999-9999' },
-        { id: 'dataNascimento', tipo: 'texto', coluna: 1, label: 'Data de Nascimento do Responsável', value: dataNascimento, onChange: (e) => setDataNascimento(mascaraData(e.target.value)), placeholder: '__/__/____' },
-        { id: 'sexo', tipo: 'radio', coluna: 1, label: 'Sexo do Responsável', name: 'sexoResponsavel', opcoes: ['Masculino', 'Feminino', 'Outro'], value: sexo, onChange: setSexo },
-        { id: 'possuiPne', tipo: 'radio', coluna: 2, label: 'A Família possui PNE?', name: 'possuiPne', opcoes: ['Não', 'Sim'], value: possuiPne, onChange: setPossuiPne },
+        { id: 'dataNascimento', tipo: 'texto', coluna: 2, label: 'Data de Nascimento do Responsável', value: dataNascimento, onChange: (e) => setDataNascimento(mascaraData(e.target.value)), placeholder: '__/__/____' },
         {
             id: 'profissao', tipo: 'profissao', coluna: 2, label: 'Profissão', profissoes: profissoes,
             selecionada: profissaoSelecionada, onChangeSelecionada: (e) => setProfissaoSelecionada(e.target.value),
             nova: profissaoNova, onChangeNova: (e) => setProfissaoNova(e.target.value)
         },
-        { id: 'rendaFamiliar', tipo: 'texto', coluna: 2, label: 'Renda familiar', value: rendaFamiliar, onChange: (e) => setRendaFamiliar(mascaraMoeda(e.target.value)), placeholder: '2.000,00' },
+        { id: 'sexo', tipo: 'radio', coluna: 2, label: 'Sexo do Responsável', name: 'sexoResponsavel', opcoes: ['Masculino', 'Feminino', 'Outro'], value: sexo, onChange: setSexo },
+        { id: 'possuiPne', tipo: 'radio', coluna: 2, label: 'A Família possui PNE?', name: 'possuiPne', opcoes: ['Não', 'Sim'], value: possuiPne, onChange: setPossuiPne },
         { id: 'imagemFamilia', tipo: 'imagem', coluna: 2, label: 'Trocar imagem', setImagem: setImagemFamilia, imagemInicial: fotoInicial },
     ];
 
@@ -266,8 +271,8 @@ function EditarFamilia() {
         { id: 'cep', tipo: 'texto', coluna: 1, label: 'CEP', value: cep, onChange: (e) => setCep(mascaraCep(e.target.value)), onBlur: handleBuscarCep, placeholder: '02141-140' },
         { id: 'rua', tipo: 'texto', coluna: 1, label: 'Rua', value: rua, onChange: (e) => setRua(e.target.value), placeholder: 'Rua Macapá' },
         { id: 'numero', tipo: 'texto', coluna: 1, label: 'Número', value: numero, onChange: (e) => setNumero(e.target.value.replace(/\D/g, "")), placeholder: '1290' },
-        { id: 'complemento', tipo: 'texto', coluna: 1, label: 'Complemento', value: complemento, onChange: (e) => setComplemento(e.target.value), placeholder: 'Apartamento 20' },
-        { id: 'bairro', tipo: 'texto', coluna: 1, label: 'Bairro', value: bairro, onChange: (e) => setBairro(e.target.value), placeholder: 'Itaquera' },
+        { id: 'complemento', tipo: 'texto', coluna: 1, label: 'Complemento (Opcional)', value: complemento, onChange: (e) => setComplemento(e.target.value), placeholder: 'Apartamento 20' },
+        { id: 'bairro', tipo: 'texto', coluna: 2, label: 'Bairro', value: bairro, onChange: (e) => setBairro(e.target.value), placeholder: 'Itaquera' },
         { id: 'cidade', tipo: 'texto', coluna: 2, label: 'Cidade', value: cidade, onChange: (e) => setCidade(e.target.value), placeholder: 'São Paulo' },
         { id: 'estado', tipo: 'select', coluna: 2, label: 'Estado', value: estadoId, onChange: (e) => setEstadoId(e.target.value), opcoes: opcoesEstado },
         {
@@ -278,7 +283,7 @@ function EditarFamilia() {
 
     const camposDependente = (dep) => ([
         { id: 'nome', tipo: 'texto', coluna: 1, label: 'Nome do Dependente', value: dep.nome, onChange: (e) => atualizarDependente(dep.id, 'nome', e.target.value), placeholder: 'Maria Ferreira' },
-        { id: 'parentesco', tipo: 'texto', coluna: 1, label: 'Parentesco', value: dep.parentesco, onChange: (e) => atualizarDependente(dep.id, 'parentesco', e.target.value), placeholder: 'Filha(o)' },
+        { id: 'parentesco', tipo: 'select', coluna: 1, label: 'Parentesco', value: dep.parentesco, onChange: (e) => atualizarDependente(dep.id, 'parentesco', e.target.value), opcoes: opcoesGrauParentesco, placeholder: 'Selecionar' },
         { id: 'rg', tipo: 'texto', coluna: 1, label: 'RG do Dependente', value: dep.rg, onChange: (e) => atualizarDependente(dep.id, 'rg', mascaraRg(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, 'rg'), placeholder: '22.222.222-2', erro: dep.erroRg },
         { id: 'cpf', tipo: 'texto', coluna: 1, label: 'CPF do Dependente', value: dep.cpf, onChange: (e) => atualizarDependente(dep.id, 'cpf', mascaraCpf(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, 'cpf'), placeholder: '444.444.444-44', erro: dep.erroCpf },
         { id: 'dataNascimento', tipo: 'texto', coluna: 2, label: 'Data de Nascimento do Dependente', value: dep.dataNascimento, onChange: (e) => atualizarDependente(dep.id, 'dataNascimento', mascaraData(e.target.value)), placeholder: '__/__/____' },
@@ -340,12 +345,7 @@ function EditarFamilia() {
                         </div>
                     ))}
 
-                    <button
-                        onClick={adicionarDependente}
-                        className='flex items-center gap-2 w-fit px-6 py-2.5 rounded-xl cursor-pointer hover:scale-104 transition duration-500 ease-in-out bg-[#2C2C2C] text-white font-bold'
-                    >
-                        <Plus size={18} /> Adicionar
-                    </button>
+                    <Botao nome='Adicionar' icone={Plus} cor='#2C2C2C' acao={adicionarDependente} larguraBotao='w-fit' />
 
                     <Formulario
                         campos={[]}

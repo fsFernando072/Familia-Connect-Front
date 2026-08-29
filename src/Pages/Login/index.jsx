@@ -46,7 +46,7 @@ function Login() {
             <div className="w-44 h-44 rounded-full bg-white flex items-center justify-center mb-7">
                 <img src={logo} className="w-32 h-auto" alt="Logo" />
             </div>
-            <Formulario campos={campos} nomeBotao='Entrar' corBotao='#167AFA' acaoBotao={handleLogin} larguraBotao="w-1/3" posicionamentoBotao="flex justify-center"/>
+            <Formulario campos={campos} nomeBotao='Entrar' corBotao='#167AFA' acaoBotao={handleLogin} alinhamentoBotao='center'/>
             <FeedbackToast tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} onClose={fecharFeedback} />
         </div>
     );

@@ -90,7 +90,7 @@ function montarPayloadFamilia(responsavel, endereco, dependentes) {
             cep: endereco.cep,
             bairro: endereco.bairro,
             logradouro: endereco.rua,
-            numero: Number(endereco.numero),
+            numero: endereco.numero,
             complemento: endereco.complemento,
             cidade: endereco.cidade,
             estadoId: Number(endereco.estadoId)

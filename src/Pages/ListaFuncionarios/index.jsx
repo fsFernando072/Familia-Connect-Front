@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserRound, ArrowUpDown, SlidersHorizontal } from "lucide-react";
-import Header from "../../components/Header/Header";
-import Navegabilidade from "../../components/Navegabilidade/Navegabilidade";
-import CampoBusca from "../../components/CampoBusca/CampoBusca";
+import { UserRound } from "lucide-react";
+import PaginaLista from "../../components/PaginaLista/PaginaLista";
+import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
+import ListaStatus from "../../components/ListaStatus/ListaStatus";
+import ListaItem from "../../components/ListaItem/ListaItem";
+import ImagemLista from "../../components/ImagemLista/ImagemLista";
+import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
-import FeedbackToast from "../../components/FeedbackToast/FeedbackToast";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
 import FotoAvatar from "../../components/FotoAvatar/FotoAvatar";
 import { mascaraCpf } from "../../utils/mascaras";
@@ -80,63 +82,47 @@ function ListaFuncionarios() {
     };
 
     return (
-        <div className='w-full min-h-screen overflow-x-hidden bg-gray-100'>
-            <Header nomeTela='Lista de Funcionários' />
-            <Navegabilidade />
-            <FeedbackToast tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} onClose={fecharFeedback} />
+        <PaginaLista nomeTela='Lista de Funcionários' feedback={feedback} onFecharFeedback={fecharFeedback}>
+            <ListaAcoes
+                busca={busca}
+                onBuscaChange={(e) => setBusca(e.target.value)}
+                placeholderBusca='Funcionário'
+                onOrdenar={() => setOrdemCrescente((v) => !v)}
+                onCadastrar={() => navigate('/funcionarios/cadastro-funcionario')}
+            />
 
-            <div className='px-6 py-6 max-w-4xl mx-auto'>
-                <div className='flex items-center gap-3 mb-6'>
-                    <CampoBusca value={busca} onChange={(e) => setBusca(e.target.value)} placeholder='Funcionário' />
-                    <button
-                        onClick={() => setOrdemCrescente((v) => !v)}
-                        className='flex items-center gap-2 px-5 py-2.5 border border-gray-800 rounded-md font-medium text-gray-900 bg-white hover:bg-gray-50 cursor-pointer whitespace-nowrap'
+            <ListaStatus
+                carregando={carregando}
+                vazio={funcionariosFiltrados.length === 0}
+                mensagemCarregando='Carregando funcionários...'
+                mensagemVazia='Nenhum funcionário encontrado.'
+            />
+
+            <div className='flex flex-col gap-4'>
+                {funcionariosFiltrados.map((funcionario) => (
+                    <ListaItem
+                        key={funcionario.id}
+                        imagem={(
+                            <ImagemLista>
+                                <FotoAvatar
+                                    caminho={funcionario.fotoFuncionario}
+                                    alt={`Foto do funcionário ${funcionario.nome}`}
+                                    Icone={UserRound}
+                                />
+                            </ImagemLista>
+                        )}
+                        acoes={(
+                            <>
+                                <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/funcionarios/${funcionario.id}/editar-funcionario`)} />
+                                <Botao nome='Apagar' cor='#DC2626' acao={() => handlePedirConfirmacao(funcionario)} />
+                            </>
+                        )}
                     >
-                        <ArrowUpDown size={16} /> Ordenar
-                    </button>
-                    <button
-                        className='flex items-center gap-2 px-5 py-2.5 border border-gray-800 rounded-md font-medium text-gray-900 bg-white hover:bg-gray-50 cursor-pointer whitespace-nowrap'
-                    >
-                        <SlidersHorizontal size={16} /> Filtrar
-                    </button>
-                </div>
-
-                {carregando && (
-                    <p className='text-gray-500 text-center mt-10'>Carregando funcionários...</p>
-                )}
-
-                {!carregando && funcionariosFiltrados.length === 0 && (
-                    <p className='text-gray-500 text-center mt-10'>Nenhum funcionário encontrado.</p>
-                )}
-
-                <div className='flex flex-col gap-4'>
-                    {funcionariosFiltrados.map((funcionario) => (
-                        <div
-                            key={funcionario.id}
-                            className='flex items-center justify-between gap-4 bg-white border border-gray-200 rounded-xl shadow-sm p-4'
-                        >
-                            <div className='flex items-center gap-4 min-w-0'>
-                                <div className='w-20 h-20 rounded-md bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden'>
-                                    <FotoAvatar
-                                        caminho={funcionario.fotoFuncionario}
-                                        alt={`Foto do funcionário ${funcionario.nome}`}
-                                        Icone={UserRound}
-                                    />
-                                </div>
-                                <div className='min-w-0'>
-                                    <p className='truncate'><span className='font-bold text-gray-900'>Nome: </span><span className='text-gray-500'>{funcionario.nome}</span></p>
-                                    <p className='truncate'><span className='font-bold text-gray-900'>CPF: </span><span className='text-gray-500'>{funcionario.cpf ? mascaraCpf(funcionario.cpf) : '-'}</span></p>
-                                    <p className='truncate'><span className='font-bold text-gray-900'>Cargo: </span><span className='text-gray-500'>{funcionario.cargo?.nome || '-'}</span></p>
-                                </div>
-                            </div>
-
-                            <div className='flex items-center gap-3 flex-shrink-0'>
-                                <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/funcionarios/${funcionario.id}/editar-funcionario`)} larguraBotao='' />
-                                <Botao nome='Apagar' cor='#DC2626' acao={() => handlePedirConfirmacao(funcionario)} larguraBotao='' />
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                        <LinhaInfo rotulo='Nome' valor={funcionario.nome} />
+                        <LinhaInfo rotulo='CPF' valor={funcionario.cpf ? mascaraCpf(funcionario.cpf) : '-'} />
+                        <LinhaInfo rotulo='Cargo' valor={funcionario.cargo?.nome || '-'} />
+                    </ListaItem>
+                ))}
             </div>
 
             <ModalConfirmacao
@@ -150,7 +136,7 @@ function ListaFuncionarios() {
                 onConfirmar={handleConfirmarApagar}
                 onCancelar={handleCancelarApagar}
             />
-        </div>
+        </PaginaLista>
     );
 }
 

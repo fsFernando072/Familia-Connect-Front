@@ -61,6 +61,7 @@ function CadastroCargo() {
                 nomeBotao='Cadastrar'
                 corBotao='#34C759'
                 acaoBotao={handleCadastrar}
+                alinhamentoBotao="end"
             />
         </PaginaFormulario>
     );
