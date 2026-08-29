@@ -51,7 +51,6 @@ function montarPayloadProduto(produto) {
     return {
         nome: produto.nome,
         descricao: produto.descricao || null,
-        quantidade: 19,
         idCategoria: Number(produto.categoriaId)
     };
 }

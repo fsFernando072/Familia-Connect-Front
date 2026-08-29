@@ -16,7 +16,6 @@ function EditarProduto() {
 
     const [nomeProduto, setNomeProduto] = useState("");
     const [categoriaId, setCategoriaId] = useState("");
-    const [quantidadeProduto, setQuantidadeProduto] = useState("");
     const [descricao, setDescricao] = useState("");
 
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
@@ -41,15 +40,13 @@ function EditarProduto() {
             setNomeProduto(produto.nome || "");
             setDescricao(produto.descricao || "");
             setCategoriaId(produto.produtoCategoria?.id != null ? String(produto.produtoCategoria.id) : "");
-            setQuantidadeProduto(produto.quantidade != null ? String(produto.quantidade) : "");
-
             setCarregando(false);
         }
         carregarDadosIniciais();
     }, [id]);
 
     const handleAtualizar = () => {
-        const produto = { nome: nomeProduto, categoriaId, quantidadeProduto, descricao };
+        const produto = { nome: nomeProduto, categoriaId, descricao };
         atualizarProduto(id, produto, navigate, setFeedback);
     };
 
@@ -72,15 +69,6 @@ function EditarProduto() {
             onChange: (e) => setCategoriaId(e.target.value),
             opcoes: categorias,
             acao: { nome: 'Criar Categoria', cor: '#2C2C2C', onClick: () => navigate('/categorias/cadastro-categoria') }
-        },
-        {
-            id: 'quantidade',
-            tipo: 'texto',
-            coluna: 1,
-            label: 'Quantidade disponível',
-            value: quantidadeProduto,
-            onChange: (e) => setQuantidadeProduto(e.target.value.replace(/\D/g, "")),
-            placeholder: '10'
         },
         {
             id: 'descricao',

@@ -59,7 +59,6 @@ function EditarFamilia() {
     const [possuiPne, setPossuiPne] = useState("Não");
     const [profissaoSelecionada, setProfissaoSelecionada] = useState("");
     const [profissaoNova, setProfissaoNova] = useState("");
-    const [rendaFamiliar, setRendaFamiliar] = useState("");
     const [imagemFamilia, setImagemFamilia] = useState("");
     const [fotoInicial, setFotoInicial] = useState("");
     const [erroRg, setErroRg] = useState("");
@@ -233,7 +232,7 @@ function EditarFamilia() {
             telefone: telefone.replace(/\D/g, ""), dataNascimento, sexo,
             possuiPne: possuiPne === 'Sim',
             profissao: profissaoSelecionada === 'outra' ? profissaoNova.trim() : profissaoSelecionada,
-            rendaFamiliar, imagem: imagemFamilia
+            imagem: imagemFamilia
         };
         const endereco = {
             cep: cep.replace(/\D/g, ""), rua, numero, complemento, bairro, cidade, estadoId
