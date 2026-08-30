@@ -8,7 +8,8 @@ import ListaItem from "../../components/ListaItem/ListaItem";
 import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
-import { listarCargos, deletarCargo, listarCargosAcessos } from "../../services/cargoService";
+import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
+import { listarCargos, deletarCargo, listarCargosAcessos, nomeAcessoPorId } from "../../services/cargoService";
 
 function ListaCargos() {
 
@@ -19,6 +20,8 @@ function ListaCargos() {
     const [busca, setBusca] = useState("");
     const [ordemCrescente, setOrdemCrescente] = useState(true);
     const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
+    const [cargoParaApagar, setCargoParaApagar] = useState(null);
+    const [apagando, setApagando] = useState(false);
 
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
@@ -32,9 +35,12 @@ function ListaCargos() {
 
         const agrupado = {};
         for (const associacao of todasAssociacoes) {
-            const rotulo = [associacao.permissaoNome, associacao.acessoNomeTela].filter(Boolean).join(' ');
-            if (!agrupado[associacao.cargoId]) agrupado[associacao.cargoId] = [];
-            if (rotulo) agrupado[associacao.cargoId].push(rotulo);
+            const cargoId = associacao.cargo?.id;
+            if (!cargoId) continue;
+
+            const rotulo = nomeAcessoPorId(associacao.acesso?.id) || associacao.acesso?.nomeTela;
+            if (!agrupado[cargoId]) agrupado[cargoId] = [];
+            if (rotulo) agrupado[cargoId].push(rotulo);
         }
 
         setAcessosPorCargo(agrupado);
@@ -59,13 +65,25 @@ function ListaCargos() {
         });
     }, [cargos, busca, ordemCrescente]);
 
-    const handleApagar = async (cargo) => {
-        const confirmou = window.confirm(`Apagar o cargo "${cargo.nome}"? Essa ação não pode ser desfeita.`);
-        if (!confirmou) return;
+    const handlePedirConfirmacao = (cargo) => {
+        setCargoParaApagar(cargo);
+    };
 
+    const handleCancelarApagar = () => {
+        if (apagando) return;
+        setCargoParaApagar(null);
+    };
+
+    const handleConfirmarApagar = async () => {
+        if (!cargoParaApagar) return;
+
+        setApagando(true);
         setFeedback({ tipo: '', msg: 'Apagando cargo...', loading: true });
 
-        const sucesso = await deletarCargo(cargo.id);
+        const sucesso = await deletarCargo(cargoParaApagar.id);
+
+        setApagando(false);
+        setCargoParaApagar(null);
 
         if (sucesso) {
             setFeedback({ tipo: 'sucesso', msg: 'Cargo apagado com sucesso!', loading: false });
@@ -107,7 +125,7 @@ function ListaCargos() {
                             acoes={(
                                 <>
                                     <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/cargos/${cargo.id}/editar`)} />
-                                    <Botao nome='Apagar' cor='#DC2626' acao={() => handleApagar(cargo)} />
+                                    <Botao nome='Apagar' cor='#DC2626' acao={() => handlePedirConfirmacao(cargo)} />
                                 </>
                             )}
                         >
@@ -117,6 +135,18 @@ function ListaCargos() {
                     );
                 })}
             </div>
+
+            <ModalConfirmacao
+                aberto={!!cargoParaApagar}
+                titulo="Apagar cargo"
+                mensagem={cargoParaApagar ? `Deseja realmente apagar o cargo "${cargoParaApagar.nome}"? Essa ação não pode ser desfeita.` : ''}
+                textoConfirmar="Sim, apagar"
+                textoCancelar="Não"
+                corConfirmar="#DC2626"
+                carregando={apagando}
+                onConfirmar={handleConfirmarApagar}
+                onCancelar={handleCancelarApagar}
+            />
         </PaginaLista>
     );
 }

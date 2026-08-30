@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { Tags } from "lucide-react";
 import Header from "../../components/Header/Header";
 
-import iconeFamilia from "../../assets/icones-pagina-inicial/familia.png";
 import iconeCargo from "../../assets/icones-pagina-inicial/cargo.png";
 import iconeListaFamilias from "../../assets/icones-pagina-inicial/lista-familias.png";
 import iconeListaFuncionarios from "../../assets/icones-pagina-inicial/lista-funcionarios.png";
@@ -10,9 +9,6 @@ import iconeListaProdutos from "../../assets/icones-pagina-inicial/lista-produto
 import iconeHistoricoEntrega from "../../assets/icones-pagina-inicial/historico-entrega.png";
 import iconeDashboard from "../../assets/icones-pagina-inicial/dashboard.png";
 
-// Cada módulo tem sua própria lista; o cadastro passou a ficar acessível
-// a partir do botão "Cadastrar" dentro de cada lista, então a Página
-// Inicial só referencia listas, entregas e dashboard.
 const cartoes = [
     { titulo: "Lista de Produtos", rota: "/produtos", icone: iconeListaProdutos },
     { titulo: "Lista de Famílias", rota: "/familias", icone: iconeListaFamilias },

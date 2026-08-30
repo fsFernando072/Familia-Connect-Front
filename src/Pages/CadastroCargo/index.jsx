@@ -53,7 +53,6 @@ function CadastroCargo() {
             nomeTela='Cadastro de Cargo'
             feedback={feedback}
             onFecharFeedback={fecharFeedback}
-            containerClassName='px-6 py-6 max-w-4xl mx-auto'
         >
             <Formulario
                 campos={campos}

@@ -117,7 +117,7 @@ function Formulario({
     nomeBotao,
     corBotao,
     acaoBotao,
-    larguraBotao = 'w-full sm:w-1/4',
+    larguraBotao = 'w-full sm:w-auto',
     alinhamentoBotao = 'start',
     botaoVoltar,
 }) {

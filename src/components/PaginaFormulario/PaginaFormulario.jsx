@@ -11,7 +11,7 @@ function PaginaFormulario({
     naoEncontradoTexto = 'Registro não encontrado.',
     feedback,
     onFecharFeedback,
-    containerClassName = 'px-6 py-6',
+    containerClassName = 'px-6 py-6 max-w-4xl mx-auto',
     children,
 }) {
     return (
