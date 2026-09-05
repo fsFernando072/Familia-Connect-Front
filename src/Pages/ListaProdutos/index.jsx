@@ -99,11 +99,7 @@ function ListaProdutos() {
                         key={produto.id}
                         imagem={(
                             <ImagemLista>
-                                {produto.imagemUrl ? (
-                                    <img src={produto.imagemUrl} alt={produto.nome} className='w-full h-full object-cover' />
-                                ) : (
-                                    <Package size={28} className='text-gray-400' />
-                                )}
+                                <Package size={28} className='text-gray-400' />
                             </ImagemLista>
                         )}
                         acoes={(

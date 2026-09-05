@@ -33,12 +33,12 @@ function EditarCargo() {
                 return;
             }
 
-            const associacoesDoCargo = todasAssociacoes.filter((a) => a.cargoId === Number(id));
+            const associacoesDoCargo = todasAssociacoes.filter((a) => a.cargo?.id === Number(id));
 
             setNome(cargo.nome || "");
             setDescricao(cargo.descricao || "");
             setAssociacoesAtuais(associacoesDoCargo);
-            setIdsPermissoes(associacoesDoCargo.map((a) => `${a.acessoId}:${a.permissaoId}`));
+            setIdsPermissoes(associacoesDoCargo.map((a) => Number(a.acesso?.id)));
             setCarregando(false);
         }
         carregarCargo();
@@ -81,14 +81,12 @@ function EditarCargo() {
     return (
         <PaginaFormulario
             nomeTela='Editar Cargo'
-            navegabilidade={{ ocultarSegmento: id, rotuloFinal: nome ? `Editar Cargo (${nome})` : undefined }}
             carregando={carregando}
             carregandoTexto='Carregando cargo...'
             encontrado={cargoEncontrado}
             naoEncontradoTexto='Cargo não encontrado.'
             feedback={feedback}
             onFecharFeedback={fecharFeedback}
-            containerClassName='px-6 py-6 max-w-4xl mx-auto'
         >
             <Formulario
                 campos={campos}
