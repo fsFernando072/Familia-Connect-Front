@@ -7,35 +7,44 @@ const ACESSOS = {
     CADASTRAR_PRODUTOS: 4,
     CADASTRAR_ENTREGAS: 5,
     CADASTRAR_ACESSOS: 6,
-    CADASTRAR_CARGOS: 7,
-    CADASTRAR_PROFISSOES: 8,
+    CADASTRAR_CATEGORIAS: 7,
+    CADASTRAR_CARGOS: 8,
+    CADASTRAR_PROFISSOES: 9,
+    CADASTRAR_ESTOQUES: 10,
 
-    EDITAR_PRODUTOS: 9,
-    EDITAR_AUDITORIAS: 10,
-    EDITAR_FAMILIAS: 11,
-    EDITAR_FUNCIONARIOS: 12,
-    EDITAR_ENTREGAS: 13,
-    EDITAR_ACESSOS: 14,
-    EDITAR_CARGOS: 15,
-    EDITAR_PROFISSOES: 16,
+    EDITAR_PRODUTOS: 11,
+    EDITAR_AUDITORIAS: 12,
+    EDITAR_FAMILIAS: 13,
+    EDITAR_FUNCIONARIOS: 14,
+    EDITAR_ENTREGAS: 15,
+    EDITAR_ACESSOS: 16,
+    EDITAR_CARGOS: 17,
+    EDITAR_PROFISSOES: 18,
+    EDITAR_CATEGORIAS: 19,
+    EDITAR_ESTOQUES: 20,
 
-    EXCLUIR_FAMILIAS: 17,
-    EXCLUIR_AUDITORIAS: 18,
-    EXCLUIR_PRODUTOS: 19,
-    EXCLUIR_FUNCIONARIOS: 20,
-    EXCLUIR_ENTREGAS: 21,
-    EXCLUIR_ACESSOS: 22,
-    EXCLUIR_CARGOS: 23,
-    EXCLUIR_PROFISSOES: 24,
+    EXCLUIR_FAMILIAS: 21,
+    EXCLUIR_AUDITORIAS: 22,
+    EXCLUIR_CATEGORIAS: 23,
+    EXCLUIR_PRODUTOS: 24,
+    EXCLUIR_FUNCIONARIOS: 25,
+    EXCLUIR_ENTREGAS: 26,
+    EXCLUIR_ACESSOS: 27,
+    EXCLUIR_CARGOS: 28,
+    EXCLUIR_PROFISSOES: 29,
+    EXCLUIR_ESTOQUES: 30,
 
-    LISTAR_FAMILIAS: 25,
-    LISTAR_AUDITORIAS: 26,
-    LISTAR_FUNCIONARIOS: 27,
-    LISTAR_ENTREGAS: 28,
-    LISTAR_PRODUTOS: 29,
-    LISTAR_ACESSOS: 30,
-    LISTAR_CARGOS: 31,
-    LISTAR_PROFISSOES: 32,
+    LISTAR_FAMILIAS: 31,
+    LISTAR_CATEGORIAS: 32,
+    LISTAR_AUDITORIAS: 33,
+    LISTAR_FUNCIONARIOS: 34,
+    LISTAR_ENTREGAS: 35,
+    LISTAR_PRODUTOS: 36,
+    LISTAR_ACESSOS: 37,
+    LISTAR_CARGOS: 38,
+    LISTAR_PROFISSOES: 39,
+    LISTAR_ESTOQUES: 40,
+    VISUALIZAR_ARQUIVOS: 41,
 };
 
 export const PERMISSOES_CARGO = [
@@ -71,6 +80,11 @@ export const PERMISSOES_CARGO = [
         nome: "Cadastrar acessos"
     },
     {
+        id: ACESSOS.CADASTRAR_CATEGORIAS,
+        acessoId: ACESSOS.CADASTRAR_CATEGORIAS,
+        nome: "Cadastrar categorias"
+    },
+    {
         id: ACESSOS.CADASTRAR_CARGOS,
         acessoId: ACESSOS.CADASTRAR_CARGOS,
         nome: "Cadastrar cargos"
@@ -79,6 +93,11 @@ export const PERMISSOES_CARGO = [
         id: ACESSOS.CADASTRAR_PROFISSOES,
         acessoId: ACESSOS.CADASTRAR_PROFISSOES,
         nome: "Cadastrar profissões"
+    },
+    {
+        id: ACESSOS.CADASTRAR_ESTOQUES,
+        acessoId: ACESSOS.CADASTRAR_ESTOQUES,
+        nome: "Cadastrar estoques"
     },
 
     {
@@ -121,6 +140,16 @@ export const PERMISSOES_CARGO = [
         acessoId: ACESSOS.EDITAR_PROFISSOES,
         nome: "Editar profissões"
     },
+    {
+        id: ACESSOS.EDITAR_CATEGORIAS,
+        acessoId: ACESSOS.EDITAR_CATEGORIAS,
+        nome: "Editar categorias"
+    },
+    {
+        id: ACESSOS.EDITAR_ESTOQUES,
+        acessoId: ACESSOS.EDITAR_ESTOQUES,
+        nome: "Editar estoques"
+    },
 
     {
         id: ACESSOS.EXCLUIR_FAMILIAS,
@@ -131,6 +160,11 @@ export const PERMISSOES_CARGO = [
         id: ACESSOS.EXCLUIR_AUDITORIAS,
         acessoId: ACESSOS.EXCLUIR_AUDITORIAS,
         nome: "Excluir auditorias"
+    },
+    {
+        id: ACESSOS.EXCLUIR_CATEGORIAS,
+        acessoId: ACESSOS.EXCLUIR_CATEGORIAS,
+        nome: "Excluir categorias"
     },
     {
         id: ACESSOS.EXCLUIR_PRODUTOS,
@@ -162,12 +196,22 @@ export const PERMISSOES_CARGO = [
         acessoId: ACESSOS.EXCLUIR_PROFISSOES,
         nome: "Excluir profissões"
     },
+    {
+        id: ACESSOS.EXCLUIR_ESTOQUES,
+        acessoId: ACESSOS.EXCLUIR_ESTOQUES,
+        nome: "Excluir estoques"
+    },
 
 
     {
         id: ACESSOS.LISTAR_FAMILIAS,
         acessoId: ACESSOS.LISTAR_FAMILIAS,
         nome: "Listar famílias"
+    },
+    {
+        id: ACESSOS.LISTAR_CATEGORIAS,
+        acessoId: ACESSOS.LISTAR_CATEGORIAS,
+        nome: "Listar categorias"
     },
     {
         id: ACESSOS.LISTAR_AUDITORIAS,
@@ -204,8 +248,24 @@ export const PERMISSOES_CARGO = [
         acessoId: ACESSOS.LISTAR_PROFISSOES,
         nome: "Listar profissões"
     },
+    {
+        id: ACESSOS.LISTAR_ESTOQUES,
+        acessoId: ACESSOS.LISTAR_ESTOQUES,
+        nome: "Listar estoques"
+    },
+    {
+        id: ACESSOS.VISUALIZAR_ARQUIVOS,
+        acessoId: ACESSOS.VISUALIZAR_ARQUIVOS,
+        nome: "Visualizar arquivos"
+    },
 ];
 
+
+// Busca o nome amigável de um acesso (ex.: "Cadastrar famílias") a partir do seu id.
+export function nomeAcessoPorId(acessoId) {
+    const permissao = PERMISSOES_CARGO.find((p) => p.acessoId === Number(acessoId));
+    return permissao?.nome;
+}
 
 export async function buscarCargo() {
     try {

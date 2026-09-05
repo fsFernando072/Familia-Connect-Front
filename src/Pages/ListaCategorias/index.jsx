@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Package } from "lucide-react";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
 import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
 import ListaStatus from "../../components/ListaStatus/ListaStatus";
 import ListaItem from "../../components/ListaItem/ListaItem";
+import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
@@ -95,7 +97,11 @@ function ListaCategorias() {
                 {categoriasFiltradas.map((categoria) => (
                     <ListaItem
                         key={categoria.id}
-                        className='min-h-[76px]'
+                        imagem={(
+                            <ImagemLista tamanho='w-14 h-14'>
+                                <Package size={24} className='text-gray-400' />
+                            </ImagemLista>
+                        )}
                         acoes={(
                             <>
                                 <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/categorias/${categoria.id}/editar-categoria`)} />

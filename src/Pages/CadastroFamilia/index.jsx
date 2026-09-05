@@ -5,6 +5,7 @@ import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario
 import Formulario from "../../components/Formulario/Formulario";
 import Carrossel from "../../components/Carrossel/Carrossel";
 import Botao from "../../components/Botao/Botao";
+import BotaoIcone from "../../components/BotaoIcone/BotaoIcone";
 import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, mascaraData } from "../../utils/mascaras";
 import { validarCpf, validarRg } from "../../utils/validadores";
 import { converterDataParaBr } from "../../utils/formatadores";
@@ -298,7 +299,6 @@ function CadastroFamilia() {
                     nomeBotao='Próximo'
                     corBotao='#167AFA'
                     acaoBotao={handleProximo}
-                    larguraBotao='w-full sm:w-auto'
                     alinhamentoBotao='end'
                 />
             )
@@ -312,7 +312,6 @@ function CadastroFamilia() {
                     nomeBotao='Próximo'
                     corBotao='#167AFA'
                     acaoBotao={handleProximo}
-                    larguraBotao='w-full sm:w-auto'
                     alinhamentoBotao='end'
                     botaoVoltar={{ onClick: handleVoltar }}
                 />
@@ -325,13 +324,12 @@ function CadastroFamilia() {
                     {dependentes.map((dep) => (
                         <div key={dep.id} className='relative border border-gray-800 rounded-md p-4'>
                             {dependentes.length > 1 && (
-                                <button
-                                    onClick={() => removerDependente(dep.id)}
-                                    className='absolute top-3 right-3 text-gray-400 hover:text-red-600 cursor-pointer'
-                                    title='Remover dependente'
-                                >
-                                    <Trash2 size={18} />
-                                </button>
+                                <BotaoIcone
+                                    icone={Trash2}
+                                    acao={() => removerDependente(dep.id)}
+                                    titulo='Remover dependente'
+                                    className='absolute top-3 right-3'
+                                />
                             )}
                             <Formulario campos={camposDependente(dep)} colunas={2} />
                         </div>
@@ -344,7 +342,6 @@ function CadastroFamilia() {
                         nomeBotao='Cadastrar'
                         corBotao='#34C759'
                         acaoBotao={handleCadastrar}
-                        larguraBotao='w-full sm:w-auto'
                         alinhamentoBotao='end'
                         botaoVoltar={{ onClick: handleVoltar }}
                     />
