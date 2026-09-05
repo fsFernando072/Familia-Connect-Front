@@ -8,13 +8,12 @@ import ListaItem from "../../components/ListaItem/ListaItem";
 import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
-import { listarCargos, deletarCargo, listarCargosAcessos } from "../../services/cargoService";
+import { listarCargos, deletarCargo } from "../../services/cargoService";
 
 function ListaCargos() {
 
     const navigate = useNavigate();
     const [cargos, setCargos] = useState([]);
-    const [acessosPorCargo, setAcessosPorCargo] = useState({});
     const [carregando, setCarregando] = useState(true);
     const [busca, setBusca] = useState("");
     const [ordemCrescente, setOrdemCrescente] = useState(true);
@@ -25,19 +24,8 @@ function ListaCargos() {
     async function carregarCargos() {
         setCarregando(true);
 
-        const [listaCargos, todasAssociacoes] = await Promise.all([
-            listarCargos(),
-            listarCargosAcessos(),
-        ]);
+        const listaCargos = await listarCargos();
 
-        const agrupado = {};
-        for (const associacao of todasAssociacoes) {
-            const rotulo = [associacao.permissaoNome, associacao.acessoNomeTela].filter(Boolean).join(' ');
-            if (!agrupado[associacao.cargoId]) agrupado[associacao.cargoId] = [];
-            if (rotulo) agrupado[associacao.cargoId].push(rotulo);
-        }
-
-        setAcessosPorCargo(agrupado);
         setCargos(listaCargos || []);
         setCarregando(false);
     }
@@ -94,8 +82,6 @@ function ListaCargos() {
 
             <div className='flex flex-col gap-4'>
                 {cargosFiltrados.map((cargo) => {
-                    const nomesAcessos = (acessosPorCargo[cargo.id] || []).join(", ");
-
                     return (
                         <ListaItem
                             key={cargo.id}
@@ -112,7 +98,7 @@ function ListaCargos() {
                             )}
                         >
                             <LinhaInfo rotulo='Nome' valor={cargo.nome} />
-                            <LinhaInfo rotulo='Acessos' valor={nomesAcessos || "Nenhum acesso definido"} />
+                            <LinhaInfo rotulo='Descrição' valor={cargo.descricao || "Sem descrição"} />
                         </ListaItem>
                     );
                 })}

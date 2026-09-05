@@ -36,6 +36,7 @@ function EditarCargo() {
             const associacoesDoCargo = todasAssociacoes.filter((a) => a.cargoId === Number(id));
 
             setNome(cargo.nome || "");
+            setDescricao(cargo.descricao || "");
             setAssociacoesAtuais(associacoesDoCargo);
             setIdsPermissoes(associacoesDoCargo.map((a) => `${a.acessoId}:${a.permissaoId}`));
             setCarregando(false);
@@ -44,7 +45,7 @@ function EditarCargo() {
     }, [id]);
 
     const handleAtualizar = () => {
-        atualizarCargo(id, nome, idsPermissoes, associacoesAtuais, navigate, setFeedback);
+        atualizarCargo(id, nome, descricao, idsPermissoes, associacoesAtuais, navigate, setFeedback);
     };
 
     const campos = [
@@ -73,8 +74,7 @@ function EditarCargo() {
             label: 'Descrição do Cargo:',
             value: descricao,
             onChange: (e) => setDescricao(e.target.value),
-            placeholder: 'Descreva as responsabilidades do cargo',
-            ajuda: 'Este campo ainda não é salvo pelo back-end (CargoRequestDto não possui "descricao").'
+            placeholder: 'Descreva as responsabilidades do cargo'
         },
     ];
 
