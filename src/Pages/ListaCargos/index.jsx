@@ -9,6 +9,7 @@ import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
 import { listarCargos, deletarCargo } from "../../services/cargoService";
+import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
 
 function ListaCargos() {
 
