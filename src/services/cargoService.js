@@ -527,11 +527,9 @@ export async function atualizarCargo(
 
         const paraRemover = associacoesAtuais.filter(
             (associacao) =>
-                !idsPermissoesSelecionadas.includes(
-                    Number(associacao.acesso?.id)
-                !idsPermissoesSelecionadas.map(Number).includes(
-                    Number(associacao.acesso?.id)
-                )
+                !idsPermissoesSelecionadas
+                    .map(Number)
+                    .includes(Number(associacao.acesso?.id))
         );
 
 
