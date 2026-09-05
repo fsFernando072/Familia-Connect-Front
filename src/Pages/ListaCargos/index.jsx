@@ -8,14 +8,12 @@ import ListaItem from "../../components/ListaItem/ListaItem";
 import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
-import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
-import { listarCargos, deletarCargo, listarCargosAcessos, nomeAcessoPorId } from "../../services/cargoService";
+import { listarCargos, deletarCargo } from "../../services/cargoService";
 
 function ListaCargos() {
 
     const navigate = useNavigate();
     const [cargos, setCargos] = useState([]);
-    const [acessosPorCargo, setAcessosPorCargo] = useState({});
     const [carregando, setCarregando] = useState(true);
     const [busca, setBusca] = useState("");
     const [ordemCrescente, setOrdemCrescente] = useState(true);
@@ -28,22 +26,8 @@ function ListaCargos() {
     async function carregarCargos() {
         setCarregando(true);
 
-        const [listaCargos, todasAssociacoes] = await Promise.all([
-            listarCargos(),
-            listarCargosAcessos(),
-        ]);
+        const listaCargos = await listarCargos();
 
-        const agrupado = {};
-        for (const associacao of todasAssociacoes) {
-            const cargoId = associacao.cargo?.id;
-            if (!cargoId) continue;
-
-            const rotulo = nomeAcessoPorId(associacao.acesso?.id) || associacao.acesso?.nomeTela;
-            if (!agrupado[cargoId]) agrupado[cargoId] = [];
-            if (rotulo) agrupado[cargoId].push(rotulo);
-        }
-
-        setAcessosPorCargo(agrupado);
         setCargos(listaCargos || []);
         setCarregando(false);
     }
@@ -112,8 +96,6 @@ function ListaCargos() {
 
             <div className='flex flex-col gap-4'>
                 {cargosFiltrados.map((cargo) => {
-                    const nomesAcessos = (acessosPorCargo[cargo.id] || []).join(", ");
-
                     return (
                         <ListaItem
                             key={cargo.id}
@@ -130,7 +112,7 @@ function ListaCargos() {
                             )}
                         >
                             <LinhaInfo rotulo='Nome' valor={cargo.nome} />
-                            <LinhaInfo rotulo='Acessos' valor={nomesAcessos || "Nenhum acesso definido"} />
+                            <LinhaInfo rotulo='Descrição' valor={cargo.descricao || "Sem descrição"} />
                         </ListaItem>
                     );
                 })}

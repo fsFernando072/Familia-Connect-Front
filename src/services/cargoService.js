@@ -48,7 +48,7 @@ const ACESSOS = {
 };
 
 export const PERMISSOES_CARGO = [
-   
+
     {
         id: ACESSOS.CADASTRAR_FAMILIAS,
         acessoId: ACESSOS.CADASTRAR_FAMILIAS,
@@ -359,6 +359,7 @@ export async function listarCargosAcessos() {
 
 export async function cadastrarCargo(
     nome,
+    descricao,
     idsPermissoesSelecionadas,
     navigate,
     setFeedback
@@ -382,7 +383,8 @@ export async function cadastrarCargo(
     try {
 
         const response = await api.post("/cargos", {
-            nome: nome.trim()
+            nome: nome.trim(),
+            descricao: descricao.trim()
         });
 
         if (response.status !== 201) {
@@ -458,6 +460,7 @@ export async function cadastrarCargo(
 export async function atualizarCargo(
     id,
     nome,
+    descricao,
     idsPermissoesSelecionadas,
     associacoesAtuais,
     navigate,
@@ -481,9 +484,10 @@ export async function atualizarCargo(
 
     try {
 
-        // 1. Atualiza o nome do cargo
+        // 1. Atualiza o nome e descrição do cargo
         const response = await api.put(`/cargos/${id}`, {
-            nome: nome.trim()
+            nome: nome.trim(),
+            descricao: descricao.trim()
         });
 
         if (response.status !== 200) {
@@ -523,6 +527,8 @@ export async function atualizarCargo(
 
         const paraRemover = associacoesAtuais.filter(
             (associacao) =>
+                !idsPermissoesSelecionadas.includes(
+                    Number(associacao.acesso?.id)
                 !idsPermissoesSelecionadas.map(Number).includes(
                     Number(associacao.acesso?.id)
                 )

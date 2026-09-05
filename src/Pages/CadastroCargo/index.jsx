@@ -15,7 +15,7 @@ function CadastroCargo() {
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
     const handleCadastrar = () => {
-        cadastrarCargo(nome, idsPermissoes, navigate, setFeedback);
+        cadastrarCargo(nome, descricao, idsPermissoes, navigate, setFeedback);
     };
 
     const campos = [
