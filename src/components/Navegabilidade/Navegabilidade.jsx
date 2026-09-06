@@ -13,7 +13,7 @@ function Navegabilidade({ sufixoUltimo }) {
         .filter(Boolean);
 
     return (
-        <div className="px-6 py-4 text-[#1E66F5] font-medium">
+        <div className="px-4 sm:px-6 py-4 text-[#1E66F5] font-medium overflow-x-auto whitespace-nowrap">
             <Link to="/pagina-inicial" className="underline hover:text-blue-800">Página Inicial</Link>
 
             {caminhos.map((caminho, index) => {

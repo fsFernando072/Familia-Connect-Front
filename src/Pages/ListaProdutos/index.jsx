@@ -5,6 +5,7 @@ import PaginaLista from "../../components/PaginaLista/PaginaLista";
 import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
 import ListaStatus from "../../components/ListaStatus/ListaStatus";
 import ListaItem from "../../components/ListaItem/ListaItem";
+import ListaContainer from "../../components/ListaContainer/ListaContainer";
 import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
@@ -93,7 +94,7 @@ function ListaProdutos() {
                 mensagemVazia='Nenhum produto encontrado.'
             />
 
-            <div className='flex flex-col gap-4'>
+            <ListaContainer>
                 {produtosFiltrados.map((produto) => (
                     <ListaItem
                         key={produto.id}
@@ -113,7 +114,7 @@ function ListaProdutos() {
                         <LinhaInfo rotulo='Descrição' valor={produto.descricao} clamp />
                     </ListaItem>
                 ))}
-            </div>
+            </ListaContainer>
 
             <ModalConfirmacao
                 aberto={!!produtoParaApagar}

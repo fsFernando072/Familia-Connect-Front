@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import Carrossel from "../../components/Carrossel/Carrossel";
 import Botao from "../../components/Botao/Botao";
-import BotaoIcone from "../../components/BotaoIcone/BotaoIcone";
+import ListaContainer from "../../components/ListaContainer/ListaContainer";
+import CartaoDependente from "../../components/CartaoDependente/CartaoDependente";
 import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, mascaraData } from "../../utils/mascaras";
 import { validarCpf, validarRg } from "../../utils/validadores";
 import { converterDataParaBr } from "../../utils/formatadores";
@@ -320,19 +321,14 @@ function CadastroFamilia() {
         {
             titulo: "Dependentes",
             conteudo: (
-                <div className='flex flex-col gap-4'>
+                <ListaContainer>
                     {dependentes.map((dep) => (
-                        <div key={dep.id} className='relative border border-gray-800 rounded-md p-4'>
-                            {dependentes.length > 1 && (
-                                <BotaoIcone
-                                    icone={Trash2}
-                                    acao={() => removerDependente(dep.id)}
-                                    titulo='Remover dependente'
-                                    className='absolute top-3 right-3'
-                                />
-                            )}
-                            <Formulario campos={camposDependente(dep)} colunas={2} />
-                        </div>
+                        <CartaoDependente
+                            key={dep.id}
+                            campos={camposDependente(dep)}
+                            podeRemover={dependentes.length > 1}
+                            onRemover={() => removerDependente(dep.id)}
+                        />
                     ))}
 
                     <Botao nome='Adicionar' icone={Plus} cor='#2C2C2C' acao={adicionarDependente} larguraBotao='w-fit' />
@@ -345,7 +341,7 @@ function CadastroFamilia() {
                         alinhamentoBotao='end'
                         botaoVoltar={{ onClick: handleVoltar }}
                     />
-                </div>
+                </ListaContainer>
             )
         }
     ];

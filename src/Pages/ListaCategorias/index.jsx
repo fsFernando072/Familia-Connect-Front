@@ -5,6 +5,7 @@ import PaginaLista from "../../components/PaginaLista/PaginaLista";
 import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
 import ListaStatus from "../../components/ListaStatus/ListaStatus";
 import ListaItem from "../../components/ListaItem/ListaItem";
+import ListaContainer from "../../components/ListaContainer/ListaContainer";
 import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
@@ -93,7 +94,7 @@ function ListaCategorias() {
                 mensagemVazia='Nenhuma categoria encontrada.'
             />
 
-            <div className='flex flex-col gap-4'>
+            <ListaContainer>
                 {categoriasFiltradas.map((categoria) => (
                     <ListaItem
                         key={categoria.id}
@@ -112,7 +113,7 @@ function ListaCategorias() {
                         <LinhaInfo rotulo='Nome' valor={categoria.nome} />
                     </ListaItem>
                 ))}
-            </div>
+            </ListaContainer>
 
             <ModalConfirmacao
                 aberto={!!categoriaParaApagar}

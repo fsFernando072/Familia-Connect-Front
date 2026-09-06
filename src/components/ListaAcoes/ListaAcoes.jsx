@@ -5,11 +5,13 @@ import BotaoSecundario from "../BotaoSecundario/BotaoSecundario";
 
 function ListaAcoes({ busca, onBuscaChange, placeholderBusca, onOrdenar, onCadastrar, textoCadastrar = "Cadastrar", children }) {
     return (
-        <div className='flex items-center gap-3 mb-6'>
+        <div className='flex flex-col sm:flex-row sm:items-center gap-3 mb-6'>
             <CampoBusca value={busca} onChange={onBuscaChange} placeholder={placeholderBusca} />
-            <BotaoSecundario nome='Ordenar' icone={ArrowUpDown} acao={onOrdenar} />
-            {children}
-            <Botao nome={textoCadastrar} icone={Plus} cor='#34C759' acao={onCadastrar} />
+            <div className='flex flex-wrap items-center gap-3'>
+                <BotaoSecundario nome='Ordenar' icone={ArrowUpDown} acao={onOrdenar} />
+                {children}
+                <Botao nome={textoCadastrar} icone={Plus} cor='#34C759' acao={onCadastrar} />
+            </div>
         </div>
     );
 }

@@ -5,6 +5,7 @@ import PaginaLista from "../../components/PaginaLista/PaginaLista";
 import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
 import ListaStatus from "../../components/ListaStatus/ListaStatus";
 import ListaItem from "../../components/ListaItem/ListaItem";
+import ListaContainer from "../../components/ListaContainer/ListaContainer";
 import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
@@ -132,7 +133,7 @@ function ListaFamilias() {
                 mensagemVazia='Nenhuma família encontrada.'
             />
 
-            <div className='flex flex-col gap-4'>
+            <ListaContainer>
                 {familiasFiltradas.map((familia) => (
                     <ListaItem
                         key={familia.idFamilia}
@@ -158,7 +159,7 @@ function ListaFamilias() {
                         <LinhaInfo rotulo='Telefone do Responsável' valor={familia.telefoneResponsavel} />
                     </ListaItem>
                 ))}
-            </div>
+            </ListaContainer>
 
             <ModalImportarFoto
                 aberto={modalImportarAberto}

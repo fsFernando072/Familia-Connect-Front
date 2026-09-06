@@ -103,7 +103,7 @@ function montarPayloadFamilia(responsavel, endereco, dependentes) {
             sexo: responsavel.sexo.toUpperCase(),
             profissao: responsavel.profissao || null,
             telefone: responsavel.telefone,
-            grauParentesco: 'Responsável',
+            grauParentesco: 'Pai/Mãe',
             isResponsavel: true
         },
         dependentes: dependentes.map((dep) => ({

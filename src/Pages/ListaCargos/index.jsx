@@ -5,6 +5,7 @@ import PaginaLista from "../../components/PaginaLista/PaginaLista";
 import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
 import ListaStatus from "../../components/ListaStatus/ListaStatus";
 import ListaItem from "../../components/ListaItem/ListaItem";
+import ListaContainer from "../../components/ListaContainer/ListaContainer";
 import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
@@ -95,7 +96,7 @@ function ListaCargos() {
                 mensagemVazia='Nenhum cargo encontrado.'
             />
 
-            <div className='flex flex-col gap-4'>
+            <ListaContainer>
                 {cargosFiltrados.map((cargo) => {
                     return (
                         <ListaItem
@@ -117,7 +118,7 @@ function ListaCargos() {
                         </ListaItem>
                     );
                 })}
-            </div>
+            </ListaContainer>
 
             <ModalConfirmacao
                 aberto={!!cargoParaApagar}
