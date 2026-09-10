@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Package } from "lucide-react";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
@@ -9,8 +9,10 @@ import ListaContainer from "../../components/ListaContainer/ListaContainer";
 import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
+import Paginacao from "../../components/Paginacao/Paginacao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
 import { listarProdutos, deletarProduto } from "../../services/produtoService";
+import { useDebounce } from "../../hooks/useDebounce";
 
 function ListaProdutos() {
 
@@ -19,35 +21,39 @@ function ListaProdutos() {
     const [carregando, setCarregando] = useState(true);
     const [busca, setBusca] = useState("");
     const [ordemCrescente, setOrdemCrescente] = useState(true);
+    const [paginaAtual, setPaginaAtual] = useState(0);
+    const [totalPaginas, setTotalPaginas] = useState(0);
     const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
     const [produtoParaApagar, setProdutoParaApagar] = useState(null);
     const [apagando, setApagando] = useState(false);
 
+    const buscaComAtraso = useDebounce(busca);
+
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
-    async function carregarProdutos() {
+    async function carregarProdutos(pagina) {
         setCarregando(true);
-        const dados = await listarProdutos();
-        setProdutos(dados || []);
+
+        const dados = await listarProdutos({
+            nome: buscaComAtraso,
+            page: pagina,
+            direcao: ordemCrescente ? 'asc' : 'desc'
+        });
+
+        setProdutos(dados.content || []);
+        setTotalPaginas(dados.totalPages || 0);
         setCarregando(false);
     }
 
+    // Sempre que a busca ou a ordenação mudam, volta para a primeira página.
     useEffect(() => {
-        carregarProdutos();
-    }, []);
+        setPaginaAtual(0);
+    }, [buscaComAtraso, ordemCrescente]);
 
-    const produtosFiltrados = useMemo(() => {
-        const termo = busca.trim().toLowerCase();
-
-        const filtrados = termo
-            ? produtos.filter((produto) => (produto.nome || "").toLowerCase().includes(termo))
-            : produtos;
-
-        return [...filtrados].sort((a, b) => {
-            const comparacao = (a.nome || "").localeCompare(b.nome || "");
-            return ordemCrescente ? comparacao : -comparacao;
-        });
-    }, [produtos, busca, ordemCrescente]);
+    useEffect(() => {
+        carregarProdutos(paginaAtual);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [buscaComAtraso, ordemCrescente, paginaAtual]);
 
     const handlePedirConfirmacao = (produto) => {
         setProdutoParaApagar(produto);
@@ -71,7 +77,15 @@ function ListaProdutos() {
 
         if (sucesso) {
             setFeedback({ tipo: 'sucesso', msg: 'Produto apagado com sucesso!', loading: false });
-            carregarProdutos();
+
+            // Se apagou o único item da página atual (e não é a primeira), volta uma página.
+            const deveVoltarPagina = produtos.length === 1 && paginaAtual > 0;
+
+            if (deveVoltarPagina) {
+                setPaginaAtual((pagina) => pagina - 1);
+            } else {
+                carregarProdutos(paginaAtual);
+            }
         } else {
             setFeedback({ tipo: 'erro', msg: 'Não foi possível apagar o produto.', loading: false });
         }
@@ -89,13 +103,13 @@ function ListaProdutos() {
 
             <ListaStatus
                 carregando={carregando}
-                vazio={produtosFiltrados.length === 0}
+                vazio={produtos.length === 0}
                 mensagemCarregando='Carregando produtos...'
                 mensagemVazia='Nenhum produto encontrado.'
             />
 
             <ListaContainer>
-                {produtosFiltrados.map((produto) => (
+                {produtos.map((produto) => (
                     <ListaItem
                         key={produto.id}
                         imagem={(
@@ -115,6 +129,8 @@ function ListaProdutos() {
                     </ListaItem>
                 ))}
             </ListaContainer>
+
+            <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
             <ModalConfirmacao
                 aberto={!!produtoParaApagar}

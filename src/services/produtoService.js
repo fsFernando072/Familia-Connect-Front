@@ -1,17 +1,19 @@
 import api from "./apiClient";
 
-export async function listarProdutos() {
+// Formato de página vazia, usado quando não há resultados ou a requisição falha.
+const PAGINA_VAZIA = { content: [], totalPages: 0, totalElements: 0, number: 0 };
+
+export async function listarProdutos({ nome = "", page = 0, size = 10, direcao = "asc" } = {}) {
     try {
-        const response = await api.get('/produtos');
+        const response = await api.get('/produtos', {
+            params: { nome: nome?.trim() || undefined, page, size, direcao }
+        });
 
-        if (response.status === 200) {
-            return response.data;
-        }
-
-        return [];
+        if (response.status === 200) return response.data;
+        return { ...PAGINA_VAZIA, number: page };
     } catch (error) {
         console.error('Erro ao buscar produtos:', error);
-        return [];
+        return { ...PAGINA_VAZIA, number: page };
     }
 }
 

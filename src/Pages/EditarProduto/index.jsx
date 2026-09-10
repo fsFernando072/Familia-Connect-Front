@@ -25,11 +25,11 @@ function EditarProduto() {
             setCarregando(true);
 
             const [dadosCategorias, produto] = await Promise.all([
-                listarCategorias(),
+                listarCategorias({ size: 100 }),
                 buscarProdutoPorId(id)
             ]);
 
-            setCategorias(dadosCategorias || []);
+            setCategorias(dadosCategorias?.content || []);
 
             if (!produto) {
                 setProdutoEncontrado(false);

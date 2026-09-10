@@ -19,8 +19,8 @@ function CadastroProduto() {
 
     useEffect(() => {
         async function carregarCategorias() {
-            const dados = await listarCategorias();
-            setCategorias(dados || []);
+            const dados = await listarCategorias({ size: 100 });
+            setCategorias(dados?.content || []);
         }
         carregarCategorias();
     }, []);
