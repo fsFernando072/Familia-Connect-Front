@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Package } from "lucide-react";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
@@ -9,8 +9,10 @@ import ListaContainer from "../../components/ListaContainer/ListaContainer";
 import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
+import Paginacao from "../../components/Paginacao/Paginacao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
 import { listarCategorias, deletarCategoria } from "../../services/categoriaService";
+import { useDebounce } from "../../hooks/useDebounce";
 
 function ListaCategorias() {
 
@@ -19,35 +21,39 @@ function ListaCategorias() {
     const [carregando, setCarregando] = useState(true);
     const [busca, setBusca] = useState("");
     const [ordemCrescente, setOrdemCrescente] = useState(true);
+    const [paginaAtual, setPaginaAtual] = useState(0);
+    const [totalPaginas, setTotalPaginas] = useState(0);
     const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
     const [categoriaParaApagar, setCategoriaParaApagar] = useState(null);
     const [apagando, setApagando] = useState(false);
 
+    const buscaComAtraso = useDebounce(busca);
+
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
-    async function carregarCategorias() {
+    async function carregarCategorias(pagina) {
         setCarregando(true);
-        const dados = await listarCategorias();
-        setCategorias(dados || []);
+
+        const dados = await listarCategorias({
+            nome: buscaComAtraso,
+            page: pagina,
+            direcao: ordemCrescente ? 'asc' : 'desc'
+        });
+
+        setCategorias(dados.content || []);
+        setTotalPaginas(dados.totalPages || 0);
         setCarregando(false);
     }
 
+    // Sempre que a busca ou a ordenação mudam, volta para a primeira página.
     useEffect(() => {
-        carregarCategorias();
-    }, []);
+        setPaginaAtual(0);
+    }, [buscaComAtraso, ordemCrescente]);
 
-    const categoriasFiltradas = useMemo(() => {
-        const termo = busca.trim().toLowerCase();
-
-        const filtradas = termo
-            ? categorias.filter((categoria) => (categoria.nome || "").toLowerCase().includes(termo))
-            : categorias;
-
-        return [...filtradas].sort((a, b) => {
-            const comparacao = (a.nome || "").localeCompare(b.nome || "");
-            return ordemCrescente ? comparacao : -comparacao;
-        });
-    }, [categorias, busca, ordemCrescente]);
+    useEffect(() => {
+        carregarCategorias(paginaAtual);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [buscaComAtraso, ordemCrescente, paginaAtual]);
 
     const handlePedirConfirmacao = (categoria) => {
         setCategoriaParaApagar(categoria);
@@ -71,7 +77,14 @@ function ListaCategorias() {
 
         if (sucesso) {
             setFeedback({ tipo: 'sucesso', msg: 'Categoria apagada com sucesso!', loading: false });
-            carregarCategorias();
+
+            const deveVoltarPagina = categorias.length === 1 && paginaAtual > 0;
+
+            if (deveVoltarPagina) {
+                setPaginaAtual((pagina) => pagina - 1);
+            } else {
+                carregarCategorias(paginaAtual);
+            }
         } else {
             setFeedback({ tipo: 'erro', msg: 'Não foi possível apagar a categoria.', loading: false });
         }
@@ -89,13 +102,13 @@ function ListaCategorias() {
 
             <ListaStatus
                 carregando={carregando}
-                vazio={categoriasFiltradas.length === 0}
+                vazio={categorias.length === 0}
                 mensagemCarregando='Carregando categorias...'
                 mensagemVazia='Nenhuma categoria encontrada.'
             />
 
             <ListaContainer>
-                {categoriasFiltradas.map((categoria) => (
+                {categorias.map((categoria) => (
                     <ListaItem
                         key={categoria.id}
                         imagem={(
@@ -114,6 +127,8 @@ function ListaCategorias() {
                     </ListaItem>
                 ))}
             </ListaContainer>
+
+            <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
             <ModalConfirmacao
                 aberto={!!categoriaParaApagar}

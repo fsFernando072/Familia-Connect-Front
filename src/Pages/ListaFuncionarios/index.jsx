@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserRound } from "lucide-react";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
@@ -9,10 +9,12 @@ import ListaContainer from "../../components/ListaContainer/ListaContainer";
 import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
+import Paginacao from "../../components/Paginacao/Paginacao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
 import FotoAvatar from "../../components/FotoAvatar/FotoAvatar";
 import { mascaraCpf } from "../../utils/mascaras";
 import { listarFuncionarios, deletarFuncionario } from "../../services/funcionarioService";
+import { useDebounce } from "../../hooks/useDebounce";
 
 function ListaFuncionarios() {
 
@@ -21,38 +23,39 @@ function ListaFuncionarios() {
     const [carregando, setCarregando] = useState(true);
     const [busca, setBusca] = useState("");
     const [ordemCrescente, setOrdemCrescente] = useState(true);
+    const [paginaAtual, setPaginaAtual] = useState(0);
+    const [totalPaginas, setTotalPaginas] = useState(0);
     const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
     const [funcionarioParaApagar, setFuncionarioParaApagar] = useState(null);
     const [apagando, setApagando] = useState(false);
 
+    const buscaComAtraso = useDebounce(busca);
+
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
-    async function carregarFuncionarios() {
+    async function carregarFuncionarios(pagina) {
         setCarregando(true);
-        const dados = await listarFuncionarios();
-        setFuncionarios(dados || []);
+
+        const dados = await listarFuncionarios({
+            nome: buscaComAtraso,
+            page: pagina,
+            direcao: ordemCrescente ? 'asc' : 'desc'
+        });
+
+        setFuncionarios(dados.content || []);
+        setTotalPaginas(dados.totalPages || 0);
         setCarregando(false);
     }
 
+    // Sempre que a busca ou a ordenação mudam, volta para a primeira página.
     useEffect(() => {
-        carregarFuncionarios();
-    }, []);
+        setPaginaAtual(0);
+    }, [buscaComAtraso, ordemCrescente]);
 
-    const funcionariosFiltrados = useMemo(() => {
-        const termo = busca.trim().toLowerCase();
-
-        const filtrados = termo
-            ? funcionarios.filter((funcionario) =>
-                (funcionario.nome || "").toLowerCase().includes(termo) ||
-                (funcionario.cargo?.nome || "").toLowerCase().includes(termo)
-            )
-            : funcionarios;
-
-        return [...filtrados].sort((a, b) => {
-            const comparacao = (a.nome || "").localeCompare(b.nome || "");
-            return ordemCrescente ? comparacao : -comparacao;
-        });
-    }, [funcionarios, busca, ordemCrescente]);
+    useEffect(() => {
+        carregarFuncionarios(paginaAtual);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [buscaComAtraso, ordemCrescente, paginaAtual]);
 
     const handlePedirConfirmacao = (funcionario) => {
         setFuncionarioParaApagar(funcionario);
@@ -76,7 +79,14 @@ function ListaFuncionarios() {
 
         if (sucesso) {
             setFeedback({ tipo: 'sucesso', msg: 'Funcionário apagado com sucesso!', loading: false });
-            carregarFuncionarios();
+
+            const deveVoltarPagina = funcionarios.length === 1 && paginaAtual > 0;
+
+            if (deveVoltarPagina) {
+                setPaginaAtual((pagina) => pagina - 1);
+            } else {
+                carregarFuncionarios(paginaAtual);
+            }
         } else {
             setFeedback({ tipo: 'erro', msg: 'Não foi possível apagar o funcionário.', loading: false });
         }
@@ -94,13 +104,13 @@ function ListaFuncionarios() {
 
             <ListaStatus
                 carregando={carregando}
-                vazio={funcionariosFiltrados.length === 0}
+                vazio={funcionarios.length === 0}
                 mensagemCarregando='Carregando funcionários...'
                 mensagemVazia='Nenhum funcionário encontrado.'
             />
 
             <ListaContainer>
-                {funcionariosFiltrados.map((funcionario) => (
+                {funcionarios.map((funcionario) => (
                     <ListaItem
                         key={funcionario.id}
                         imagem={(
@@ -125,6 +135,8 @@ function ListaFuncionarios() {
                     </ListaItem>
                 ))}
             </ListaContainer>
+
+            <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
             <ModalConfirmacao
                 aberto={!!funcionarioParaApagar}

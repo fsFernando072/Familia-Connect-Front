@@ -209,8 +209,8 @@ function CadastroFamilia() {
         // Valida CPF/RG de todos os dependentes de uma vez, marcando os campos com erro.
         let dependentesValidos = true;
         const dependentesValidados = dependentes.map((dep) => {
-            const erroRgDep = !dep.rg ? 'RG é obrigatório' : (!validarRg(dep.rg) ? 'RG inválido' : '');
-            const erroCpfDep = !dep.cpf ? 'CPF é obrigatório' : (!validarCpf(dep.cpf) ? 'CPF inválido' : '');
+            const erroRgDep = dep.rg && !validarRg(dep.rg) ? 'RG inválido' : '';
+            const erroCpfDep = dep.cpf && !validarCpf(dep.cpf) ? 'CPF inválido' : '';
             if (erroRgDep || erroCpfDep) dependentesValidos = false;
             return { ...dep, erroRg: erroRgDep, erroCpf: erroCpfDep };
         });
@@ -278,11 +278,11 @@ function CadastroFamilia() {
     const camposDependente = (dep) => ([
         { id: 'nome', tipo: 'texto', coluna: 1, label: 'Nome do Dependente', value: dep.nome, onChange: (e) => atualizarDependente(dep.id, 'nome', e.target.value), placeholder: 'Maria Ferreira' },
         { id: 'parentesco', tipo: 'select', coluna: 1, label: 'Parentesco', value: dep.parentesco, onChange: (e) => atualizarDependente(dep.id, 'parentesco', e.target.value), opcoes: opcoesGrauParentesco, placeholder: 'Selecionar' },
-        { id: 'rg', tipo: 'texto', coluna: 1, label: 'RG do Dependente', value: dep.rg, onChange: (e) => atualizarDependente(dep.id, 'rg', mascaraRg(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, 'rg'), placeholder: '22.222.222-2', erro: dep.erroRg },
-        { id: 'cpf', tipo: 'texto', coluna: 1, label: 'CPF do Dependente', value: dep.cpf, onChange: (e) => atualizarDependente(dep.id, 'cpf', mascaraCpf(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, 'cpf'), placeholder: '444.444.444-44', erro: dep.erroCpf },
+        { id: 'rg', tipo: 'texto', coluna: 1, label: 'RG do Dependente (Opcional)', value: dep.rg, onChange: (e) => atualizarDependente(dep.id, 'rg', mascaraRg(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, 'rg'), placeholder: '22.222.222-2', erro: dep.erroRg },
+        { id: 'cpf', tipo: 'texto', coluna: 1, label: 'CPF do Dependente (Opcional)', value: dep.cpf, onChange: (e) => atualizarDependente(dep.id, 'cpf', mascaraCpf(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, 'cpf'), placeholder: '444.444.444-44', erro: dep.erroCpf },
         { id: 'dataNascimento', tipo: 'texto', coluna: 2, label: 'Data de Nascimento do Dependente', value: dep.dataNascimento, onChange: (e) => atualizarDependente(dep.id, 'dataNascimento', mascaraData(e.target.value)), placeholder: '__/__/____' },
         { id: 'sexo', tipo: 'radio', coluna: 2, label: 'Sexo do Dependente', name: `sexoDependente-${dep.id}`, opcoes: ['Masculino', 'Feminino', 'Outro'], value: dep.sexo, onChange: (valor) => atualizarDependente(dep.id, 'sexo', valor) },
-        { id: 'telefone', tipo: 'texto', coluna: 2, label: 'Telefone do Dependente', value: dep.telefone, onChange: (e) => atualizarDependente(dep.id, 'telefone', mascaraTelefone(e.target.value)), placeholder: '(11) 99999-9999' },
+        { id: 'telefone', tipo: 'texto', coluna: 2, label: 'Telefone do Dependente (Opcional)', value: dep.telefone, onChange: (e) => atualizarDependente(dep.id, 'telefone', mascaraTelefone(e.target.value)), placeholder: '(11) 99999-9999' },
         {
             id: 'profissao', tipo: 'profissao', coluna: 2, label: 'Profissão do Dependente', profissoes: profissoes,
             selecionada: dep.profissaoSelecionada, onChangeSelecionada: (e) => atualizarDependente(dep.id, 'profissaoSelecionada', e.target.value),

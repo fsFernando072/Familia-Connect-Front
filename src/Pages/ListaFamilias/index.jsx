@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Users, Upload } from "lucide-react";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
@@ -10,11 +10,13 @@ import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
 import BotaoSecundario from "../../components/BotaoSecundario/BotaoSecundario";
+import Paginacao from "../../components/Paginacao/Paginacao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
 import ModalImportarFoto from "../../components/ModalImportarFoto/ModalImportarFoto";
 import FotoAvatar from "../../components/FotoAvatar/FotoAvatar";
 import { listarFamilias, deletarFamilia } from "../../services/familiaService";
 import { extrairDadosFamiliaPorFoto } from "../../services/ocrService";
+import { useDebounce } from "../../hooks/useDebounce";
 
 function ListaFamilias() {
 
@@ -23,12 +25,16 @@ function ListaFamilias() {
     const [carregando, setCarregando] = useState(true);
     const [busca, setBusca] = useState("");
     const [ordemCrescente, setOrdemCrescente] = useState(true);
+    const [paginaAtual, setPaginaAtual] = useState(0);
+    const [totalPaginas, setTotalPaginas] = useState(0);
     const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
     const [familiaParaApagar, setFamiliaParaApagar] = useState(null);
     const [apagando, setApagando] = useState(false);
     const [modalImportarAberto, setModalImportarAberto] = useState(false);
     const [importando, setImportando] = useState(false);
     const [erroImportacao, setErroImportacao] = useState('');
+
+    const buscaComAtraso = useDebounce(busca);
 
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
@@ -59,32 +65,29 @@ function ListaFamilias() {
         }
     };
 
-    async function carregarFamilias() {
+    async function carregarFamilias(pagina) {
         setCarregando(true);
-        const dados = await listarFamilias();
-        setFamilias(dados || []);
+
+        const dados = await listarFamilias({
+            nomeResponsavel: buscaComAtraso,
+            page: pagina,
+            direcao: ordemCrescente ? 'asc' : 'desc'
+        });
+
+        setFamilias(dados.content || []);
+        setTotalPaginas(dados.totalPages || 0);
         setCarregando(false);
     }
 
+    // Sempre que a busca ou a ordenação mudam, volta para a primeira página.
     useEffect(() => {
-        carregarFamilias();
-    }, []);
+        setPaginaAtual(0);
+    }, [buscaComAtraso, ordemCrescente]);
 
-    const familiasFiltradas = useMemo(() => {
-        const termo = busca.trim().toLowerCase();
-
-        const filtradas = termo
-            ? familias.filter((familia) =>
-                (familia.nomeFamilia || "").toLowerCase().includes(termo) ||
-                (familia.nomeResponsavel || "").toLowerCase().includes(termo)
-            )
-            : familias;
-
-        return [...filtradas].sort((a, b) => {
-            const comparacao = (a.nomeFamilia || "").localeCompare(b.nomeFamilia || "");
-            return ordemCrescente ? comparacao : -comparacao;
-        });
-    }, [familias, busca, ordemCrescente]);
+    useEffect(() => {
+        carregarFamilias(paginaAtual);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [buscaComAtraso, ordemCrescente, paginaAtual]);
 
     const handlePedirConfirmacao = (familia) => {
         setFamiliaParaApagar(familia);
@@ -108,7 +111,14 @@ function ListaFamilias() {
 
         if (sucesso) {
             setFeedback({ tipo: 'sucesso', msg: 'Família apagada com sucesso!', loading: false });
-            carregarFamilias();
+
+            const deveVoltarPagina = familias.length === 1 && paginaAtual > 0;
+
+            if (deveVoltarPagina) {
+                setPaginaAtual((pagina) => pagina - 1);
+            } else {
+                carregarFamilias(paginaAtual);
+            }
         } else {
             setFeedback({ tipo: 'erro', msg: 'Não foi possível apagar a família.', loading: false });
         }
@@ -128,13 +138,13 @@ function ListaFamilias() {
 
             <ListaStatus
                 carregando={carregando}
-                vazio={familiasFiltradas.length === 0}
+                vazio={familias.length === 0}
                 mensagemCarregando='Carregando famílias...'
                 mensagemVazia='Nenhuma família encontrada.'
             />
 
             <ListaContainer>
-                {familiasFiltradas.map((familia) => (
+                {familias.map((familia) => (
                     <ListaItem
                         key={familia.idFamilia}
                         imagem={(
@@ -160,6 +170,8 @@ function ListaFamilias() {
                     </ListaItem>
                 ))}
             </ListaContainer>
+
+            <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
             <ModalImportarFoto
                 aberto={modalImportarAberto}

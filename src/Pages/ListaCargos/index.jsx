@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Briefcase } from "lucide-react";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
@@ -9,8 +9,10 @@ import ListaContainer from "../../components/ListaContainer/ListaContainer";
 import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
+import Paginacao from "../../components/Paginacao/Paginacao";
 import { listarCargos, deletarCargo } from "../../services/cargoService";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
+import { useDebounce } from "../../hooks/useDebounce";
 
 function ListaCargos() {
 
@@ -19,37 +21,39 @@ function ListaCargos() {
     const [carregando, setCarregando] = useState(true);
     const [busca, setBusca] = useState("");
     const [ordemCrescente, setOrdemCrescente] = useState(true);
+    const [paginaAtual, setPaginaAtual] = useState(0);
+    const [totalPaginas, setTotalPaginas] = useState(0);
     const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
     const [cargoParaApagar, setCargoParaApagar] = useState(null);
     const [apagando, setApagando] = useState(false);
 
+    const buscaComAtraso = useDebounce(busca);
+
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
-    async function carregarCargos() {
+    async function carregarCargos(pagina) {
         setCarregando(true);
 
-        const listaCargos = await listarCargos();
+        const dados = await listarCargos({
+            nome: buscaComAtraso,
+            page: pagina,
+            direcao: ordemCrescente ? 'asc' : 'desc'
+        });
 
-        setCargos(listaCargos || []);
+        setCargos(dados.content || []);
+        setTotalPaginas(dados.totalPages || 0);
         setCarregando(false);
     }
 
+    // Sempre que a busca ou a ordenação mudam, volta para a primeira página.
     useEffect(() => {
-        carregarCargos();
-    }, []);
+        setPaginaAtual(0);
+    }, [buscaComAtraso, ordemCrescente]);
 
-    const cargosFiltrados = useMemo(() => {
-        const termo = busca.trim().toLowerCase();
-
-        const filtrados = termo
-            ? cargos.filter((cargo) => (cargo.nome || "").toLowerCase().includes(termo))
-            : cargos;
-
-        return [...filtrados].sort((a, b) => {
-            const comparacao = (a.nome || "").localeCompare(b.nome || "");
-            return ordemCrescente ? comparacao : -comparacao;
-        });
-    }, [cargos, busca, ordemCrescente]);
+    useEffect(() => {
+        carregarCargos(paginaAtual);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [buscaComAtraso, ordemCrescente, paginaAtual]);
 
     const handlePedirConfirmacao = (cargo) => {
         setCargoParaApagar(cargo);
@@ -73,7 +77,14 @@ function ListaCargos() {
 
         if (sucesso) {
             setFeedback({ tipo: 'sucesso', msg: 'Cargo apagado com sucesso!', loading: false });
-            carregarCargos();
+
+            const deveVoltarPagina = cargos.length === 1 && paginaAtual > 0;
+
+            if (deveVoltarPagina) {
+                setPaginaAtual((pagina) => pagina - 1);
+            } else {
+                carregarCargos(paginaAtual);
+            }
         } else {
             setFeedback({ tipo: 'erro', msg: 'Não foi possível apagar o cargo.', loading: false });
         }
@@ -91,13 +102,13 @@ function ListaCargos() {
 
             <ListaStatus
                 carregando={carregando}
-                vazio={cargosFiltrados.length === 0}
+                vazio={cargos.length === 0}
                 mensagemCarregando='Carregando cargos...'
                 mensagemVazia='Nenhum cargo encontrado.'
             />
 
             <ListaContainer>
-                {cargosFiltrados.map((cargo) => {
+                {cargos.map((cargo) => {
                     return (
                         <ListaItem
                             key={cargo.id}
@@ -119,6 +130,8 @@ function ListaCargos() {
                     );
                 })}
             </ListaContainer>
+
+            <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
             <ModalConfirmacao
                 aberto={!!cargoParaApagar}

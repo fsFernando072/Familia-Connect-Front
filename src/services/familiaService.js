@@ -2,15 +2,20 @@ import api from "./apiClient";
 import { validarCpf, validarRg, validarTelefone } from "../utils/validadores";
 import { converterDataParaIso } from "../utils/formatadores";
 
-export async function listarFamilias(page = 0, size = 100) {
-    try {
-        const response = await api.get('/familias', { params: { page, size } });
+// Formato de página vazia, usado quando não há resultados ou a requisição falha.
+const PAGINA_VAZIA = { content: [], totalPages: 0, totalElements: 0, number: 0 };
 
-        if (response.status === 200) return response.data.content;
-        return [];
+export async function listarFamilias({ nomeResponsavel = "", page = 0, size = 10, direcao = "asc" } = {}) {
+    try {
+        const response = await api.get('/familias', {
+            params: { nomeResponsavel: nomeResponsavel?.trim() || undefined, page, size, direcao }
+        });
+
+        if (response.status === 200) return response.data;
+        return { ...PAGINA_VAZIA, number: page };
     } catch (error) {
         console.error('Erro ao buscar famílias:', error);
-        return [];
+        return { ...PAGINA_VAZIA, number: page };
     }
 }
 
@@ -61,19 +66,19 @@ function validarDadosFamilia(responsavel, endereco, dependentes, setFeedback) {
     }
 
     for (const dep of dependentes) {
-        if (!dep.nome || !dep.rg || !dep.cpf || !dep.telefone || !dep.dataNascimento) {
-            setFeedback({ tipo: 'erro', msg: 'Preencha todos os campos obrigatórios dos dependentes.', loading: false });
+        if (!dep.nome || !dep.dataNascimento) {
+            setFeedback({ tipo: 'erro', msg: 'Preencha o nome e a data de nascimento de todos os dependentes.', loading: false });
             return false;
         }
-        if (!validarCpf(dep.cpf)) {
+        if (dep.cpf && !validarCpf(dep.cpf)) {
             setFeedback({ tipo: 'erro', msg: `O CPF do dependente "${dep.nome}" é inválido.`, loading: false });
             return false;
         }
-        if (!validarRg(dep.rg)) {
+        if (dep.rg && !validarRg(dep.rg)) {
             setFeedback({ tipo: 'erro', msg: `O RG do dependente "${dep.nome}" é inválido.`, loading: false });
             return false;
         }
-        if (!validarTelefone(dep.telefone)) {
+        if (dep.telefone && !validarTelefone(dep.telefone)) {
             setFeedback({ tipo: 'erro', msg: `O telefone do dependente "${dep.nome}" é inválido.`, loading: false });
             return false;
         }
@@ -108,12 +113,12 @@ function montarPayloadFamilia(responsavel, endereco, dependentes) {
         },
         dependentes: dependentes.map((dep) => ({
             nome: dep.nome,
-            rg: dep.rg,
-            cpf: dep.cpf,
+            rg: dep.rg?.trim() || null,
+            cpf: dep.cpf?.trim() || null,
             dataNascimento: converterDataParaIso(dep.dataNascimento),
             sexo: dep.sexo.toUpperCase(),
             profissao: dep.profissao || null,
-            telefone: dep.telefone,
+            telefone: dep.telefone?.trim() || null,
             grauParentesco: dep.parentesco,
             isResponsavel: false
         }))
