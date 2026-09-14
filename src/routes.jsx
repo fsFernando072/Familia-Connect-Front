@@ -17,6 +17,9 @@ import ListaFuncionarios from "./pages/ListaFuncionarios";
 import EditarFuncionario from "./pages/EditarFuncionario";
 import ListaCargos from "./pages/ListaCargos";
 import EditarCargo from "./pages/EditarCargo";
+import ListaHistoricoEstoque from "./pages/ListaHistoricoEstoque";
+import CadastroHistoricoEstoque from "./pages/CadastroHistoricoEstoque";
+import EditarHistoricoEstoque from "./pages/EditarHistoricoEstoque";
 
 function AppRoutes() {
     return (
@@ -45,6 +48,10 @@ function AppRoutes() {
                 <Route path="/cargos" element={<ListaCargos />} />
                 <Route path="/cargos/cadastro-cargo" element={<CadastroCargo />} />
                 <Route path="/cargos/:id/editar" element={<EditarCargo />} />
+
+                <Route path="/historico-estoque" element={<ListaHistoricoEstoque />} />
+                <Route path="/historico-estoque/cadastro-estoque" element={<CadastroHistoricoEstoque />} />
+                <Route path="/historico-estoque/:id/editar-estoque" element={<EditarHistoricoEstoque />} />
             </Routes>
         </BrowserRouter>
     )

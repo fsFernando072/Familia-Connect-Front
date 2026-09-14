@@ -4,7 +4,9 @@ const nomesRotas = {
     "cadastro-produto": "Cadastro de Produto",
     "cadastro-categoria": "Cadastro de Categoria",
     "cadastro-cargo": "Cadastro de Cargo",
+    "cadastro-estoque": "Cadastro de Estoque",
     "historico-entrega": "Histórico de Entrega",
+    "historico-estoque": "Histórico de Estoque",
     "dashboard": "Dashboard",
     "familias": "Lista de Famílias",
     "funcionarios": "Lista de Funcionários",
@@ -16,6 +18,7 @@ const nomesRotas = {
     "editar-produto": "Editar Produto",
     "editar-categoria": "Editar Categoria",
     "editar-cargo": "Editar Cargo",
+    "editar-estoque": "Editar Estoque",
     "editar": "Editar Cargo"
 };
 

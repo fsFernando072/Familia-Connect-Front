@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Tags } from "lucide-react";
+import { Tags, Archive } from "lucide-react";
 import Header from "../../components/Header/Header";
 
 import iconeCargo from "../../assets/icones-pagina-inicial/cargo.png";
@@ -16,6 +16,7 @@ const cartoes = [
     { titulo: "Lista de Cargos", rota: "/cargos", icone: iconeCargo },
     { titulo: "Lista de Categorias", rota: "/categorias", Icone: Tags },
     { titulo: "Histórico de Entrega", rota: "/historico-entrega", icone: iconeHistoricoEntrega },
+    { titulo: "Histórico de Estoque", rota: "/historico-estoque", Icone: Archive },
     { titulo: "Dashboard", rota: "/dashboard", icone: iconeDashboard },
 ];
 
