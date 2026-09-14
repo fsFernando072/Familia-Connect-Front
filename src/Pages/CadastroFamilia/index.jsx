@@ -29,38 +29,57 @@ function CadastroFamilia() {
 
     const navigate = useNavigate();
     const location = useLocation();
+
+    const dadosOcr = location.state?.dadosOcr;
+    const responsavelOcr = dadosOcr?.responsavel;
+    const enderecoOcr = dadosOcr?.familiaEndereco;
+    const dependentesOcr = (dadosOcr?.dependentes || []).filter((dep) => !dep.isResponsavel);
+
     const [passoAtual, setPassoAtual] = useState(0);
-    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
+    const [feedback, setFeedback] = useState(() => dadosOcr ? {
+        tipo: 'sucesso',
+        msg: 'Dados preenchidos a partir da foto importada. Confira e complete as informações antes de cadastrar.',
+        loading: false
+    } : { tipo: '', msg: '', loading: false });
     const [estados, setEstados] = useState([]);
     const [profissoes, setProfissoes] = useState([]);
     const [grausParentesco, setGrausParentesco] = useState([]);
 
     // Dados do responsável
-    const [nome, setNome] = useState("");
-    const [rg, setRg] = useState("");
-    const [cpf, setCpf] = useState("");
-    const [telefone, setTelefone] = useState("");
-    const [dataNascimento, setDataNascimento] = useState("");
+    const [nome, setNome] = useState(responsavelOcr?.nome || "");
+    const [rg, setRg] = useState(() => responsavelOcr?.rg ? mascaraRg(responsavelOcr.rg) : "");
+    const [cpf, setCpf] = useState(() => responsavelOcr?.cpf ? mascaraCpf(responsavelOcr.cpf) : "");
+    const [telefone, setTelefone] = useState(() => responsavelOcr?.telefone ? mascaraTelefone(responsavelOcr.telefone) : "");
+    const [dataNascimento, setDataNascimento] = useState(() => responsavelOcr?.dataNascimento ? converterDataParaBr(responsavelOcr.dataNascimento) : "");
     const [sexo, setSexo] = useState("Masculino");
     const [possuiPne, setPossuiPne] = useState("Não");
     const [profissaoSelecionada, setProfissaoSelecionada] = useState("");
-    const [profissaoNova, setProfissaoNova] = useState("");
+    const [profissaoNova, setProfissaoNova] = useState(responsavelOcr?.profissao || "");
     const [imagemFamilia, setImagemFamilia] = useState("");
     const [erroRg, setErroRg] = useState("");
     const [erroCpf, setErroCpf] = useState("");
 
     // Dados do endereço
-    const [cep, setCep] = useState("");
-    const [rua, setRua] = useState("");
-    const [numero, setNumero] = useState("");
-    const [complemento, setComplemento] = useState("");
-    const [bairro, setBairro] = useState("");
-    const [cidade, setCidade] = useState("");
+    const [cep, setCep] = useState(() => enderecoOcr?.cep ? mascaraCep(enderecoOcr.cep) : "");
+    const [rua, setRua] = useState(enderecoOcr?.logradouro || "");
+    const [numero, setNumero] = useState(() => enderecoOcr?.numero ? String(enderecoOcr.numero).replace(/\D/g, "") : "");
+    const [complemento, setComplemento] = useState(enderecoOcr?.complemento || "");
+    const [bairro, setBairro] = useState(enderecoOcr?.bairro || "");
+    const [cidade, setCidade] = useState(enderecoOcr?.cidade || "");
     const [estadoId, setEstadoId] = useState("");
     const [buscandoCep, setBuscandoCep] = useState(false);
 
     // Dados dos dependentes
-    const [dependentes, setDependentes] = useState([dependenteVazio()]);
+    const [dependentes, setDependentes] = useState(() =>
+        dependentesOcr.length > 0
+            ? dependentesOcr.map((dep) => ({
+                ...dependenteVazio(),
+                nome: dep.nome || "",
+                parentesco: dep.grauParentesco || "",
+                dataNascimento: dep.dataNascimento ? converterDataParaBr(dep.dataNascimento) : ""
+            }))
+            : [dependenteVazio()]
+    );
 
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
@@ -85,48 +104,6 @@ function CadastroFamilia() {
         carregarProfissoes();
         carregarGrausParentesco();
     }, []);
-
-    // Preenche o formulário com os dados extraídos da foto importada na Lista de Famílias (via OCR).
-    useEffect(() => {
-        const dadosOcr = location.state?.dadosOcr;
-        if (!dadosOcr) return;
-
-        const responsavelOcr = dadosOcr.responsavel;
-        if (responsavelOcr) {
-            if (responsavelOcr.nome) setNome(responsavelOcr.nome);
-            if (responsavelOcr.rg) setRg(mascaraRg(responsavelOcr.rg));
-            if (responsavelOcr.cpf) setCpf(mascaraCpf(responsavelOcr.cpf));
-            if (responsavelOcr.telefone) setTelefone(mascaraTelefone(responsavelOcr.telefone));
-            if (responsavelOcr.dataNascimento) setDataNascimento(converterDataParaBr(responsavelOcr.dataNascimento));
-            if (responsavelOcr.profissao) setProfissaoNova(responsavelOcr.profissao);
-        }
-
-        const enderecoOcr = dadosOcr.familiaEndereco;
-        if (enderecoOcr) {
-            if (enderecoOcr.cep) setCep(mascaraCep(enderecoOcr.cep));
-            if (enderecoOcr.logradouro) setRua(enderecoOcr.logradouro);
-            if (enderecoOcr.numero) setNumero(String(enderecoOcr.numero).replace(/\D/g, ""));
-            if (enderecoOcr.complemento) setComplemento(enderecoOcr.complemento);
-            if (enderecoOcr.bairro) setBairro(enderecoOcr.bairro);
-            if (enderecoOcr.cidade) setCidade(enderecoOcr.cidade);
-        }
-
-        const dependentesOcr = (dadosOcr.dependentes || []).filter((dep) => !dep.isResponsavel);
-        if (dependentesOcr.length > 0) {
-            setDependentes(dependentesOcr.map((dep) => ({
-                ...dependenteVazio(),
-                nome: dep.nome || "",
-                parentesco: dep.grauParentesco || "",
-                dataNascimento: dep.dataNascimento ? converterDataParaBr(dep.dataNascimento) : ""
-            })));
-        }
-
-        setFeedback({
-            tipo: 'sucesso',
-            msg: 'Dados preenchidos a partir da foto importada. Confira e complete as informações antes de cadastrar.',
-            loading: false
-        });
-    }, [location.state]);
 
     const handleBuscarCep = async () => {
         if (cep.replace(/\D/g, "").length !== 8) return;

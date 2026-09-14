@@ -13,7 +13,6 @@ function EditarFuncionario() {
 
     const [carregando, setCarregando] = useState(true);
     const [funcionarioEncontrado, setFuncionarioEncontrado] = useState(true);
-    const [nomeFuncionario, setNomeFuncionario] = useState("");
 
     const [nome, setNome] = useState("");
     const [cpf, setCpf] = useState("");
@@ -47,7 +46,6 @@ function EditarFuncionario() {
             }
 
             setNome(funcionario.nome || "");
-            setNomeFuncionario(funcionario.nome || "");
             setCpf(funcionario.cpf ? mascaraCpf(funcionario.cpf) : "");
             setIdCargo(funcionario.cargo?.id ? String(funcionario.cargo.id) : "");
             setFotoInicial(funcionario.fotoFuncionario || "");

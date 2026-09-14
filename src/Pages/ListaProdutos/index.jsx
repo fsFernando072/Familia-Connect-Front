@@ -45,12 +45,18 @@ function ListaProdutos() {
         setCarregando(false);
     }
 
-    // Sempre que a busca ou a ordenação mudam, volta para a primeira página.
-    useEffect(() => {
-        setPaginaAtual(0);
-    }, [buscaComAtraso, ordemCrescente]);
+    const [buscaAnterior, setBuscaAnterior] = useState(buscaComAtraso);
+    const [ordemAnterior, setOrdemAnterior] = useState(ordemCrescente);
+    if (buscaComAtraso !== buscaAnterior || ordemCrescente !== ordemAnterior) {
+        setBuscaAnterior(buscaComAtraso);
+        setOrdemAnterior(ordemCrescente);
+        if (paginaAtual !== 0) {
+            setPaginaAtual(0);
+        }
+    }
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         carregarProdutos(paginaAtual);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [buscaComAtraso, ordemCrescente, paginaAtual]);
