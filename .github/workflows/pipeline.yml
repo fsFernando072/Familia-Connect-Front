@@ -1,0 +1,62 @@
+name: Validating Lint, Build and Docker Image
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão da imagem Docker (ex: 1.0, 1.1, 2.0)'
+        required: true
+        default: '1.0'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Build project
+        run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker image
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          echo "Building image with tag ${VERSION}"
+          docker build -t fsfernando072/familia-connect-front:${VERSION} .
+          docker push fsfernando072/familia-connect-front:${VERSION}
+          docker tag fsfernando072/familia-connect-front:${VERSION} fsfernando072/familia-connect-front:latest
+          docker push fsfernando072/familia-connect-front:latest
