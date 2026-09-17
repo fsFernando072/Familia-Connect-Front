@@ -1,16 +1,24 @@
 #!/bin/sh
 set -e
 
-# Gera o env-config.js em runtime, a partir da variável de ambiente
-# API_BASE_URL do container. Isso permite trocar a URL da API sem
-# precisar rebuildar a imagem — basta reiniciar o container com outro
-# valor de env var (ex.: em docker-compose.yml ou docker run -e ...).
+# Gera o env-config.js em runtime para o React.
 ENV_CONFIG_PATH=/usr/share/nginx/html/env-config.js
-
-cat <<EOF > "$ENV_CONFIG_PATH"
+cat <<EOF2 > "$ENV_CONFIG_PATH"
 window.__ENV__ = {
-  API_BASE_URL: "${API_BASE_URL:-}",
+  API_BASE_URL: "${API_BASE_URL:-/api}",
 };
-EOF
+EOF2
+
+# Gera a configuração do Nginx com o endereço do ALB interno do Backend.
+# Ex.: BACKEND_URL=http://lb-back-xxxxxxxx.us-east-1.elb.amazonaws.com:8080
+if [ -z "${BACKEND_URL:-}" ]; then
+    echo "ERRO: BACKEND_URL não foi definido."
+    exit 1
+fi
+
+export BACKEND_URL
+envsubst '${BACKEND_URL}' \
+    < /etc/nginx/templates/default.conf.template \
+    > /etc/nginx/conf.d/default.conf
 
 exec "$@"
