@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cadastrarFuncionario } from "../../services/funcionarioService";
-import { buscarCargo } from "../../services/cargoService";
+import { listarCargos } from "../../services/cargoService";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import { mascaraCpf } from "../../utils/mascaras";
@@ -23,17 +23,11 @@ function Cadastro() {
     const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
     useEffect(() => {
-        async function obterCargos() {
-            try {
-                const dados = await buscarCargo();
-                if (dados) {
-                    setCargos(dados);
-                }
-            } catch (error) {
-                console.error("Erro ao carregar cargos:", error);
-            }
+        async function carregarCargos() {
+            const dados = await listarCargos({ size: 100 });
+            setCargos(dados?.content || []);
         }
-        obterCargos();
+        carregarCargos();
     }, []);
 
     const handleCadastrarFuncionario = () => {

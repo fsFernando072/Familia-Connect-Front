@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { atualizarFuncionario, buscarFuncionarioPorId } from "../../services/funcionarioService";
-import { buscarCargo } from "../../services/cargoService";
+import { listarCargos } from "../../services/cargoService";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import { mascaraCpf } from "../../utils/mascaras";
@@ -32,8 +32,15 @@ function EditarFuncionario() {
         async function carregarDadosIniciais() {
             setCarregando(true);
 
-            const [dadosCargos, funcionario] = await Promise.all([
-                buscarCargo(),
+            useEffect(() => {
+                    async function carregarCargos() {
+                        const dados = await listarCargos({ size: 100 });
+                        setCargos(dados?.content || []);
+                    }
+                    carregarCargos();
+                }, []);
+
+            const [funcionario] = await Promise.all([
                 buscarFuncionarioPorId(id)
             ]);
 
