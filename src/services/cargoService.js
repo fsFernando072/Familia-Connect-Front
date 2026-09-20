@@ -1,265 +1,66 @@
 import api from "./apiClient";
+import {
+    algumaRequisicaoFalhou,
+    buscarLista,
+    criarServicoBase,
+    enviarComFeedback,
+} from "./servicoBase";
 
-const ACESSOS = {
-    CADASTRAR_FAMILIAS: 1,
-    CADASTRAR_AUDITORIAS: 2,
-    CADASTRAR_FUNCIONARIOS: 3,
-    CADASTRAR_PRODUTOS: 4,
-    CADASTRAR_ENTREGAS: 5,
-    CADASTRAR_ACESSOS: 6,
-    CADASTRAR_CATEGORIAS: 7,
-    CADASTRAR_CARGOS: 8,
-    CADASTRAR_PROFISSOES: 9,
-    CADASTRAR_ESTOQUES: 10,
+const base = criarServicoBase("/cargos", { singular: "cargo", plural: "cargos" });
 
-    EDITAR_PRODUTOS: 11,
-    EDITAR_AUDITORIAS: 12,
-    EDITAR_FAMILIAS: 13,
-    EDITAR_FUNCIONARIOS: 14,
-    EDITAR_ENTREGAS: 15,
-    EDITAR_ACESSOS: 16,
-    EDITAR_CARGOS: 17,
-    EDITAR_PROFISSOES: 18,
-    EDITAR_CATEGORIAS: 19,
-    EDITAR_ESTOQUES: 20,
+export const listarCargos = base.listar;
+export const buscarCargoPorId = base.buscarPorId;
+export const deletarCargo = base.deletar;
 
-    EXCLUIR_FAMILIAS: 21,
-    EXCLUIR_AUDITORIAS: 22,
-    EXCLUIR_CATEGORIAS: 23,
-    EXCLUIR_PRODUTOS: 24,
-    EXCLUIR_FUNCIONARIOS: 25,
-    EXCLUIR_ENTREGAS: 26,
-    EXCLUIR_ACESSOS: 27,
-    EXCLUIR_CARGOS: 28,
-    EXCLUIR_PROFISSOES: 29,
-    EXCLUIR_ESTOQUES: 30,
+export const listarCargosAcessos = () => buscarLista("/cargos-acessos", "acessos dos cargos");
 
-    LISTAR_FAMILIAS: 31,
-    LISTAR_CATEGORIAS: 32,
-    LISTAR_AUDITORIAS: 33,
-    LISTAR_FUNCIONARIOS: 34,
-    LISTAR_ENTREGAS: 35,
-    LISTAR_PRODUTOS: 36,
-    LISTAR_ACESSOS: 37,
-    LISTAR_CARGOS: 38,
-    LISTAR_PROFISSOES: 39,
-    LISTAR_ESTOQUES: 40,
-    VISUALIZAR_ARQUIVOS: 41,
-};
-
-export const PERMISSOES_CARGO = [
-
-    {
-        id: ACESSOS.CADASTRAR_FAMILIAS,
-        acessoId: ACESSOS.CADASTRAR_FAMILIAS,
-        nome: "Cadastrar famílias"
-    },
-    {
-        id: ACESSOS.CADASTRAR_AUDITORIAS,
-        acessoId: ACESSOS.CADASTRAR_AUDITORIAS,
-        nome: "Cadastrar auditorias"
-    },
-    {
-        id: ACESSOS.CADASTRAR_FUNCIONARIOS,
-        acessoId: ACESSOS.CADASTRAR_FUNCIONARIOS,
-        nome: "Cadastrar funcionários"
-    },
-    {
-        id: ACESSOS.CADASTRAR_PRODUTOS,
-        acessoId: ACESSOS.CADASTRAR_PRODUTOS,
-        nome: "Cadastrar produtos"
-    },
-    {
-        id: ACESSOS.CADASTRAR_ENTREGAS,
-        acessoId: ACESSOS.CADASTRAR_ENTREGAS,
-        nome: "Cadastrar entregas"
-    },
-    {
-        id: ACESSOS.CADASTRAR_ACESSOS,
-        acessoId: ACESSOS.CADASTRAR_ACESSOS,
-        nome: "Cadastrar acessos"
-    },
-    {
-        id: ACESSOS.CADASTRAR_CATEGORIAS,
-        acessoId: ACESSOS.CADASTRAR_CATEGORIAS,
-        nome: "Cadastrar categorias"
-    },
-    {
-        id: ACESSOS.CADASTRAR_CARGOS,
-        acessoId: ACESSOS.CADASTRAR_CARGOS,
-        nome: "Cadastrar cargos"
-    },
-    {
-        id: ACESSOS.CADASTRAR_PROFISSOES,
-        acessoId: ACESSOS.CADASTRAR_PROFISSOES,
-        nome: "Cadastrar profissões"
-    },
-    {
-        id: ACESSOS.CADASTRAR_ESTOQUES,
-        acessoId: ACESSOS.CADASTRAR_ESTOQUES,
-        nome: "Cadastrar estoques"
-    },
-
-    {
-        id: ACESSOS.EDITAR_PRODUTOS,
-        acessoId: ACESSOS.EDITAR_PRODUTOS,
-        nome: "Editar produtos"
-    },
-    {
-        id: ACESSOS.EDITAR_AUDITORIAS,
-        acessoId: ACESSOS.EDITAR_AUDITORIAS,
-        nome: "Editar auditorias"
-    },
-    {
-        id: ACESSOS.EDITAR_FAMILIAS,
-        acessoId: ACESSOS.EDITAR_FAMILIAS,
-        nome: "Editar famílias"
-    },
-    {
-        id: ACESSOS.EDITAR_FUNCIONARIOS,
-        acessoId: ACESSOS.EDITAR_FUNCIONARIOS,
-        nome: "Editar funcionários"
-    },
-    {
-        id: ACESSOS.EDITAR_ENTREGAS,
-        acessoId: ACESSOS.EDITAR_ENTREGAS,
-        nome: "Editar entregas"
-    },
-    {
-        id: ACESSOS.EDITAR_ACESSOS,
-        acessoId: ACESSOS.EDITAR_ACESSOS,
-        nome: "Editar acessos"
-    },
-    {
-        id: ACESSOS.EDITAR_CARGOS,
-        acessoId: ACESSOS.EDITAR_CARGOS,
-        nome: "Editar cargos"
-    },
-    {
-        id: ACESSOS.EDITAR_PROFISSOES,
-        acessoId: ACESSOS.EDITAR_PROFISSOES,
-        nome: "Editar profissões"
-    },
-    {
-        id: ACESSOS.EDITAR_CATEGORIAS,
-        acessoId: ACESSOS.EDITAR_CATEGORIAS,
-        nome: "Editar categorias"
-    },
-    {
-        id: ACESSOS.EDITAR_ESTOQUES,
-        acessoId: ACESSOS.EDITAR_ESTOQUES,
-        nome: "Editar estoques"
-    },
-
-    {
-        id: ACESSOS.EXCLUIR_FAMILIAS,
-        acessoId: ACESSOS.EXCLUIR_FAMILIAS,
-        nome: "Excluir famílias"
-    },
-    {
-        id: ACESSOS.EXCLUIR_AUDITORIAS,
-        acessoId: ACESSOS.EXCLUIR_AUDITORIAS,
-        nome: "Excluir auditorias"
-    },
-    {
-        id: ACESSOS.EXCLUIR_CATEGORIAS,
-        acessoId: ACESSOS.EXCLUIR_CATEGORIAS,
-        nome: "Excluir categorias"
-    },
-    {
-        id: ACESSOS.EXCLUIR_PRODUTOS,
-        acessoId: ACESSOS.EXCLUIR_PRODUTOS,
-        nome: "Excluir produtos"
-    },
-    {
-        id: ACESSOS.EXCLUIR_FUNCIONARIOS,
-        acessoId: ACESSOS.EXCLUIR_FUNCIONARIOS,
-        nome: "Excluir funcionários"
-    },
-    {
-        id: ACESSOS.EXCLUIR_ENTREGAS,
-        acessoId: ACESSOS.EXCLUIR_ENTREGAS,
-        nome: "Excluir entregas"
-    },
-    {
-        id: ACESSOS.EXCLUIR_ACESSOS,
-        acessoId: ACESSOS.EXCLUIR_ACESSOS,
-        nome: "Excluir acessos"
-    },
-    {
-        id: ACESSOS.EXCLUIR_CARGOS,
-        acessoId: ACESSOS.EXCLUIR_CARGOS,
-        nome: "Excluir cargos"
-    },
-    {
-        id: ACESSOS.EXCLUIR_PROFISSOES,
-        acessoId: ACESSOS.EXCLUIR_PROFISSOES,
-        nome: "Excluir profissões"
-    },
-    {
-        id: ACESSOS.EXCLUIR_ESTOQUES,
-        acessoId: ACESSOS.EXCLUIR_ESTOQUES,
-        nome: "Excluir estoques"
-    },
-
-
-    {
-        id: ACESSOS.LISTAR_FAMILIAS,
-        acessoId: ACESSOS.LISTAR_FAMILIAS,
-        nome: "Listar famílias"
-    },
-    {
-        id: ACESSOS.LISTAR_CATEGORIAS,
-        acessoId: ACESSOS.LISTAR_CATEGORIAS,
-        nome: "Listar categorias"
-    },
-    {
-        id: ACESSOS.LISTAR_AUDITORIAS,
-        acessoId: ACESSOS.LISTAR_AUDITORIAS,
-        nome: "Listar auditorias"
-    },
-    {
-        id: ACESSOS.LISTAR_FUNCIONARIOS,
-        acessoId: ACESSOS.LISTAR_FUNCIONARIOS,
-        nome: "Listar funcionários"
-    },
-    {
-        id: ACESSOS.LISTAR_ENTREGAS,
-        acessoId: ACESSOS.LISTAR_ENTREGAS,
-        nome: "Listar entregas"
-    },
-    {
-        id: ACESSOS.LISTAR_PRODUTOS,
-        acessoId: ACESSOS.LISTAR_PRODUTOS,
-        nome: "Listar produtos"
-    },
-    {
-        id: ACESSOS.LISTAR_ACESSOS,
-        acessoId: ACESSOS.LISTAR_ACESSOS,
-        nome: "Listar acessos"
-    },
-    {
-        id: ACESSOS.LISTAR_CARGOS,
-        acessoId: ACESSOS.LISTAR_CARGOS,
-        nome: "Listar cargos"
-    },
-    {
-        id: ACESSOS.LISTAR_PROFISSOES,
-        acessoId: ACESSOS.LISTAR_PROFISSOES,
-        nome: "Listar profissões"
-    },
-    {
-        id: ACESSOS.LISTAR_ESTOQUES,
-        acessoId: ACESSOS.LISTAR_ESTOQUES,
-        nome: "Listar estoques"
-    },
-    {
-        id: ACESSOS.VISUALIZAR_ARQUIVOS,
-        acessoId: ACESSOS.VISUALIZAR_ARQUIVOS,
-        nome: "Visualizar arquivos"
-    },
+// [id do acesso no back-end, nome exibido no formulário]
+const ACESSOS = [
+    [1, "Cadastrar famílias"],
+    [2, "Cadastrar auditorias"],
+    [3, "Cadastrar funcionários"],
+    [4, "Cadastrar produtos"],
+    [5, "Cadastrar entregas"],
+    [6, "Cadastrar acessos"],
+    [7, "Cadastrar categorias"],
+    [8, "Cadastrar cargos"],
+    [9, "Cadastrar profissões"],
+    [10, "Cadastrar estoques"],
+    [11, "Editar produtos"],
+    [12, "Editar auditorias"],
+    [13, "Editar famílias"],
+    [14, "Editar funcionários"],
+    [15, "Editar entregas"],
+    [16, "Editar acessos"],
+    [17, "Editar cargos"],
+    [18, "Editar profissões"],
+    [19, "Editar categorias"],
+    [20, "Editar estoques"],
+    [21, "Excluir famílias"],
+    [22, "Excluir auditorias"],
+    [23, "Excluir categorias"],
+    [24, "Excluir produtos"],
+    [25, "Excluir funcionários"],
+    [26, "Excluir entregas"],
+    [27, "Excluir acessos"],
+    [28, "Excluir cargos"],
+    [29, "Excluir profissões"],
+    [30, "Excluir estoques"],
+    [31, "Listar famílias"],
+    [32, "Listar categorias"],
+    [33, "Listar auditorias"],
+    [34, "Listar funcionários"],
+    [35, "Listar entregas"],
+    [36, "Listar produtos"],
+    [37, "Listar acessos"],
+    [38, "Listar cargos"],
+    [39, "Listar profissões"],
+    [40, "Listar estoques"],
+    [41, "Visualizar arquivos"],
 ];
 
+// Formato esperado pelo CampoCheckbox (id) e pelo vínculo cargo-acesso (acessoId).
+export const PERMISSOES_CARGO = ACESSOS.map(([id, nome]) => ({ id, acessoId: id, nome }));
 
 // Busca o nome amigável de um acesso (ex.: "Cadastrar famílias") a partir do seu id.
 export function nomeAcessoPorId(acessoId) {
@@ -267,326 +68,76 @@ export function nomeAcessoPorId(acessoId) {
     return permissao?.nome;
 }
 
-export async function buscarCargo() {
-    try {
-        const response = await api.get("/cargos");
-
-        if (response.status === 200) {
-            return response.data;
-        }
-
-        if (response.status === 204) {
-            console.log("Nenhum cargo encontrado.");
-            return [];
-        }
-
-        if (response.status === 401) {
-            console.log("Não autorizado.");
-        }
-
-        return null;
-
-    } catch (error) {
-        console.error("Erro:", error);
-        return null;
-    }
+function validarDadosCargo(nome) {
+    return nome?.trim() ? null : 'O nome do cargo é obrigatório.';
 }
 
-
-// Formato de página vazia, usado quando não há resultados ou a requisição falha.
-const PAGINA_VAZIA_CARGOS = { content: [], totalPages: 0, totalElements: 0, number: 0 };
-
-export async function listarCargos({ nome = "", page = 0, size = 10, direcao = "asc" } = {}) {
-    try {
-        const response = await api.get("/cargos", {
-            params: { nome: nome?.trim() || undefined, page, size, direcao }
-        });
-
-        if (response.status === 200) return response.data;
-        return { ...PAGINA_VAZIA_CARGOS, number: page };
-
-    } catch (error) {
-        console.error("Erro ao buscar cargos:", error);
-        return { ...PAGINA_VAZIA_CARGOS, number: page };
-    }
+function montarPayloadCargo(nome, descricao) {
+    return { nome: nome.trim(), descricao: (descricao || "").trim() };
 }
 
-
-export async function buscarCargoPorId(id) {
-    try {
-        const response = await api.get(`/cargos/${id}`);
-
-        if (response.status === 200) {
-            return response.data;
-        }
-
-        return null;
-
-    } catch (error) {
-        console.error("Erro ao buscar cargo:", error);
-        return null;
-    }
-}
-
-
-export async function deletarCargo(id) {
-    try {
-        const response = await api.delete(`/cargos/${id}`);
-
-        return response.status === 204;
-
-    } catch (error) {
-        console.error("Erro ao apagar cargo:", error);
-        return false;
-    }
-}
-
-
-export async function listarCargosAcessos() {
-    try {
-        const response = await api.get("/cargos-acessos");
-
-        if (response.status === 200) {
-            return response.data;
-        }
-
-        return [];
-
-    } catch (error) {
-        console.error("Erro ao buscar acessos dos cargos:", error);
-        return [];
-    }
-}
-
-
-export async function cadastrarCargo(
-    nome,
-    descricao,
-    idsPermissoesSelecionadas,
-    navigate,
-    setFeedback
-) {
-
-    if (!nome.trim()) {
-        setFeedback({
-            tipo: "erro",
-            msg: "O nome do cargo é obrigatório.",
-            loading: false
-        });
-        return;
-    }
-
-    setFeedback({
-        tipo: "",
-        msg: "Cadastrando cargo...",
-        loading: true
-    });
-
-    try {
-
-        const response = await api.post("/cargos", {
-            nome: nome.trim(),
-            descricao: descricao.trim()
-        });
-
-        if (response.status !== 201) {
-
-            if (response.status === 401) {
-                setFeedback({
-                    tipo: "erro",
-                    msg: "Ação não autorizada.",
-                    loading: false
-                });
-            } else {
-                setFeedback({
-                    tipo: "erro",
-                    msg: "Não foi possível cadastrar o cargo.",
-                    loading: false
-                });
-            }
-
-            return;
-        }
-
-        const novoCargoId = response.data.id;
-
-        if (idsPermissoesSelecionadas?.length > 0) {
+export function cadastrarCargo(nome, descricao, idsPermissoesSelecionadas, navigate, setFeedback) {
+    return enviarComFeedback({
+        erroValidacao: validarDadosCargo(nome),
+        requisicao: () => api.post('/cargos', montarPayloadCargo(nome, descricao)),
+        msgCarregando: 'Cadastrando cargo...',
+        sucesso: { status: 201, msg: 'Cargo cadastrado com sucesso!', rota: '/cargos' },
+        msgErro: 'Não foi possível cadastrar o cargo.',
+        msgConexao: 'Erro de conexão. Não foi possível cadastrar o cargo.',
+        navigate,
+        setFeedback,
+        aposSucesso: async (response) => {
+            if (!idsPermissoesSelecionadas?.length) return null;
 
             const resultados = await Promise.allSettled(
                 idsPermissoesSelecionadas.map((acessoId) =>
-                    api.post("/cargos-acessos", {
-                        cargoId: Number(novoCargoId),
+                    api.post('/cargos-acessos', {
+                        cargoId: Number(response.data.id),
                         acessoId: Number(acessoId)
                     })
                 )
             );
 
-            // Verifica se algum acesso falhou
-            const houveErro = resultados.some(
-                (resultado) => resultado.status === "rejected"
-            );
-
-            if (houveErro) {
-
-                setFeedback({
-                    tipo: "erro",
-                    msg: "O cargo foi cadastrado, mas alguns acessos não puderam ser associados.",
-                    loading: false
-                });
-
-                return;
-            }
-        }
-
-        setFeedback({
-            tipo: "sucesso",
-            msg: "Cargo cadastrado com sucesso!",
-            loading: false
-        });
-
-        setTimeout(() => navigate("/cargos"), 2000);
-
-    } catch (error) {
-
-        console.error("Erro ao cadastrar cargo:", error);
-
-        setFeedback({
-            tipo: "erro",
-            msg: "Erro de conexão. Não foi possível cadastrar o cargo.",
-            loading: false
-        });
-    }
+            return algumaRequisicaoFalhou(resultados)
+                ? 'O cargo foi cadastrado, mas alguns acessos não puderam ser associados.'
+                : null;
+        },
+    });
 }
 
+// Compara os acessos marcados com os que o cargo já tinha e só inclui/remove a diferença.
+function sincronizarAcessosDoCargo(cargoId, idsSelecionados, associacoesAtuais) {
+    const selecionados = idsSelecionados.map(Number);
+    const idsAtuais = associacoesAtuais.map((associacao) => Number(associacao.acesso?.id));
 
-export async function atualizarCargo(
-    id,
-    nome,
-    descricao,
-    idsPermissoesSelecionadas,
-    associacoesAtuais,
-    navigate,
-    setFeedback
-) {
+    const inclusoes = selecionados
+        .filter((acessoId) => !idsAtuais.includes(acessoId))
+        .map((acessoId) => api.post('/cargos-acessos', { cargoId: Number(cargoId), acessoId }));
 
-    if (!nome.trim()) {
-        setFeedback({
-            tipo: "erro",
-            msg: "O nome do cargo é obrigatório.",
-            loading: false
-        });
-        return;
-    }
+    const exclusoes = associacoesAtuais
+        .filter((associacao) => !selecionados.includes(Number(associacao.acesso?.id)))
+        .map((associacao) => api.delete(`/cargos-acessos/${associacao.id}`));
 
-    setFeedback({
-        tipo: "",
-        msg: "Atualizando cargo...",
-        loading: true
+    return Promise.allSettled([...inclusoes, ...exclusoes]);
+}
+
+export function atualizarCargo(id, nome, descricao, idsPermissoesSelecionadas, associacoesAtuais, navigate, setFeedback) {
+    return enviarComFeedback({
+        erroValidacao: validarDadosCargo(nome),
+        requisicao: () => api.put(`/cargos/${id}`, montarPayloadCargo(nome, descricao)),
+        msgCarregando: 'Atualizando cargo...',
+        sucesso: { status: 200, msg: 'Cargo atualizado com sucesso!', rota: '/cargos' },
+        erros: { 404: 'Cargo não encontrado.' },
+        msgErro: 'Não foi possível atualizar o cargo.',
+        msgConexao: 'Erro de conexão. Não foi possível atualizar o cargo.',
+        navigate,
+        setFeedback,
+        aposSucesso: async () => {
+            const resultados = await sincronizarAcessosDoCargo(id, idsPermissoesSelecionadas, associacoesAtuais);
+
+            return algumaRequisicaoFalhou(resultados)
+                ? 'O cargo foi atualizado, mas alguns acessos não puderam ser alterados.'
+                : null;
+        },
     });
-
-    try {
-
-        // 1. Atualiza o nome e descrição do cargo
-        const response = await api.put(`/cargos/${id}`, {
-            nome: nome.trim(),
-            descricao: descricao.trim()
-        });
-
-        if (response.status !== 200) {
-
-            if (response.status === 404) {
-                setFeedback({
-                    tipo: "erro",
-                    msg: "Cargo não encontrado.",
-                    loading: false
-                });
-
-            } else if (response.status === 401) {
-                setFeedback({
-                    tipo: "erro",
-                    msg: "Ação não autorizada.",
-                    loading: false
-                });
-
-            } else {
-                setFeedback({
-                    tipo: "erro",
-                    msg: "Não foi possível atualizar o cargo.",
-                    loading: false
-                });
-            }
-
-            return;
-        }
-
-        const idsAtuais = associacoesAtuais.map(
-            (associacao) => Number(associacao.acesso?.id)
-        );
-
-        const paraAdicionar = idsPermissoesSelecionadas.filter(
-            (acessoId) => !idsAtuais.includes(Number(acessoId))
-        );
-
-        const paraRemover = associacoesAtuais.filter(
-            (associacao) =>
-                !idsPermissoesSelecionadas
-                    .map(Number)
-                    .includes(Number(associacao.acesso?.id))
-        );
-
-
-        const inclusoes = paraAdicionar.map((acessoId) =>
-            api.post("/cargos-acessos", {
-                cargoId: Number(id),
-                acessoId: Number(acessoId)
-            })
-        );
-
-
-        const exclusoes = paraRemover.map((associacao) =>
-            api.delete(`/cargos-acessos/${associacao.id}`)
-        );
-
-
-        const resultados = await Promise.allSettled([
-            ...inclusoes,
-            ...exclusoes
-        ]);
-
-
-        const houveErro = resultados.some(
-            (resultado) => resultado.status === "rejected"
-        );
-
-
-        if (houveErro) {
-
-            setFeedback({
-                tipo: "erro",
-                msg: "O cargo foi atualizado, mas alguns acessos não puderam ser alterados.",
-                loading: false
-            });
-
-            return;
-        }
-
-
-        setFeedback({
-            tipo: "sucesso",
-            msg: "Cargo atualizado com sucesso!",
-            loading: false
-        });
-
-        setTimeout(() => navigate("/cargos"), 2000);
-
-    } catch (error) {
-
-        console.error("Erro ao atualizar cargo:", error);
-
-        setFeedback({
-            tipo: "erro",
-            msg: "Erro de conexão. Não foi possível atualizar o cargo.",
-            loading: false
-        });
-    }
 }

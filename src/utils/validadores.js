@@ -1,34 +1,30 @@
+import { somenteDigitos } from "./mascaras";
+
+// Dígito verificador do CPF: pesos decrescentes a partir de (qtd + 1) sobre os primeiros `qtd` dígitos.
+function calcularDigitoCpf(digitos, qtd) {
+    let soma = 0;
+    for (let i = 0; i < qtd; i++) {
+        soma += Number(digitos[i]) * (qtd + 1 - i);
+    }
+    const resto = (soma * 10) % 11;
+    return resto === 10 ? 0 : resto;
+}
+
 export function validarCpf(cpf) {
-    const cpfLimpo = (cpf || "").replace(/\D/g, "");
+    const cpfLimpo = somenteDigitos(cpf);
 
     if (cpfLimpo.length !== 11) return false;
     if (/^(\d)\1{10}$/.test(cpfLimpo)) return false; // ex: 111.111.111-11
 
-    let soma = 0;
-    for (let i = 0; i < 9; i++) {
-        soma += parseInt(cpfLimpo[i], 10) * (10 - i);
-    }
-    let resto = (soma * 10) % 11;
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cpfLimpo[9], 10)) return false;
-
-    soma = 0;
-    for (let i = 0; i < 10; i++) {
-        soma += parseInt(cpfLimpo[i], 10) * (11 - i);
-    }
-    resto = (soma * 10) % 11;
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cpfLimpo[10], 10)) return false;
-
-    return true;
+    return calcularDigitoCpf(cpfLimpo, 9) === Number(cpfLimpo[9])
+        && calcularDigitoCpf(cpfLimpo, 10) === Number(cpfLimpo[10]);
 }
 
 export function validarRg(rg) {
-    const rgLimpo = (rg || "").replace(/\D/g, "");
-    return rgLimpo.length >= 7 && rgLimpo.length <= 9;
+    const tamanho = somenteDigitos(rg).length;
+    return tamanho >= 7 && tamanho <= 9;
 }
 
 export function validarTelefone(telefone) {
-    const telefoneLimpo = (telefone || "").replace(/\D/g, "");
-    return telefoneLimpo.length === 11;
+    return somenteDigitos(telefone).length === 11;
 }

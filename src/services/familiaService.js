@@ -1,90 +1,49 @@
 import api from "./apiClient";
 import { validarCpf, validarRg, validarTelefone } from "../utils/validadores";
 import { converterDataParaIso } from "../utils/formatadores";
+import { criarServicoBase, enviarComFeedback, montarFormData } from "./servicoBase";
 
-// Formato de página vazia, usado quando não há resultados ou a requisição falha.
-const PAGINA_VAZIA = { content: [], totalPages: 0, totalElements: 0, number: 0 };
+const base = criarServicoBase("/familias", {
+    singular: "família",
+    plural: "famílias",
+    argBusca: "nomeResponsavel",
+});
 
-export async function listarFamilias({ nomeResponsavel = "", page = 0, size = 10, direcao = "asc" } = {}) {
-    try {
-        const response = await api.get('/familias', {
-            params: { nomeResponsavel: nomeResponsavel?.trim() || undefined, page, size, direcao }
-        });
+export const listarFamilias = base.listar;
+export const buscarFamiliaPorId = base.buscarPorId;
+export const deletarFamilia = base.deletar;
 
-        if (response.status === 200) return response.data;
-        return { ...PAGINA_VAZIA, number: page };
-    } catch (error) {
-        console.error('Erro ao buscar famílias:', error);
-        return { ...PAGINA_VAZIA, number: page };
-    }
+// Documentos opcionais do dependente: só valida se foi preenchido.
+function validarDocumentosDependente(dep) {
+    if (dep.cpf && !validarCpf(dep.cpf)) return `O CPF do dependente "${dep.nome}" é inválido.`;
+    if (dep.rg && !validarRg(dep.rg)) return `O RG do dependente "${dep.nome}" é inválido.`;
+    if (dep.telefone && !validarTelefone(dep.telefone)) return `O telefone do dependente "${dep.nome}" é inválido.`;
+    return null;
 }
 
-export async function buscarFamiliaPorId(id) {
-    try {
-        const response = await api.get(`/familias/${id}`);
-
-        if (response.status === 200) return response.data;
-        return null;
-    } catch (error) {
-        console.error('Erro ao buscar família:', error);
-        return null;
-    }
-}
-
-export async function deletarFamilia(id) {
-    try {
-        const response = await api.delete(`/familias/${id}`);
-
-        return response.status === 204;
-    } catch (error) {
-        console.error('Erro ao apagar família:', error);
-        return false;
-    }
-}
-
-function validarDadosFamilia(responsavel, endereco, dependentes, setFeedback) {
+// Devolve a mensagem do primeiro erro encontrado (ou null se está tudo certo).
+function validarDadosFamilia(responsavel, endereco, dependentes) {
     if (!responsavel.nome || !responsavel.rg || !responsavel.cpf || !responsavel.telefone || !responsavel.dataNascimento) {
-        setFeedback({ tipo: 'erro', msg: 'Preencha todos os campos obrigatórios do responsável.', loading: false });
-        return false;
+        return 'Preencha todos os campos obrigatórios do responsável.';
     }
-    if (!validarCpf(responsavel.cpf)) {
-        setFeedback({ tipo: 'erro', msg: 'O CPF do responsável é inválido.', loading: false });
-        return false;
-    }
-    if (!validarRg(responsavel.rg)) {
-        setFeedback({ tipo: 'erro', msg: 'O RG do responsável é inválido.', loading: false });
-        return false;
-    }
-    if (!validarTelefone(responsavel.telefone)) {
-        setFeedback({ tipo: 'erro', msg: 'O telefone do responsável é inválido.', loading: false });
-        return false;
-    }
+    if (!validarCpf(responsavel.cpf)) return 'O CPF do responsável é inválido.';
+    if (!validarRg(responsavel.rg)) return 'O RG do responsável é inválido.';
+    if (!validarTelefone(responsavel.telefone)) return 'O telefone do responsável é inválido.';
 
     if (!endereco.rua || !endereco.numero || !endereco.cidade || !endereco.estadoId) {
-        setFeedback({ tipo: 'erro', msg: 'Preencha todos os campos obrigatórios do endereço.', loading: false });
-        return false;
+        return 'Preencha todos os campos obrigatórios do endereço.';
     }
 
     for (const dep of dependentes) {
         if (!dep.nome || !dep.dataNascimento) {
-            setFeedback({ tipo: 'erro', msg: 'Preencha o nome e a data de nascimento de todos os dependentes.', loading: false });
-            return false;
+            return 'Preencha o nome e a data de nascimento de todos os dependentes.';
         }
-        if (dep.cpf && !validarCpf(dep.cpf)) {
-            setFeedback({ tipo: 'erro', msg: `O CPF do dependente "${dep.nome}" é inválido.`, loading: false });
-            return false;
-        }
-        if (dep.rg && !validarRg(dep.rg)) {
-            setFeedback({ tipo: 'erro', msg: `O RG do dependente "${dep.nome}" é inválido.`, loading: false });
-            return false;
-        }
-        if (dep.telefone && !validarTelefone(dep.telefone)) {
-            setFeedback({ tipo: 'erro', msg: `O telefone do dependente "${dep.nome}" é inválido.`, loading: false });
-            return false;
-        }
+
+        const erroDocumentos = validarDocumentosDependente(dep);
+        if (erroDocumentos) return erroDocumentos;
     }
 
-    return true;
+    return null;
 }
 
 function montarPayloadFamilia(responsavel, endereco, dependentes) {
@@ -125,82 +84,39 @@ function montarPayloadFamilia(responsavel, endereco, dependentes) {
     };
 }
 
-export async function cadastrarFamilia(responsavel, endereco, dependentes, navigate, setFeedback) {
-
-    if (!validarDadosFamilia(responsavel, endereco, dependentes, setFeedback)) return;
-
-    setFeedback({ tipo: '', msg: 'Cadastrando família...', loading: true });
-
+function montarFormDataFamilia(responsavel, endereco, dependentes) {
     const payload = montarPayloadFamilia(responsavel, endereco, dependentes);
-
-    const formData = new FormData();
-
-    formData.append(
-        "familiaRequestDto",
-        new Blob(
-            [JSON.stringify(payload)],
-            { type: "application/json" }
-        )
-    );
-
-    formData.append("arquivo", responsavel.imagem);
-
-    try {
-        const response = await api.post('/familias', formData);
-
-        if (response.status === 201) {
-            setFeedback({ tipo: 'sucesso', msg: 'Família cadastrada com sucesso!', loading: false });
-            setTimeout(() => navigate("/familias"), 2000);
-        } else if (response.status === 409) {
-            setFeedback({ tipo: 'erro', msg: 'Endereço ou pessoa (CPF) já cadastrados. Nenhum dado foi salvo.', loading: false });
-        } else if (response.status === 404) {
-            setFeedback({ tipo: 'erro', msg: 'Estado informado não foi encontrado. Nenhum dado foi salvo.', loading: false });
-        } else if (response.status === 401) {
-            setFeedback({ tipo: 'erro', msg: 'Ação não autorizada.', loading: false });
-        } else {
-            setFeedback({ tipo: 'erro', msg: 'Não foi possível cadastrar a família. Nenhum dado foi salvo.', loading: false });
-        }
-    } catch {
-        setFeedback({ tipo: 'erro', msg: 'Erro de conexão. Nenhum dado foi salvo.', loading: false });
-    }
+    return montarFormData("familiaRequestDto", payload, responsavel.imagem);
 }
 
-export async function atualizarFamilia(id, responsavel, endereco, dependentes, navigate, setFeedback) {
+export function cadastrarFamilia(responsavel, endereco, dependentes, navigate, setFeedback) {
+    return enviarComFeedback({
+        erroValidacao: validarDadosFamilia(responsavel, endereco, dependentes),
+        requisicao: () => api.post('/familias', montarFormDataFamilia(responsavel, endereco, dependentes)),
+        msgCarregando: 'Cadastrando família...',
+        sucesso: { status: 201, msg: 'Família cadastrada com sucesso!', rota: '/familias' },
+        erros: {
+            409: 'Endereço ou pessoa (CPF) já cadastrados. Nenhum dado foi salvo.',
+            404: 'Estado informado não foi encontrado. Nenhum dado foi salvo.',
+        },
+        msgErro: 'Não foi possível cadastrar a família. Nenhum dado foi salvo.',
+        navigate,
+        setFeedback,
+    });
+}
 
-    if (!validarDadosFamilia(responsavel, endereco, dependentes, setFeedback)) return;
-
-    setFeedback({ tipo: '', msg: 'Atualizando família...', loading: true });
-
-    const payload = montarPayloadFamilia(responsavel, endereco, dependentes);
-
-    const formData = new FormData();
-
-    formData.append(
-        "familiaRequestDto",
-        new Blob(
-            [JSON.stringify(payload)],
-            { type: "application/json" }
-        )
-    );
-
-    formData.append("arquivo", responsavel.imagem);
-
-    try {
-        const response = await api.put(`/familias/${id}`, formData);
-
-        if (response.status === 200) {
-            setFeedback({ tipo: 'sucesso', msg: 'Família atualizada com sucesso!', loading: false });
-            setTimeout(() => navigate(`/familias/${id}`), 2000);
-        } else if (response.status === 409) {
-            setFeedback({ tipo: 'erro', msg: 'CPF já cadastrado para outra pessoa. Nenhum dado foi salvo.', loading: false });
-        } else if (response.status === 404) {
-            setFeedback({ tipo: 'erro', msg: 'Família, endereço ou estado não encontrados.', loading: false });
-        } else if (response.status === 401) {
-            setFeedback({ tipo: 'erro', msg: 'Ação não autorizada.', loading: false });
-        } else {
-            setFeedback({ tipo: 'erro', msg: 'Não foi possível atualizar a família.', loading: false });
-        }
-    } catch {
-        setFeedback({ tipo: 'erro', msg: 'Erro de conexão. Nenhum dado foi salvo.', loading: false });
-    }
+export function atualizarFamilia(id, responsavel, endereco, dependentes, navigate, setFeedback) {
+    return enviarComFeedback({
+        erroValidacao: validarDadosFamilia(responsavel, endereco, dependentes),
+        requisicao: () => api.put(`/familias/${id}`, montarFormDataFamilia(responsavel, endereco, dependentes)),
+        msgCarregando: 'Atualizando família...',
+        sucesso: { status: 200, msg: 'Família atualizada com sucesso!', rota: `/familias/${id}` },
+        erros: {
+            409: 'CPF já cadastrado para outra pessoa. Nenhum dado foi salvo.',
+            404: 'Família, endereço ou estado não encontrados.',
+        },
+        msgErro: 'Não foi possível atualizar a família.',
+        navigate,
+        setFeedback,
+    });
 }

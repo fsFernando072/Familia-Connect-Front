@@ -1,13 +1,3 @@
-import api from "./apiClient";
+import { buscarLista } from "./servicoBase";
 
-export async function buscarProfissoes() {
-    try {
-        const response = await api.get("/profissoes");
-
-        if (response.status === 200) return response.data;
-        return [];
-    } catch (error) {
-        console.error("Erro ao buscar profissões:", error);
-        return [];
-    }
-}
+export const buscarProfissoes = () => buscarLista("/profissoes", "profissões");

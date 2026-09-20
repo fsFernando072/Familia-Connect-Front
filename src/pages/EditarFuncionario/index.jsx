@@ -5,6 +5,7 @@ import { listarCargos } from "../../services/cargoService";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import { mascaraCpf } from "../../utils/mascaras";
+import { useFeedback } from "../../hooks/useFeedback";
 
 function EditarFuncionario() {
 
@@ -22,29 +23,21 @@ function EditarFuncionario() {
     const [foto, setFoto] = useState("");
     const [fotoInicial, setFotoInicial] = useState("");
     const [cargos, setCargos] = useState([]);
-    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
+    const { feedback, setFeedback, fecharFeedback } = useFeedback();
     const [mostrarSenha, setMostrarSenha] = useState(false);
     const [mostrarSenha2, setMostrarSenha2] = useState(false);
 
-    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
     useEffect(() => {
         async function carregarDadosIniciais() {
             setCarregando(true);
 
-            useEffect(() => {
-                    async function carregarCargos() {
-                        const dados = await listarCargos({ size: 100 });
-                        setCargos(dados?.content || []);
-                    }
-                    carregarCargos();
-                }, []);
-
-            const [funcionario] = await Promise.all([
-                buscarFuncionarioPorId(id)
+            const [funcionario, dadosCargos] = await Promise.all([
+                buscarFuncionarioPorId(id),
+                listarCargos({ size: 100 })
             ]);
 
-            setCargos(dadosCargos || []);
+            setCargos(dadosCargos?.content || []);
 
             if (!funcionario) {
                 setFuncionarioEncontrado(false);

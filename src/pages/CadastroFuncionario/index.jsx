@@ -5,6 +5,7 @@ import { listarCargos } from "../../services/cargoService";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import { mascaraCpf } from "../../utils/mascaras";
+import { useFeedback } from "../../hooks/useFeedback";
 
 function Cadastro() {
 
@@ -16,11 +17,10 @@ function Cadastro() {
     const [foto, setFoto] = useState("");
     const [cargos, setCargos] = useState([]);
     const navigate = useNavigate();
-    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
+    const { feedback, setFeedback, fecharFeedback } = useFeedback();
     const [mostrarSenha, setMostrarSenha] = useState(false);
     const [mostrarSenha2, setMostrarSenha2] = useState(false);
 
-    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
     useEffect(() => {
         async function carregarCargos() {

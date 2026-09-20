@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import { cadastrarCategoria } from "../../services/categoriaService";
+import { useFeedback } from "../../hooks/useFeedback";
 
 function CadastroCategoria() {
 
     const navigate = useNavigate();
-    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
+    const { feedback, setFeedback, fecharFeedback } = useFeedback();
     const [nomeCategoria, setNomeCategoria] = useState("");
 
-    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
     const handleCadastrar = () => {
         cadastrarCategoria(nomeCategoria, navigate, setFeedback);

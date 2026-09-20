@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Package } from "lucide-react";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
@@ -12,89 +11,26 @@ import Botao from "../../components/Botao/Botao";
 import Paginacao from "../../components/Paginacao/Paginacao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
 import { listarCategorias, deletarCategoria } from "../../services/categoriaService";
-import { useDebounce } from "../../hooks/useDebounce";
+import { useListaPaginada } from "../../hooks/useListaPaginada";
 
 function ListaCategorias() {
 
     const navigate = useNavigate();
-    const [categorias, setCategorias] = useState([]);
-    const [carregando, setCarregando] = useState(true);
-    const [busca, setBusca] = useState("");
-    const [ordemCrescente, setOrdemCrescente] = useState(true);
-    const [paginaAtual, setPaginaAtual] = useState(0);
-    const [totalPaginas, setTotalPaginas] = useState(0);
-    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
-    const [categoriaParaApagar, setCategoriaParaApagar] = useState(null);
-    const [apagando, setApagando] = useState(false);
-
-    const buscaComAtraso = useDebounce(busca);
-
-    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
-
-    async function carregarCategorias(pagina) {
-        setCarregando(true);
-
-        const dados = await listarCategorias({
-            nome: buscaComAtraso,
-            page: pagina,
-            direcao: ordemCrescente ? 'asc' : 'desc'
-        });
-
-        setCategorias(dados.content || []);
-        setTotalPaginas(dados.totalPages || 0);
-        setCarregando(false);
-    }
-
-    const [buscaAnterior, setBuscaAnterior] = useState(buscaComAtraso);
-    const [ordemAnterior, setOrdemAnterior] = useState(ordemCrescente);
-    if (buscaComAtraso !== buscaAnterior || ordemCrescente !== ordemAnterior) {
-        setBuscaAnterior(buscaComAtraso);
-        setOrdemAnterior(ordemCrescente);
-        if (paginaAtual !== 0) {
-            setPaginaAtual(0);
-        }
-    }
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        carregarCategorias(paginaAtual);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [buscaComAtraso, ordemCrescente, paginaAtual]);
-
-    const handlePedirConfirmacao = (categoria) => {
-        setCategoriaParaApagar(categoria);
-    };
-
-    const handleCancelarApagar = () => {
-        if (apagando) return;
-        setCategoriaParaApagar(null);
-    };
-
-    const handleConfirmarApagar = async () => {
-        if (!categoriaParaApagar) return;
-
-        setApagando(true);
-        setFeedback({ tipo: '', msg: 'Apagando categoria...', loading: true });
-
-        const sucesso = await deletarCategoria(categoriaParaApagar.id);
-
-        setApagando(false);
-        setCategoriaParaApagar(null);
-
-        if (sucesso) {
-            setFeedback({ tipo: 'sucesso', msg: 'Categoria apagada com sucesso!', loading: false });
-
-            const deveVoltarPagina = categorias.length === 1 && paginaAtual > 0;
-
-            if (deveVoltarPagina) {
-                setPaginaAtual((pagina) => pagina - 1);
-            } else {
-                carregarCategorias(paginaAtual);
-            }
-        } else {
-            setFeedback({ tipo: 'erro', msg: 'Não foi possível apagar a categoria.', loading: false });
-        }
-    };
+    const {
+        itens, carregando,
+        busca, setBusca, alternarOrdem,
+        paginaAtual, setPaginaAtual, totalPaginas,
+        feedback, fecharFeedback,
+        itemParaApagar, pedirConfirmacao, cancelarApagar, confirmarApagar, apagando,
+    } = useListaPaginada({
+        listar: listarCategorias,
+        apagar: deletarCategoria,
+        mensagens: {
+            apagando: 'Apagando categoria...',
+            sucesso: 'Categoria apagada com sucesso!',
+            erro: 'Não foi possível apagar a categoria.',
+        },
+    });
 
     return (
         <PaginaLista nomeTela='Lista de Categorias de Produto' feedback={feedback} onFecharFeedback={fecharFeedback}>
@@ -102,19 +38,19 @@ function ListaCategorias() {
                 busca={busca}
                 onBuscaChange={(e) => setBusca(e.target.value)}
                 placeholderBusca='Buscar Categoria'
-                onOrdenar={() => setOrdemCrescente((v) => !v)}
+                onOrdenar={alternarOrdem}
                 onCadastrar={() => navigate('/categorias/cadastro-categoria')}
             />
 
             <ListaStatus
                 carregando={carregando}
-                vazio={categorias.length === 0}
+                vazio={itens.length === 0}
                 mensagemCarregando='Carregando categorias...'
                 mensagemVazia='Nenhuma categoria encontrada.'
             />
 
             <ListaContainer>
-                {categorias.map((categoria) => (
+                {itens.map((categoria) => (
                     <ListaItem
                         key={categoria.id}
                         imagem={(
@@ -125,7 +61,7 @@ function ListaCategorias() {
                         acoes={(
                             <>
                                 <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/categorias/${categoria.id}/editar-categoria`)} />
-                                <Botao nome='Apagar' cor='#DC2626' acao={() => handlePedirConfirmacao(categoria)} />
+                                <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(categoria)} />
                             </>
                         )}
                     >
@@ -137,15 +73,15 @@ function ListaCategorias() {
             <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
             <ModalConfirmacao
-                aberto={!!categoriaParaApagar}
+                aberto={!!itemParaApagar}
                 titulo="Apagar categoria"
-                mensagem={categoriaParaApagar ? `Deseja realmente apagar a categoria "${categoriaParaApagar.nome}"? Essa ação não pode ser desfeita.` : ''}
+                mensagem={itemParaApagar ? `Deseja realmente apagar a categoria "${itemParaApagar.nome}"? Essa ação não pode ser desfeita.` : ''}
                 textoConfirmar="Sim, apagar"
                 textoCancelar="Não"
                 corConfirmar="#DC2626"
                 carregando={apagando}
-                onConfirmar={handleConfirmarApagar}
-                onCancelar={handleCancelarApagar}
+                onConfirmar={confirmarApagar}
+                onCancelar={cancelarApagar}
             />
         </PaginaLista>
     );

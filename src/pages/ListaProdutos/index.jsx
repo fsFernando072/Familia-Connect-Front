@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Package } from "lucide-react";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
@@ -12,90 +11,26 @@ import Botao from "../../components/Botao/Botao";
 import Paginacao from "../../components/Paginacao/Paginacao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
 import { listarProdutos, deletarProduto } from "../../services/produtoService";
-import { useDebounce } from "../../hooks/useDebounce";
+import { useListaPaginada } from "../../hooks/useListaPaginada";
 
 function ListaProdutos() {
 
     const navigate = useNavigate();
-    const [produtos, setProdutos] = useState([]);
-    const [carregando, setCarregando] = useState(true);
-    const [busca, setBusca] = useState("");
-    const [ordemCrescente, setOrdemCrescente] = useState(true);
-    const [paginaAtual, setPaginaAtual] = useState(0);
-    const [totalPaginas, setTotalPaginas] = useState(0);
-    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
-    const [produtoParaApagar, setProdutoParaApagar] = useState(null);
-    const [apagando, setApagando] = useState(false);
-
-    const buscaComAtraso = useDebounce(busca);
-
-    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
-
-    async function carregarProdutos(pagina) {
-        setCarregando(true);
-
-        const dados = await listarProdutos({
-            nome: buscaComAtraso,
-            page: pagina,
-            direcao: ordemCrescente ? 'asc' : 'desc'
-        });
-
-        setProdutos(dados.content || []);
-        setTotalPaginas(dados.totalPages || 0);
-        setCarregando(false);
-    }
-
-    const [buscaAnterior, setBuscaAnterior] = useState(buscaComAtraso);
-    const [ordemAnterior, setOrdemAnterior] = useState(ordemCrescente);
-    if (buscaComAtraso !== buscaAnterior || ordemCrescente !== ordemAnterior) {
-        setBuscaAnterior(buscaComAtraso);
-        setOrdemAnterior(ordemCrescente);
-        if (paginaAtual !== 0) {
-            setPaginaAtual(0);
-        }
-    }
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        carregarProdutos(paginaAtual);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [buscaComAtraso, ordemCrescente, paginaAtual]);
-
-    const handlePedirConfirmacao = (produto) => {
-        setProdutoParaApagar(produto);
-    };
-
-    const handleCancelarApagar = () => {
-        if (apagando) return;
-        setProdutoParaApagar(null);
-    };
-
-    const handleConfirmarApagar = async () => {
-        if (!produtoParaApagar) return;
-
-        setApagando(true);
-        setFeedback({ tipo: '', msg: 'Apagando produto...', loading: true });
-
-        const sucesso = await deletarProduto(produtoParaApagar.id);
-
-        setApagando(false);
-        setProdutoParaApagar(null);
-
-        if (sucesso) {
-            setFeedback({ tipo: 'sucesso', msg: 'Produto apagado com sucesso!', loading: false });
-
-            // Se apagou o único item da página atual (e não é a primeira), volta uma página.
-            const deveVoltarPagina = produtos.length === 1 && paginaAtual > 0;
-
-            if (deveVoltarPagina) {
-                setPaginaAtual((pagina) => pagina - 1);
-            } else {
-                carregarProdutos(paginaAtual);
-            }
-        } else {
-            setFeedback({ tipo: 'erro', msg: 'Não foi possível apagar o produto.', loading: false });
-        }
-    };
+    const {
+        itens, carregando,
+        busca, setBusca, alternarOrdem,
+        paginaAtual, setPaginaAtual, totalPaginas,
+        feedback, fecharFeedback,
+        itemParaApagar, pedirConfirmacao, cancelarApagar, confirmarApagar, apagando,
+    } = useListaPaginada({
+        listar: listarProdutos,
+        apagar: deletarProduto,
+        mensagens: {
+            apagando: 'Apagando produto...',
+            sucesso: 'Produto apagado com sucesso!',
+            erro: 'Não foi possível apagar o produto.',
+        },
+    });
 
     return (
         <PaginaLista nomeTela='Lista de Produtos' feedback={feedback} onFecharFeedback={fecharFeedback}>
@@ -103,19 +38,19 @@ function ListaProdutos() {
                 busca={busca}
                 onBuscaChange={(e) => setBusca(e.target.value)}
                 placeholderBusca='Buscar Produto'
-                onOrdenar={() => setOrdemCrescente((v) => !v)}
+                onOrdenar={alternarOrdem}
                 onCadastrar={() => navigate('/produtos/cadastro-produto')}
             />
 
             <ListaStatus
                 carregando={carregando}
-                vazio={produtos.length === 0}
+                vazio={itens.length === 0}
                 mensagemCarregando='Carregando produtos...'
                 mensagemVazia='Nenhum produto encontrado.'
             />
 
             <ListaContainer>
-                {produtos.map((produto) => (
+                {itens.map((produto) => (
                     <ListaItem
                         key={produto.id}
                         imagem={(
@@ -126,7 +61,7 @@ function ListaProdutos() {
                         acoes={(
                             <>
                                 <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/produtos/${produto.id}/editar-produto`)} />
-                                <Botao nome='Apagar' cor='#DC2626' acao={() => handlePedirConfirmacao(produto)} />
+                                <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(produto)} />
                             </>
                         )}
                     >
@@ -139,15 +74,15 @@ function ListaProdutos() {
             <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
             <ModalConfirmacao
-                aberto={!!produtoParaApagar}
+                aberto={!!itemParaApagar}
                 titulo="Apagar produto"
-                mensagem={produtoParaApagar ? `Deseja realmente apagar o produto "${produtoParaApagar.nome}"? Essa ação não pode ser desfeita.` : ''}
+                mensagem={itemParaApagar ? `Deseja realmente apagar o produto "${itemParaApagar.nome}"? Essa ação não pode ser desfeita.` : ''}
                 textoConfirmar="Sim, apagar"
                 textoCancelar="Não"
                 corConfirmar="#DC2626"
                 carregando={apagando}
-                onConfirmar={handleConfirmarApagar}
-                onCancelar={handleCancelarApagar}
+                onConfirmar={confirmarApagar}
+                onCancelar={cancelarApagar}
             />
         </PaginaLista>
     );

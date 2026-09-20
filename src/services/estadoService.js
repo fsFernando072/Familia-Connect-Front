@@ -1,13 +1,3 @@
-import api from "./apiClient";
+import { buscarLista } from "./servicoBase";
 
-export async function buscarEstados() {
-    try {
-        const response = await api.get("/estados");
-
-        if (response.status === 200) return response.data;
-        return [];
-    } catch (error) {
-        console.error("Erro ao buscar estados:", error);
-        return [];
-    }
-}
+export const buscarEstados = () => buscarLista("/estados", "estados");

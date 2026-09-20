@@ -12,6 +12,7 @@ import ListaStatus from "../../components/ListaStatus/ListaStatus";
 import { mascaraCpf, mascaraRg, mascaraTelefone } from "../../utils/mascaras";
 import { converterDataParaBr } from "../../utils/formatadores";
 import { buscarFamiliaPorId } from "../../services/familiaService";
+import { useFeedback } from "../../hooks/useFeedback";
 
 function DetalhesFamilia() {
 
@@ -19,9 +20,7 @@ function DetalhesFamilia() {
     const navigate = useNavigate();
     const [familia, setFamilia] = useState(null);
     const [carregando, setCarregando] = useState(true);
-    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
-
-    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
+    const { feedback, fecharFeedback } = useFeedback();
 
     useEffect(() => {
         async function carregarFamilia() {

@@ -1,62 +1,31 @@
 import api from "./apiClient";
+import { criarServicoBase, enviarComFeedback } from "./servicoBase";
 
-// Formato de página vazia, usado quando não há resultados ou a requisição falha.
-const PAGINA_VAZIA = { content: [], totalPages: 0, totalElements: 0, number: 0 };
+// A tela busca por { nome }, mas a API espera o query param "nomeProduto".
+const base = criarServicoBase("/historico-estoque", {
+    singular: "histórico de estoque",
+    plural: "histórico de estoque",
+    paramBusca: "nomeProduto",
+});
 
-export async function listarHistoricoEstoque({ nome = "", page = 0, size = 10, direcao = "asc" } = {}) {
-    try {
-        const response = await api.get('/historico-estoque', {
-            params: { nomeProduto: nome?.trim() || undefined, page, size, direcao }
-        });
+export const listarHistoricoEstoque = base.listar;
+export const buscarHistoricoEstoquePorId = base.buscarPorId;
+export const deletarHistoricoEstoque = base.deletar;
 
-        if (response.status === 200) return response.data;
-        return { ...PAGINA_VAZIA, number: page };
-    } catch (error) {
-        console.error('Erro ao buscar histórico de estoque:', error);
-        return { ...PAGINA_VAZIA, number: page };
-    }
-}
-
-export async function buscarHistoricoEstoquePorId(id) {
-    try {
-        const response = await api.get(`/historico-estoque/${id}`);
-
-        if (response.status === 200) return response.data;
-        return null;
-    } catch (error) {
-        console.error('Erro ao buscar histórico de estoque:', error);
-        return null;
-    }
-}
-
-export async function deletarHistoricoEstoque(id) {
-    try {
-        const response = await api.delete(`/historico-estoque/${id}`);
-
-        return response.status === 204;
-    } catch (error) {
-        console.error('Erro ao apagar histórico de estoque:', error);
-        return false;
-    }
-}
-
-function validarDadosHistoricoEstoque(historico, setFeedback) {
+function validarDadosHistoricoEstoque(historico) {
     if (!historico.produtoId) {
-        setFeedback({ tipo: 'erro', msg: 'Selecione um produto.', loading: false });
-        return false;
+        return 'Selecione um produto.';
     }
 
     if (historico.quantidade === '' || historico.quantidade === null || historico.quantidade === undefined) {
-        setFeedback({ tipo: 'erro', msg: 'Informe a quantidade em estoque.', loading: false });
-        return false;
+        return 'Informe a quantidade em estoque.';
     }
 
     if (Number.isNaN(Number(historico.quantidade)) || Number(historico.quantidade) < 0) {
-        setFeedback({ tipo: 'erro', msg: 'A quantidade precisa ser um número maior ou igual a zero.', loading: false });
-        return false;
+        return 'A quantidade precisa ser um número maior ou igual a zero.';
     }
 
-    return true;
+    return null;
 }
 
 function montarPayloadHistoricoEstoque(historico) {
@@ -66,58 +35,34 @@ function montarPayloadHistoricoEstoque(historico) {
     };
 }
 
-export async function cadastrarHistoricoEstoque(historico, navigate, setFeedback) {
-
-    if (!validarDadosHistoricoEstoque(historico, setFeedback)) return;
-
-    setFeedback({ tipo: '', msg: 'Cadastrando estoque...', loading: true });
-
-    const payload = montarPayloadHistoricoEstoque(historico);
-
-    try {
-        const response = await api.post('/historico-estoque', payload);
-
-        if (response.status === 201) {
-            setFeedback({ tipo: 'sucesso', msg: 'Estoque cadastrado com sucesso!', loading: false });
-            setTimeout(() => navigate("/historico-estoque"), 2000);
-        } else if (response.status === 404) {
-            setFeedback({ tipo: 'erro', msg: 'Produto informado não foi encontrado. Nenhum dado foi salvo.', loading: false });
-        } else if (response.status === 401) {
-            setFeedback({ tipo: 'erro', msg: 'Ação não autorizada.', loading: false });
-        } else if (response.status === 400) {
-            setFeedback({ tipo: 'erro', msg: 'Dados inválidos. Verifique os campos e tente novamente.', loading: false });
-        } else {
-            setFeedback({ tipo: 'erro', msg: 'Não foi possível cadastrar o estoque. Nenhum dado foi salvo.', loading: false });
-        }
-    } catch {
-        setFeedback({ tipo: 'erro', msg: 'Erro de conexão. Nenhum dado foi salvo.', loading: false });
-    }
+export function cadastrarHistoricoEstoque(historico, navigate, setFeedback) {
+    return enviarComFeedback({
+        erroValidacao: validarDadosHistoricoEstoque(historico),
+        requisicao: () => api.post('/historico-estoque', montarPayloadHistoricoEstoque(historico)),
+        msgCarregando: 'Cadastrando estoque...',
+        sucesso: { status: 201, msg: 'Estoque cadastrado com sucesso!', rota: '/historico-estoque' },
+        erros: {
+            404: 'Produto informado não foi encontrado. Nenhum dado foi salvo.',
+            400: 'Dados inválidos. Verifique os campos e tente novamente.',
+        },
+        msgErro: 'Não foi possível cadastrar o estoque. Nenhum dado foi salvo.',
+        navigate,
+        setFeedback,
+    });
 }
 
-export async function atualizarHistoricoEstoque(id, historico, navigate, setFeedback) {
-
-    if (!validarDadosHistoricoEstoque(historico, setFeedback)) return;
-
-    setFeedback({ tipo: '', msg: 'Atualizando estoque...', loading: true });
-
-    const payload = montarPayloadHistoricoEstoque(historico);
-
-    try {
-        const response = await api.put(`/historico-estoque/${id}`, payload);
-
-        if (response.status === 200) {
-            setFeedback({ tipo: 'sucesso', msg: 'Estoque atualizado com sucesso!', loading: false });
-            setTimeout(() => navigate("/historico-estoque"), 2000);
-        } else if (response.status === 404) {
-            setFeedback({ tipo: 'erro', msg: 'Registro de estoque ou produto não encontrados.', loading: false });
-        } else if (response.status === 401) {
-            setFeedback({ tipo: 'erro', msg: 'Ação não autorizada.', loading: false });
-        } else if (response.status === 400) {
-            setFeedback({ tipo: 'erro', msg: 'Dados inválidos. Verifique os campos e tente novamente.', loading: false });
-        } else {
-            setFeedback({ tipo: 'erro', msg: 'Não foi possível atualizar o estoque.', loading: false });
-        }
-    } catch {
-        setFeedback({ tipo: 'erro', msg: 'Erro de conexão. Nenhum dado foi salvo.', loading: false });
-    }
+export function atualizarHistoricoEstoque(id, historico, navigate, setFeedback) {
+    return enviarComFeedback({
+        erroValidacao: validarDadosHistoricoEstoque(historico),
+        requisicao: () => api.put(`/historico-estoque/${id}`, montarPayloadHistoricoEstoque(historico)),
+        msgCarregando: 'Atualizando estoque...',
+        sucesso: { status: 200, msg: 'Estoque atualizado com sucesso!', rota: '/historico-estoque' },
+        erros: {
+            404: 'Registro de estoque ou produto não encontrados.',
+            400: 'Dados inválidos. Verifique os campos e tente novamente.',
+        },
+        msgErro: 'Não foi possível atualizar o estoque.',
+        navigate,
+        setFeedback,
+    });
 }

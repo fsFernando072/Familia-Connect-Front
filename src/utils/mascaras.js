@@ -1,48 +1,37 @@
-export const mascaraCpf = (valor) => {
-    valor = valor.replace(/\D/g, "").slice(0, 11);
-
-    valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
-    valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
-    valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-
-    return valor;
+// Remove tudo que não é número e (opcionalmente) limita a quantidade de dígitos.
+export const somenteDigitos = (valor, max) => {
+    const digitos = (valor || "").replace(/\D/g, "");
+    return max ? digitos.slice(0, max) : digitos;
 };
 
-export const mascaraRg = (valor) => {
-    valor = valor.replace(/\D/g, "").slice(0, 9);
+export const mascaraCpf = (valor) =>
+    somenteDigitos(valor, 11)
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 
-    valor = valor.replace(/(\d{2})(\d)/, "$1.$2");
-    valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
-    valor = valor.replace(/(\d{3})(\d{1,1})$/, "$1-$2");
+export const mascaraRg = (valor) =>
+    somenteDigitos(valor, 9)
+        .replace(/(\d{2})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)$/, "$1-$2");
 
-    return valor;
-};
+export const mascaraTelefone = (valor) =>
+    somenteDigitos(valor, 11)
+        .replace(/(\d{2})(\d)/, "($1) $2")
+        .replace(/(\d{5})(\d{1,4})$/, "$1-$2");
 
-export const mascaraTelefone = (valor) => {
-    valor = valor.replace(/\D/g, "").slice(0, 11);
+export const mascaraCep = (valor) =>
+    somenteDigitos(valor, 8)
+        .replace(/(\d{5})(\d{1,3})$/, "$1-$2");
 
-    valor = valor.replace(/(\d{2})(\d)/, "($1) $2");
-    valor = valor.replace(/(\d{5})(\d{1,4})$/, "$1-$2");
-
-    return valor;
-};
-
-export const mascaraCep = (valor) => {
-    valor = valor.replace(/\D/g, "").slice(0, 8);
-    valor = valor.replace(/(\d{5})(\d{1,3})$/, "$1-$2");
-    return valor;
-};
-
-export const mascaraData = (valor) => {
-    valor = valor.replace(/\D/g, "").slice(0, 8);
-    valor = valor.replace(/(\d{2})(\d)/, "$1/$2");
-    valor = valor.replace(/(\d{2})(\d{1,4})$/, "$1/$2");
-    return valor;
-};
+export const mascaraData = (valor) =>
+    somenteDigitos(valor, 8)
+        .replace(/(\d{2})(\d)/, "$1/$2")
+        .replace(/(\d{2})(\d{1,4})$/, "$1/$2");
 
 export const mascaraMoeda = (valor) => {
-    valor = valor.replace(/\D/g, "");
-    if (!valor) return "";
-    valor = (Number(valor) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-    return valor;
+    const digitos = somenteDigitos(valor);
+    if (!digitos) return "";
+    return (Number(digitos) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 };

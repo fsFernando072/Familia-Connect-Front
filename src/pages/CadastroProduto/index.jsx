@@ -4,18 +4,18 @@ import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario
 import Formulario from "../../components/Formulario/Formulario";
 import { listarCategorias } from "../../services/categoriaService";
 import { cadastrarProduto } from "../../services/produtoService";
+import { useFeedback } from "../../hooks/useFeedback";
 
 function CadastroProduto() {
 
     const navigate = useNavigate();
-    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
+    const { feedback, setFeedback, fecharFeedback } = useFeedback();
     const [categorias, setCategorias] = useState([]);
 
     const [nomeProduto, setNomeProduto] = useState("");
     const [categoriaId, setCategoriaId] = useState("");
     const [descricao, setDescricao] = useState("");
 
-    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
     useEffect(() => {
         async function carregarCategorias() {

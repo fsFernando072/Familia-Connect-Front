@@ -4,17 +4,17 @@ import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario
 import Formulario from "../../components/Formulario/Formulario";
 import { listarProdutos } from "../../services/produtoService";
 import { cadastrarHistoricoEstoque } from "../../services/historicoEstoqueService";
+import { useFeedback } from "../../hooks/useFeedback";
 
 function CadastroHistoricoEstoque() {
 
     const navigate = useNavigate();
-    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
+    const { feedback, setFeedback, fecharFeedback } = useFeedback();
     const [produtos, setProdutos] = useState([]);
 
     const [produtoId, setProdutoId] = useState("");
     const [quantidade, setQuantidade] = useState("");
 
-    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
     useEffect(() => {
         async function carregarProdutos() {

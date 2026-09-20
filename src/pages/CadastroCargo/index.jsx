@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import { cadastrarCargo, PERMISSOES_CARGO } from "../../services/cargoService";
+import { useFeedback } from "../../hooks/useFeedback";
 
 function CadastroCargo() {
 
@@ -10,9 +11,7 @@ function CadastroCargo() {
     const [nome, setNome] = useState("");
     const [descricao, setDescricao] = useState("");
     const [idsPermissoes, setIdsPermissoes] = useState([]);
-    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
-
-    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
+    const { feedback, setFeedback, fecharFeedback } = useFeedback();
 
     const handleCadastrar = () => {
         cadastrarCargo(nome, descricao, idsPermissoes, navigate, setFeedback);

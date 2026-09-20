@@ -5,16 +5,16 @@ import { entrar } from "../../services/authService";
 import { mascaraCpf } from "../../utils/mascaras";
 import Formulario from "../../components/Formulario/Formulario";
 import FeedbackToast from "../../components/FeedbackToast/FeedbackToast";
+import { useFeedback } from "../../hooks/useFeedback";
 
 function Login() {
     
     const [cpf, setCpf] = useState("");
     const [senha, setSenha] = useState("");
-    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
+    const { feedback, setFeedback, fecharFeedback } = useFeedback();
     const navigate = useNavigate();
     const [mostrarSenha, setMostrarSenha] = useState(false);
 
-    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
     const campos = [
         {

@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Briefcase } from "lucide-react";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
@@ -12,89 +11,26 @@ import Botao from "../../components/Botao/Botao";
 import Paginacao from "../../components/Paginacao/Paginacao";
 import { listarCargos, deletarCargo } from "../../services/cargoService";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
-import { useDebounce } from "../../hooks/useDebounce";
+import { useListaPaginada } from "../../hooks/useListaPaginada";
 
 function ListaCargos() {
 
     const navigate = useNavigate();
-    const [cargos, setCargos] = useState([]);
-    const [carregando, setCarregando] = useState(true);
-    const [busca, setBusca] = useState("");
-    const [ordemCrescente, setOrdemCrescente] = useState(true);
-    const [paginaAtual, setPaginaAtual] = useState(0);
-    const [totalPaginas, setTotalPaginas] = useState(0);
-    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
-    const [cargoParaApagar, setCargoParaApagar] = useState(null);
-    const [apagando, setApagando] = useState(false);
-
-    const buscaComAtraso = useDebounce(busca);
-
-    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
-
-    async function carregarCargos(pagina) {
-        setCarregando(true);
-
-        const dados = await listarCargos({
-            nome: buscaComAtraso,
-            page: pagina,
-            direcao: ordemCrescente ? 'asc' : 'desc'
-        });
-
-        setCargos(dados.content || []);
-        setTotalPaginas(dados.totalPages || 0);
-        setCarregando(false);
-    }
-
-    const [buscaAnterior, setBuscaAnterior] = useState(buscaComAtraso);
-    const [ordemAnterior, setOrdemAnterior] = useState(ordemCrescente);
-    if (buscaComAtraso !== buscaAnterior || ordemCrescente !== ordemAnterior) {
-        setBuscaAnterior(buscaComAtraso);
-        setOrdemAnterior(ordemCrescente);
-        if (paginaAtual !== 0) {
-            setPaginaAtual(0);
-        }
-    }
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        carregarCargos(paginaAtual);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [buscaComAtraso, ordemCrescente, paginaAtual]);
-
-    const handlePedirConfirmacao = (cargo) => {
-        setCargoParaApagar(cargo);
-    };
-
-    const handleCancelarApagar = () => {
-        if (apagando) return;
-        setCargoParaApagar(null);
-    };
-
-    const handleConfirmarApagar = async () => {
-        if (!cargoParaApagar) return;
-
-        setApagando(true);
-        setFeedback({ tipo: '', msg: 'Apagando cargo...', loading: true });
-
-        const sucesso = await deletarCargo(cargoParaApagar.id);
-
-        setApagando(false);
-        setCargoParaApagar(null);
-
-        if (sucesso) {
-            setFeedback({ tipo: 'sucesso', msg: 'Cargo apagado com sucesso!', loading: false });
-
-            const deveVoltarPagina = cargos.length === 1 && paginaAtual > 0;
-
-            if (deveVoltarPagina) {
-                setPaginaAtual((pagina) => pagina - 1);
-            } else {
-                carregarCargos(paginaAtual);
-            }
-        } else {
-            setFeedback({ tipo: 'erro', msg: 'Não foi possível apagar o cargo.', loading: false });
-        }
-    };
+    const {
+        itens, carregando,
+        busca, setBusca, alternarOrdem,
+        paginaAtual, setPaginaAtual, totalPaginas,
+        feedback, fecharFeedback,
+        itemParaApagar, pedirConfirmacao, cancelarApagar, confirmarApagar, apagando,
+    } = useListaPaginada({
+        listar: listarCargos,
+        apagar: deletarCargo,
+        mensagens: {
+            apagando: 'Apagando cargo...',
+            sucesso: 'Cargo apagado com sucesso!',
+            erro: 'Não foi possível apagar o cargo.',
+        },
+    });
 
     return (
         <PaginaLista nomeTela='Lista de Cargos' feedback={feedback} onFecharFeedback={fecharFeedback}>
@@ -102,19 +38,19 @@ function ListaCargos() {
                 busca={busca}
                 onBuscaChange={(e) => setBusca(e.target.value)}
                 placeholderBusca='Buscar Cargo'
-                onOrdenar={() => setOrdemCrescente((v) => !v)}
+                onOrdenar={alternarOrdem}
                 onCadastrar={() => navigate('/cargos/cadastro-cargo')}
             />
 
             <ListaStatus
                 carregando={carregando}
-                vazio={cargos.length === 0}
+                vazio={itens.length === 0}
                 mensagemCarregando='Carregando cargos...'
                 mensagemVazia='Nenhum cargo encontrado.'
             />
 
             <ListaContainer>
-                {cargos.map((cargo) => {
+                {itens.map((cargo) => {
                     return (
                         <ListaItem
                             key={cargo.id}
@@ -126,7 +62,7 @@ function ListaCargos() {
                             acoes={(
                                 <>
                                     <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/cargos/${cargo.id}/editar`)} />
-                                    <Botao nome='Apagar' cor='#DC2626' acao={() => handlePedirConfirmacao(cargo)} />
+                                    <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(cargo)} />
                                 </>
                             )}
                         >
@@ -140,15 +76,15 @@ function ListaCargos() {
             <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
             <ModalConfirmacao
-                aberto={!!cargoParaApagar}
+                aberto={!!itemParaApagar}
                 titulo="Apagar cargo"
-                mensagem={cargoParaApagar ? `Deseja realmente apagar o cargo "${cargoParaApagar.nome}"? Essa ação não pode ser desfeita.` : ''}
+                mensagem={itemParaApagar ? `Deseja realmente apagar o cargo "${itemParaApagar.nome}"? Essa ação não pode ser desfeita.` : ''}
                 textoConfirmar="Sim, apagar"
                 textoCancelar="Não"
                 corConfirmar="#DC2626"
                 carregando={apagando}
-                onConfirmar={handleConfirmarApagar}
-                onCancelar={handleCancelarApagar}
+                onConfirmar={confirmarApagar}
+                onCancelar={cancelarApagar}
             />
         </PaginaLista>
     );

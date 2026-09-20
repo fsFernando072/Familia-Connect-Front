@@ -1,100 +1,41 @@
 import api from "./apiClient";
+import { criarServicoBase, enviarComFeedback } from "./servicoBase";
 
-// Formato de página vazia, usado quando não há resultados ou a requisição falha.
-const PAGINA_VAZIA = { content: [], totalPages: 0, totalElements: 0, number: 0 };
+const base = criarServicoBase("/categorias", { singular: "categoria", plural: "categorias" });
 
-export async function listarCategorias({ nome = "", page = 0, size = 10, direcao = "asc" } = {}) {
-    try {
-        const response = await api.get('/categorias', {
-            params: { nome: nome?.trim() || undefined, page, size, direcao }
-        });
+export const listarCategorias = base.listar;
+export const buscarCategoriaPorId = base.buscarPorId;
+export const deletarCategoria = base.deletar;
 
-        if (response.status === 200) return response.data;
-        return { ...PAGINA_VAZIA, number: page };
-    } catch (error) {
-        console.error('Erro ao buscar categorias:', error);
-        return { ...PAGINA_VAZIA, number: page };
-    }
+function validarDadosCategoria(nome) {
+    return nome ? null : 'Informe o nome da categoria.';
 }
 
-export async function buscarCategoriaPorId(id) {
-    try {
-        const response = await api.get(`/categorias/${id}`);
-
-        if (response.status === 200) return response.data;
-        return null;
-    } catch (error) {
-        console.error('Erro ao buscar categoria:', error);
-        return null;
-    }
+export function cadastrarCategoria(nome, navigate, setFeedback) {
+    return enviarComFeedback({
+        erroValidacao: validarDadosCategoria(nome),
+        requisicao: () => api.post('/categorias', { nome }),
+        msgCarregando: 'Cadastrando categoria...',
+        sucesso: { status: 201, msg: 'Categoria cadastrada com sucesso!', rota: '/categorias' },
+        erros: { 409: 'Categoria já cadastrada. Nenhum dado foi salvo.' },
+        msgErro: 'Não foi possível cadastrar a categoria. Nenhum dado foi salvo.',
+        navigate,
+        setFeedback,
+    });
 }
 
-export async function deletarCategoria(id) {
-    try {
-        const response = await api.delete(`/categorias/${id}`);
-
-        return response.status === 204;
-    } catch (error) {
-        console.error('Erro ao apagar categoria:', error);
-        return false;
-    }
-}
-
-function validarDadosCategoria(nome, setFeedback) {
-    if (!nome) {
-        setFeedback({ tipo: 'erro', msg: 'Informe o nome da categoria.', loading: false });
-        return false;
-    }
-
-    return true;
-}
-
-export async function cadastrarCategoria(nome, navigate, setFeedback) {
-
-    if (!validarDadosCategoria(nome, setFeedback)) return;
-
-    setFeedback({ tipo: '', msg: 'Cadastrando categoria...', loading: true });
-
-    try {
-        const response = await api.post('/categorias', { nome });
-
-        if (response.status === 201) {
-            setFeedback({ tipo: 'sucesso', msg: 'Categoria cadastrada com sucesso!', loading: false });
-            setTimeout(() => navigate("/categorias"), 2000);
-        } else if (response.status === 409) {
-            setFeedback({ tipo: 'erro', msg: 'Categoria já cadastrada. Nenhum dado foi salvo.', loading: false });
-        } else if (response.status === 401) {
-            setFeedback({ tipo: 'erro', msg: 'Ação não autorizada.', loading: false });
-        } else {
-            setFeedback({ tipo: 'erro', msg: 'Não foi possível cadastrar a categoria. Nenhum dado foi salvo.', loading: false });
-        }
-    } catch {
-        setFeedback({ tipo: 'erro', msg: 'Erro de conexão. Nenhum dado foi salvo.', loading: false });
-    }
-}
-
-export async function atualizarCategoria(id, nome, navigate, setFeedback) {
-
-    if (!validarDadosCategoria(nome, setFeedback)) return;
-
-    setFeedback({ tipo: '', msg: 'Atualizando categoria...', loading: true });
-
-    try {
-        const response = await api.put(`/categorias/${id}`, { nome });
-
-        if (response.status === 200) {
-            setFeedback({ tipo: 'sucesso', msg: 'Categoria atualizada com sucesso!', loading: false });
-            setTimeout(() => navigate("/categorias"), 2000);
-        } else if (response.status === 409) {
-            setFeedback({ tipo: 'erro', msg: 'Categoria já cadastrada para outro nome. Nenhum dado foi salvo.', loading: false });
-        } else if (response.status === 404) {
-            setFeedback({ tipo: 'erro', msg: 'Categoria não encontrada.', loading: false });
-        } else if (response.status === 401) {
-            setFeedback({ tipo: 'erro', msg: 'Ação não autorizada.', loading: false });
-        } else {
-            setFeedback({ tipo: 'erro', msg: 'Não foi possível atualizar a categoria.', loading: false });
-        }
-    } catch {
-        setFeedback({ tipo: 'erro', msg: 'Erro de conexão. Nenhum dado foi salvo.', loading: false });
-    }
+export function atualizarCategoria(id, nome, navigate, setFeedback) {
+    return enviarComFeedback({
+        erroValidacao: validarDadosCategoria(nome),
+        requisicao: () => api.put(`/categorias/${id}`, { nome }),
+        msgCarregando: 'Atualizando categoria...',
+        sucesso: { status: 200, msg: 'Categoria atualizada com sucesso!', rota: '/categorias' },
+        erros: {
+            409: 'Categoria já cadastrada para outro nome. Nenhum dado foi salvo.',
+            404: 'Categoria não encontrada.',
+        },
+        msgErro: 'Não foi possível atualizar a categoria.',
+        navigate,
+        setFeedback,
+    });
 }

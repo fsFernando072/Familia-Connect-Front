@@ -1,7 +1,8 @@
 import axios from "axios";
+import { somenteDigitos } from "../utils/mascaras";
 
 export async function buscarEnderecoPorCep(cep) {
-    const cepLimpo = cep.replace(/\D/g, "");
+    const cepLimpo = somenteDigitos(cep);
     if (cepLimpo.length !== 8) return null;
 
     try {

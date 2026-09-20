@@ -5,6 +5,7 @@ import Formulario from "../../components/Formulario/Formulario";
 import { listarProdutos } from "../../services/produtoService";
 import { buscarHistoricoEstoquePorId, atualizarHistoricoEstoque } from "../../services/historicoEstoqueService";
 import { converterDataParaBr } from "../../utils/formatadores";
+import { useFeedback } from "../../hooks/useFeedback";
 
 function EditarHistoricoEstoque() {
 
@@ -12,14 +13,13 @@ function EditarHistoricoEstoque() {
     const navigate = useNavigate();
     const [carregando, setCarregando] = useState(true);
     const [historicoEncontrado, setHistoricoEncontrado] = useState(true);
-    const [feedback, setFeedback] = useState({ tipo: '', msg: '', loading: false });
+    const { feedback, setFeedback, fecharFeedback } = useFeedback();
     const [produtos, setProdutos] = useState([]);
 
     const [produtoId, setProdutoId] = useState("");
     const [quantidade, setQuantidade] = useState("");
     const [dataEstoque, setDataEstoque] = useState("");
 
-    const fecharFeedback = () => setFeedback({ tipo: '', msg: '', loading: false });
 
     useEffect(() => {
         async function carregarDadosIniciais() {

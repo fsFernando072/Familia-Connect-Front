@@ -1,52 +1,16 @@
 import api from "./apiClient";
+import { criarServicoBase, enviarComFeedback } from "./servicoBase";
 
-// Formato de página vazia, usado quando não há resultados ou a requisição falha.
-const PAGINA_VAZIA = { content: [], totalPages: 0, totalElements: 0, number: 0 };
+const base = criarServicoBase("/produtos", { singular: "produto", plural: "produtos" });
 
-export async function listarProdutos({ nome = "", page = 0, size = 10, direcao = "asc" } = {}) {
-    try {
-        const response = await api.get('/produtos', {
-            params: { nome: nome?.trim() || undefined, page, size, direcao }
-        });
+export const listarProdutos = base.listar;
+export const buscarProdutoPorId = base.buscarPorId;
+export const deletarProduto = base.deletar;
 
-        if (response.status === 200) return response.data;
-        return { ...PAGINA_VAZIA, number: page };
-    } catch (error) {
-        console.error('Erro ao buscar produtos:', error);
-        return { ...PAGINA_VAZIA, number: page };
-    }
-}
-
-export async function buscarProdutoPorId(id) {
-    try {
-        const response = await api.get(`/produtos/${id}`);
-
-        if (response.status === 200) return response.data;
-        return null;
-    } catch (error) {
-        console.error('Erro ao buscar produto:', error);
-        return null;
-    }
-}
-
-export async function deletarProduto(id) {
-    try {
-        const response = await api.delete(`/produtos/${id}`);
-
-        return response.status === 204;
-    } catch (error) {
-        console.error('Erro ao apagar produto:', error);
-        return false;
-    }
-}
-
-function validarDadosProduto(produto, setFeedback) {
-    if (!produto.nome || !produto.categoriaId) {
-        setFeedback({ tipo: 'erro', msg: 'Preencha o nome do produto e selecione uma categoria.', loading: false });
-        return false;
-    }
-
-    return true;
+function validarDadosProduto(produto) {
+    return (!produto.nome || !produto.categoriaId)
+        ? 'Preencha o nome do produto e selecione uma categoria.'
+        : null;
 }
 
 function montarPayloadProduto(produto) {
@@ -57,58 +21,34 @@ function montarPayloadProduto(produto) {
     };
 }
 
-export async function cadastrarProduto(produto, navigate, setFeedback) {
-
-    if (!validarDadosProduto(produto, setFeedback)) return;
-
-    setFeedback({ tipo: '', msg: 'Cadastrando produto...', loading: true });
-
-    const payload = montarPayloadProduto(produto);
-
-    try {
-        const response = await api.post('/produtos', payload);
-
-        if (response.status === 201) {
-            setFeedback({ tipo: 'sucesso', msg: 'Produto cadastrado com sucesso!', loading: false });
-            setTimeout(() => navigate("/produtos"), 2000);
-        } else if (response.status === 409) {
-            setFeedback({ tipo: 'erro', msg: 'Produto já cadastrado. Nenhum dado foi salvo.', loading: false });
-        } else if (response.status === 404) {
-            setFeedback({ tipo: 'erro', msg: 'Categoria informada não foi encontrada. Nenhum dado foi salvo.', loading: false });
-        } else if (response.status === 401) {
-            setFeedback({ tipo: 'erro', msg: 'Ação não autorizada.', loading: false });
-        } else {
-            setFeedback({ tipo: 'erro', msg: 'Não foi possível cadastrar o produto. Nenhum dado foi salvo.', loading: false });
-        }
-    } catch {
-        setFeedback({ tipo: 'erro', msg: 'Erro de conexão. Nenhum dado foi salvo.', loading: false });
-    }
+export function cadastrarProduto(produto, navigate, setFeedback) {
+    return enviarComFeedback({
+        erroValidacao: validarDadosProduto(produto),
+        requisicao: () => api.post('/produtos', montarPayloadProduto(produto)),
+        msgCarregando: 'Cadastrando produto...',
+        sucesso: { status: 201, msg: 'Produto cadastrado com sucesso!', rota: '/produtos' },
+        erros: {
+            409: 'Produto já cadastrado. Nenhum dado foi salvo.',
+            404: 'Categoria informada não foi encontrada. Nenhum dado foi salvo.',
+        },
+        msgErro: 'Não foi possível cadastrar o produto. Nenhum dado foi salvo.',
+        navigate,
+        setFeedback,
+    });
 }
 
-export async function atualizarProduto(id, produto, navigate, setFeedback) {
-
-    if (!validarDadosProduto(produto, setFeedback)) return;
-
-    setFeedback({ tipo: '', msg: 'Atualizando produto...', loading: true });
-
-    const payload = montarPayloadProduto(produto);
-
-    try {
-        const response = await api.put(`/produtos/${id}`, payload);
-
-        if (response.status === 200) {
-            setFeedback({ tipo: 'sucesso', msg: 'Produto atualizado com sucesso!', loading: false });
-            setTimeout(() => navigate("/produtos"), 2000);
-        } else if (response.status === 409) {
-            setFeedback({ tipo: 'erro', msg: 'Produto já cadastrado para outra categoria. Nenhum dado foi salvo.', loading: false });
-        } else if (response.status === 404) {
-            setFeedback({ tipo: 'erro', msg: 'Produto ou categoria não encontrados.', loading: false });
-        } else if (response.status === 401) {
-            setFeedback({ tipo: 'erro', msg: 'Ação não autorizada.', loading: false });
-        } else {
-            setFeedback({ tipo: 'erro', msg: 'Não foi possível atualizar o produto.', loading: false });
-        }
-    } catch {
-        setFeedback({ tipo: 'erro', msg: 'Erro de conexão. Nenhum dado foi salvo.', loading: false });
-    }
+export function atualizarProduto(id, produto, navigate, setFeedback) {
+    return enviarComFeedback({
+        erroValidacao: validarDadosProduto(produto),
+        requisicao: () => api.put(`/produtos/${id}`, montarPayloadProduto(produto)),
+        msgCarregando: 'Atualizando produto...',
+        sucesso: { status: 200, msg: 'Produto atualizado com sucesso!', rota: '/produtos' },
+        erros: {
+            409: 'Produto já cadastrado para outra categoria. Nenhum dado foi salvo.',
+            404: 'Produto ou categoria não encontrados.',
+        },
+        msgErro: 'Não foi possível atualizar o produto.',
+        navigate,
+        setFeedback,
+    });
 }
