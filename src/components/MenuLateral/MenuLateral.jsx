@@ -40,7 +40,7 @@ function MenuLateral({ aberto, onFechar }) {
                     </div>
                 </div>
 
-                <nav className="flex-1 overflow-y-auto px-3 pb-4 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.18)_transparent]">
+                <nav className="flex-1 overflow-y-auto px-3 pb-4 [scrollbar-thin] [scrollbar-color:rgba(255,255,255,0.18)_transparent]">
                     <ul className="flex flex-col gap-1">
                         {itensMenu.map(({ titulo, rota, Icone }) => (
                             <li key={rota}>

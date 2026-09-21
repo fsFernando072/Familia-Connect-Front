@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "./apiClient";
 import { somenteDigitos } from "../utils/mascaras";
 
 export async function buscarEnderecoPorCep(cep) {
@@ -6,9 +6,9 @@ export async function buscarEnderecoPorCep(cep) {
     if (cepLimpo.length !== 8) return null;
 
     try {
-        const { data } = await axios.get(`https://viacep.com.br/ws/${cepLimpo}/json/`);
-        if (data.erro) return null;
-        return data;
+        const response = await api.get(`/cep/${cepLimpo}`);
+        if (response.status !== 200) return null;
+        return response.data;
     } catch (error) {
         console.error("Erro ao buscar CEP:", error);
         return null;

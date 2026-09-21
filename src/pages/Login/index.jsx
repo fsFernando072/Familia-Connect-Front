@@ -42,7 +42,7 @@ function Login() {
     };
 
     return (
-        <div className='w-full min-h-screen overflow-x-hidden flex flex-col justify-center items-center px-4 py-10 bg-gradient-to-br from-[#0c3750] via-cifa-navy to-[#0e3247]'>
+        <div className='w-full min-h-screen overflow-x-hidden flex flex-col justify-center items-center px-4 py-10 bg-linear-to-br from-[#0c3750] via-cifa-navy to-[#0e3247]'>
             <div className='w-full max-w-md bg-white rounded-3xl border border-cifa-linha shadow-xl px-6 py-8 sm:px-10 sm:py-10 flex flex-col items-center'>
                 <div className='w-28 h-28 rounded-full bg-cifa-fundo border border-cifa-linha flex items-center justify-center mb-6'>
                     <img src={logo} className='w-20 h-auto' alt='Logo' />
