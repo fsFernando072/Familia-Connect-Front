@@ -53,7 +53,7 @@ function EditarFamilia() {
                 dadosIniciais={dadosIniciais}
                 opcoes={opcoes}
                 labelImagem='Trocar imagem'
-                nomeBotaoFinal='Salvar'
+                nomeBotaoFinal='Confirmar'
                 onSalvar={(responsavel, endereco, dependentes) =>
                     atualizarFamilia(id, responsavel, endereco, dependentes, navigate, setFeedback)}
                 setFeedback={setFeedback}

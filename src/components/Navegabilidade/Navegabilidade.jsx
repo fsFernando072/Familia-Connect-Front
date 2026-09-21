@@ -30,7 +30,7 @@ function Navegabilidade({ sufixoUltimo }) {
                         <span key={rota}>
                             {" > "}
                             <Link to={rota} className="underline hover:text-blue-800">
-                                Detalhes Família
+                                Detalhes da Família
                             </Link>
                         </span>
                     );

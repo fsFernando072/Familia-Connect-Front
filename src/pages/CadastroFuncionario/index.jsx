@@ -57,7 +57,7 @@ function Cadastro() {
             id: 'senha',
             tipo: 'texto',
             coluna: 1,
-            label: 'Senha',
+            label: 'Senha do Funcionário',
             type: mostrarSenha ? 'text' : 'password',
             value: senha,
             onChange: (e) => setSenha(e.target.value),

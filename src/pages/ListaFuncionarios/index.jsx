@@ -39,7 +39,7 @@ function ListaFuncionarios() {
             <ListaAcoes
                 busca={busca}
                 onBuscaChange={(e) => setBusca(e.target.value)}
-                placeholderBusca='Funcionário'
+                placeholderBusca='Buscar Funcionário'
                 onOrdenar={alternarOrdem}
                 onCadastrar={() => navigate('/funcionarios/cadastro-funcionario')}
             />

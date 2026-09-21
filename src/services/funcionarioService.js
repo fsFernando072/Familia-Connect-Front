@@ -13,7 +13,7 @@ const TAMANHO_MINIMO_SENHA = 8;
 // Mesmas regras para cadastrar e atualizar.
 function validarDadosFuncionario({ nome, cpf, senha, senhaConfirmada, idCargo }) {
     if (!nome || !cpf || !senha || !senhaConfirmada || !idCargo) {
-        return 'Os campos são obrigatórios';
+        return 'Os campos são obrigatórios.';
     }
 
     if (!validarCpf(cpf)) {
@@ -21,11 +21,11 @@ function validarDadosFuncionario({ nome, cpf, senha, senhaConfirmada, idCargo })
     }
 
     if (senha.length < TAMANHO_MINIMO_SENHA || senhaConfirmada.length < TAMANHO_MINIMO_SENHA) {
-        return `A senha deve ter no mínimo ${TAMANHO_MINIMO_SENHA} caracteres`;
+        return `A senha deve ter no mínimo ${TAMANHO_MINIMO_SENHA} caracteres.`;
     }
 
     if (senha !== senhaConfirmada) {
-        return 'As senhas têm que ser iguais';
+        return 'As senhas têm que ser iguais.';
     }
 
     return null;
@@ -41,11 +41,10 @@ export function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, idCargo,
     return enviarComFeedback({
         erroValidacao: validarDadosFuncionario(dados),
         requisicao: () => api.post('/funcionarios', montarFormDataFuncionario(dados, foto)),
-        msgCarregando: 'Verificando...',
+        msgCarregando: 'Cadastrando funcionário...',
         sucesso: { status: 201, msg: 'Funcionário cadastrado com sucesso!', rota: '/funcionarios' },
         erros: { 404: 'Cargo não encontrado.' },
         msgErro: 'Não foi possível cadastrar o funcionário.',
-        msgConexao: 'Erro de conexão. Tente novamente.',
         navigate,
         setFeedback,
     });
@@ -57,11 +56,10 @@ export function atualizarFuncionario(id, nome, cpf, senha, senhaConfirmada, idCa
     return enviarComFeedback({
         erroValidacao: validarDadosFuncionario(dados),
         requisicao: () => api.put(`/funcionarios/${id}`, montarFormDataFuncionario(dados, foto)),
-        msgCarregando: 'Atualizando...',
+        msgCarregando: 'Atualizando funcionário...',
         sucesso: { status: 200, msg: 'Funcionário atualizado com sucesso!', rota: '/funcionarios' },
         erros: { 404: 'Funcionário ou cargo não encontrado.' },
         msgErro: 'Não foi possível atualizar o funcionário.',
-        msgConexao: 'Erro de conexão. Tente novamente.',
         navigate,
         setFeedback,
     });

@@ -33,7 +33,7 @@ function ListaCategorias() {
     });
 
     return (
-        <PaginaLista nomeTela='Lista de Categorias de Produto' feedback={feedback} onFecharFeedback={fecharFeedback}>
+        <PaginaLista nomeTela='Lista de Categorias' feedback={feedback} onFecharFeedback={fecharFeedback}>
             <ListaAcoes
                 busca={busca}
                 onBuscaChange={(e) => setBusca(e.target.value)}

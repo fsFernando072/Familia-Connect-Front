@@ -55,7 +55,7 @@ function EditarProduto() {
             id: 'nome',
             tipo: 'texto',
             coluna: 1,
-            label: 'Nome Produto',
+            label: 'Nome do Produto',
             value: nomeProduto,
             onChange: (e) => setNomeProduto(e.target.value),
             placeholder: 'Cesta Básica'

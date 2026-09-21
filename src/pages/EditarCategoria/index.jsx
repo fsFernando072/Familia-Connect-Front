@@ -42,7 +42,7 @@ function EditarCategoria() {
             id: 'nome',
             tipo: 'texto',
             coluna: 1,
-            label: 'Nome Categoria',
+            label: 'Nome da Categoria',
             value: nomeCategoria,
             onChange: (e) => setNomeCategoria(e.target.value),
             placeholder: 'Vestimenta'
@@ -51,7 +51,7 @@ function EditarCategoria() {
 
     return (
         <PaginaFormulario
-            nomeTela='Editar Categoria de Produto'
+            nomeTela='Editar Categoria'
             carregando={carregando}
             carregandoTexto='Carregando categoria...'
             encontrado={categoriaEncontrada}
@@ -64,7 +64,7 @@ function EditarCategoria() {
                 nomeBotao='Confirmar'
                 corBotao='#34C759'
                 acaoBotao={handleAtualizar}
-                alinhamentoBotao='start'
+                alinhamentoBotao='end'
             />
         </PaginaFormulario>
     );

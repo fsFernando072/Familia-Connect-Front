@@ -38,7 +38,7 @@ function DetalhesFamilia() {
 
     return (
         <PaginaFormulario
-            nomeTela='Detalhes Família'
+            nomeTela='Detalhes da Família'
             carregando={carregando}
             carregandoTexto='Carregando família...'
             encontrado={!!familia}

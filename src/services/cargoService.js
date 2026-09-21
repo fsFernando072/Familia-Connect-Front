@@ -62,12 +62,6 @@ const ACESSOS = [
 // Formato esperado pelo CampoCheckbox (id) e pelo vínculo cargo-acesso (acessoId).
 export const PERMISSOES_CARGO = ACESSOS.map(([id, nome]) => ({ id, acessoId: id, nome }));
 
-// Busca o nome amigável de um acesso (ex.: "Cadastrar famílias") a partir do seu id.
-export function nomeAcessoPorId(acessoId) {
-    const permissao = PERMISSOES_CARGO.find((p) => p.acessoId === Number(acessoId));
-    return permissao?.nome;
-}
-
 function validarDadosCargo(nome) {
     return nome?.trim() ? null : 'O nome do cargo é obrigatório.';
 }
@@ -83,7 +77,6 @@ export function cadastrarCargo(nome, descricao, idsPermissoesSelecionadas, navig
         msgCarregando: 'Cadastrando cargo...',
         sucesso: { status: 201, msg: 'Cargo cadastrado com sucesso!', rota: '/cargos' },
         msgErro: 'Não foi possível cadastrar o cargo.',
-        msgConexao: 'Erro de conexão. Não foi possível cadastrar o cargo.',
         navigate,
         setFeedback,
         aposSucesso: async (response) => {
@@ -129,7 +122,6 @@ export function atualizarCargo(id, nome, descricao, idsPermissoesSelecionadas, a
         sucesso: { status: 200, msg: 'Cargo atualizado com sucesso!', rota: '/cargos' },
         erros: { 404: 'Cargo não encontrado.' },
         msgErro: 'Não foi possível atualizar o cargo.',
-        msgConexao: 'Erro de conexão. Não foi possível atualizar o cargo.',
         navigate,
         setFeedback,
         aposSucesso: async () => {

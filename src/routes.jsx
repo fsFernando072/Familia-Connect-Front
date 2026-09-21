@@ -47,7 +47,7 @@ function AppRoutes() {
                   
                 <Route path="/cargos" element={<ListaCargos />} />
                 <Route path="/cargos/cadastro-cargo" element={<CadastroCargo />} />
-                <Route path="/cargos/:id/editar" element={<EditarCargo />} />
+                <Route path="/cargos/:id/editar-cargo" element={<EditarCargo />} />
 
                 <Route path="/historico-estoque" element={<ListaHistoricoEstoque />} />
                 <Route path="/historico-estoque/cadastro-estoque" element={<CadastroHistoricoEstoque />} />

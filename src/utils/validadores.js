@@ -26,5 +26,6 @@ export function validarRg(rg) {
 }
 
 export function validarTelefone(telefone) {
-    return somenteDigitos(telefone).length === 11;
+    const tamanho = somenteDigitos(telefone).length;
+    return tamanho === 10 || tamanho === 11; // fixo ou celular
 }

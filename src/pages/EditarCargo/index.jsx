@@ -52,7 +52,7 @@ function EditarCargo() {
             id: 'nome',
             tipo: 'texto',
             coluna: 1,
-            label: 'Nome do Cargo:',
+            label: 'Nome do Cargo',
             value: nome,
             onChange: (e) => setNome(e.target.value),
             placeholder: 'Recepcionista'
@@ -61,7 +61,7 @@ function EditarCargo() {
             id: 'permissoes',
             tipo: 'checkbox',
             coluna: 1,
-            label: 'Permissões no Sistema para o Cargo:',
+            label: 'Permissões no Sistema para o Cargo',
             opcoes: PERMISSOES_CARGO,
             value: idsPermissoes,
             onChange: setIdsPermissoes
@@ -70,7 +70,7 @@ function EditarCargo() {
             id: 'descricao',
             tipo: 'textarea',
             coluna: 2,
-            label: 'Descrição do Cargo:',
+            label: 'Descrição do Cargo',
             value: descricao,
             onChange: (e) => setDescricao(e.target.value),
             placeholder: 'Descreva as responsabilidades do cargo'
@@ -93,6 +93,7 @@ function EditarCargo() {
                 nomeBotao='Confirmar'
                 corBotao='#34C759'
                 acaoBotao={handleAtualizar}
+                alinhamentoBotao="end"
             />
         </PaginaFormulario>
     );

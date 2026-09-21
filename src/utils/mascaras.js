@@ -16,10 +16,15 @@ export const mascaraRg = (valor) =>
         .replace(/(\d{3})(\d)/, "$1.$2")
         .replace(/(\d{3})(\d)$/, "$1-$2");
 
-export const mascaraTelefone = (valor) =>
-    somenteDigitos(valor, 11)
-        .replace(/(\d{2})(\d)/, "($1) $2")
-        .replace(/(\d{5})(\d{1,4})$/, "$1-$2");
+// Aceita fixo (10 dígitos: (11) 1234-5678) e celular (11 dígitos: (11) 91234-5678).
+export const mascaraTelefone = (valor) => {
+    const digitos = somenteDigitos(valor, 11);
+
+    if (digitos.length <= 2) return digitos;
+    if (digitos.length <= 6) return digitos.replace(/(\d{2})(\d+)/, "($1) $2");
+    if (digitos.length <= 10) return digitos.replace(/(\d{2})(\d{4})(\d+)/, "($1) $2-$3");
+    return digitos.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+};
 
 export const mascaraCep = (valor) =>
     somenteDigitos(valor, 8)
@@ -29,9 +34,3 @@ export const mascaraData = (valor) =>
     somenteDigitos(valor, 8)
         .replace(/(\d{2})(\d)/, "$1/$2")
         .replace(/(\d{2})(\d{1,4})$/, "$1/$2");
-
-export const mascaraMoeda = (valor) => {
-    const digitos = somenteDigitos(valor);
-    if (!digitos) return "";
-    return (Number(digitos) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-};

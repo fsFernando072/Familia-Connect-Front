@@ -21,7 +21,7 @@ function CadastroCategoria() {
             id: 'nome',
             tipo: 'texto',
             coluna: 1,
-            label: 'Nome Categoria',
+            label: 'Nome da Categoria',
             value: nomeCategoria,
             onChange: (e) => setNomeCategoria(e.target.value),
             placeholder: 'Vestimenta'
@@ -29,13 +29,13 @@ function CadastroCategoria() {
     ];
 
     return (
-        <PaginaFormulario nomeTela='Cadastro de Categoria de Produto' feedback={feedback} onFecharFeedback={fecharFeedback}>
+        <PaginaFormulario nomeTela='Cadastro de Categoria' feedback={feedback} onFecharFeedback={fecharFeedback}>
             <Formulario
                 campos={campos}
                 nomeBotao='Cadastrar'
                 corBotao='#34C759'
                 acaoBotao={handleCadastrar}
-                alinhamentoBotao='start'
+                alinhamentoBotao='end'
             />
         </PaginaFormulario>
     );

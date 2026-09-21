@@ -27,7 +27,7 @@ function FormularioFamilia({
     dadosIniciais,
     opcoes,
     labelImagem = 'Imagem da família',
-    nomeBotaoFinal = 'Salvar',
+    nomeBotaoFinal = 'Confirmar',
     preSelecionarSP = false,
     onSalvar,
     setFeedback,

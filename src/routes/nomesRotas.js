@@ -18,8 +18,7 @@ const nomesRotas = {
     "editar-produto": "Editar Produto",
     "editar-categoria": "Editar Categoria",
     "editar-cargo": "Editar Cargo",
-    "editar-estoque": "Editar Estoque",
-    "editar": "Editar Cargo"
+    "editar-estoque": "Editar Estoque"
 };
 
 export default nomesRotas;

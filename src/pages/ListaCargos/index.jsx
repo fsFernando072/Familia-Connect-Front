@@ -61,7 +61,7 @@ function ListaCargos() {
                             )}
                             acoes={(
                                 <>
-                                    <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/cargos/${cargo.id}/editar`)} />
+                                    <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/cargos/${cargo.id}/editar-cargo`)} />
                                     <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(cargo)} />
                                 </>
                             )}
