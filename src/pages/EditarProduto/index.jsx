@@ -68,7 +68,7 @@ function EditarProduto() {
             value: categoriaId,
             onChange: (e) => setCategoriaId(e.target.value),
             opcoes: categorias,
-            acao: { nome: 'Criar Categoria', cor: '#2C2C2C', onClick: () => navigate('/categorias/cadastro-categoria') }
+            acao: { nome: 'Criar Categoria', cor: '#0A243E', onClick: () => navigate('/categorias/cadastro-categoria') }
         },
         {
             id: 'descricao',
@@ -96,7 +96,7 @@ function EditarProduto() {
                 campos={campos}
                 colunas={2}
                 nomeBotao='Confirmar'
-                corBotao='#34C759'
+                corBotao='#44BEB7'
                 acaoBotao={handleAtualizar}
                 alinhamentoBotao='end'
             />

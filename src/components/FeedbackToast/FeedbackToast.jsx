@@ -14,7 +14,7 @@ function FeedbackToast({ tipo, msg, loading, onClose }) {
     const estilos = {
         sucesso: { bg: '#dcfce7', borda: '#16a34a', texto: '#15803d' },
         erro:    { bg: '#fee2e2', borda: '#dc2626', texto: '#b91c1c' },
-        '':      { bg: '#e0f2fe', borda: '#0284c7', texto: '#0369a1' }, // loading
+        '':      { bg: '#d9eaeb', borda: '#137d91', texto: '#08425d' }, // loading
     };
 
     const { bg, borda, texto } = estilos[tipo] ?? estilos[''];

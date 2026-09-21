@@ -5,6 +5,7 @@ import CampoRadio from '../CampoRadio/CampoRadio';
 import CampoSelect from '../CampoSelect/CampoSelect';
 import CampoProfissao from '../CampoProfissao/CampoProfissao';
 import UploadImagem from '../UploadImagem/UploadImagem';
+import { CLASSE_LABEL, CLASSE_INPUT } from '../estilosCampo';
 
 function renderCampo(campo) {
     switch (campo.tipo) {
@@ -59,26 +60,26 @@ function renderCampo(campo) {
         case 'textarea':
             return (
                 <div>
-                    <label className='block text-lg font-bold text-gray-900 mb-1'>{campo.label}</label>
+                    <label className={CLASSE_LABEL}>{campo.label}</label>
                     <textarea
                         value={campo.value}
                         onChange={campo.onChange}
                         rows={campo.rows || 9}
                         placeholder={campo.placeholder}
-                        className='w-full px-3 py-2.5 border border-gray-800 rounded-md text-base bg-white placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 resize-none'
+                        className={`${CLASSE_INPUT} resize-none`}
                     />
-                    {campo.ajuda && <span className='text-xs text-gray-400 mt-1 block'>{campo.ajuda}</span>}
+                    {campo.ajuda && <span className='text-xs text-cifa-apagado mt-1 block'>{campo.ajuda}</span>}
                 </div>
             );
         case 'select-com-acao':
             return (
                 <div>
-                    <label className='block text-lg font-bold text-gray-900 mb-1'>{campo.label}</label>
+                    <label className={CLASSE_LABEL}>{campo.label}</label>
                     <div className='flex gap-2 items-center'>
                         <select
                             value={campo.value ?? ""}
                             onChange={campo.onChange}
-                            className='flex-1 min-w-0 px-3 py-2.5 border border-gray-800 rounded-md text-sm bg-white text-black focus:outline-none'
+                            className={`${CLASSE_INPUT} flex-1 min-w-0`}
                         >
                             <option value="">Selecionar</option>
                             {campo.opcoes.map((item) => (
@@ -146,7 +147,7 @@ function Formulario({
                 <button
                     type='button'
                     onClick={botaoVoltar.onClick}
-                    className='text-gray-600 font-medium hover:underline cursor-pointer text-center sm:text-left'
+                    className='text-cifa-apagado font-semibold hover:text-cifa-navy hover:underline cursor-pointer text-center sm:text-left'
                 >
                     {botaoVoltar.nome || 'Voltar'}
                 </button>

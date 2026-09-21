@@ -62,7 +62,7 @@ function EditarCategoria() {
             <Formulario
                 campos={campos}
                 nomeBotao='Confirmar'
-                corBotao='#34C759'
+                corBotao='#44BEB7'
                 acaoBotao={handleAtualizar}
                 alinhamentoBotao='end'
             />

@@ -53,14 +53,9 @@ function ListaProdutos() {
                 {itens.map((produto) => (
                     <ListaItem
                         key={produto.id}
-                        imagem={(
-                            <ImagemLista>
-                                <Package size={28} className='text-gray-400' />
-                            </ImagemLista>
-                        )}
                         acoes={(
                             <>
-                                <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/produtos/${produto.id}/editar-produto`)} />
+                                <Botao nome='Editar' cor='#137D91' acao={() => navigate(`/produtos/${produto.id}/editar-produto`)} />
                                 <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(produto)} />
                             </>
                         )}

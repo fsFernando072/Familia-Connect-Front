@@ -17,11 +17,11 @@ function ModalConfirmacao({
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-cifa-navy/60 backdrop-blur-sm px-4"
             onClick={onCancelar}
         >
             <div
-                className="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6 flex flex-col items-center text-center gap-4"
+                className="w-full max-w-sm bg-white rounded-3xl border border-cifa-linha shadow-xl p-6 flex flex-col items-center text-center gap-4"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
@@ -29,8 +29,8 @@ function ModalConfirmacao({
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <h2 className="text-lg font-bold text-gray-900">{titulo}</h2>
-                    {mensagem && <p className="text-sm text-gray-500">{mensagem}</p>}
+                    <h2 className="text-lg font-extrabold text-cifa-navy">{titulo}</h2>
+                    {mensagem && <p className="text-sm text-cifa-apagado">{mensagem}</p>}
                 </div>
 
                 <div className="flex items-center justify-center gap-3 w-full mt-2">

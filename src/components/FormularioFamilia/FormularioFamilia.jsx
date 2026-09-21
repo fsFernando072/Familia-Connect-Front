@@ -217,7 +217,7 @@ function FormularioFamilia({
         { id: 'estado', tipo: 'select', coluna: 2, label: 'Estado', value: estadoId, onChange: (e) => setEstadoId(e.target.value), opcoes: opcoesEstado },
         {
             id: 'buscandoCep', tipo: 'custom', coluna: 2,
-            render: () => buscandoCep ? <span className='text-sm text-gray-500'>Buscando endereço...</span> : null
+            render: () => buscandoCep ? <span className='text-sm text-cifa-apagado'>Buscando endereço...</span> : null
         },
     ];
 
@@ -244,7 +244,7 @@ function FormularioFamilia({
                     campos={camposResponsavel}
                     colunas={2}
                     nomeBotao='Próximo'
-                    corBotao='#167AFA'
+                    corBotao='#137D91'
                     acaoBotao={handleProximo}
                     alinhamentoBotao='end'
                 />
@@ -257,7 +257,7 @@ function FormularioFamilia({
                     campos={camposEndereco}
                     colunas={2}
                     nomeBotao='Próximo'
-                    corBotao='#167AFA'
+                    corBotao='#137D91'
                     acaoBotao={handleProximo}
                     alinhamentoBotao='end'
                     botaoVoltar={{ onClick: handleVoltar }}
@@ -277,12 +277,12 @@ function FormularioFamilia({
                         />
                     ))}
 
-                    <Botao nome='Adicionar' icone={Plus} cor='#2C2C2C' acao={adicionarDependente} larguraBotao='w-fit' />
+                    <Botao nome='Adicionar' icone={Plus} cor='#0A243E' acao={adicionarDependente} larguraBotao='w-fit' />
 
                     <Formulario
                         campos={[]}
                         nomeBotao={nomeBotaoFinal}
-                        corBotao='#34C759'
+                        corBotao='#44BEB7'
                         acaoBotao={handleSalvar}
                         alinhamentoBotao='end'
                         botaoVoltar={{ onClick: handleVoltar }}

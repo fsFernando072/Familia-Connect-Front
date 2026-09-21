@@ -85,7 +85,7 @@ function Cadastro() {
             value: idCargo,
             onChange: (e) => setIdCargo(e.target.value),
             opcoes: cargos,
-            acao: { nome: 'Criar cargo', cor: '#2C2C2C' }
+            acao: { nome: 'Criar cargo', cor: '#0A243E' }
         },
         {
             id: 'foto',
@@ -102,7 +102,7 @@ function Cadastro() {
                 campos={campos}
                 colunas={2}
                 nomeBotao="Cadastrar"
-                corBotao="#34C759"
+                corBotao="#44BEB7"
                 acaoBotao={handleCadastrarFuncionario}
                 alinhamentoBotao="end"
             />

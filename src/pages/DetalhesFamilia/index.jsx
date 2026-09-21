@@ -39,6 +39,7 @@ function DetalhesFamilia() {
     return (
         <PaginaFormulario
             nomeTela='Detalhes da Família'
+            comCartao={false}
             carregando={carregando}
             carregandoTexto='Carregando família...'
             encontrado={!!familia}
@@ -58,7 +59,7 @@ function DetalhesFamilia() {
                     </ImagemLista>
 
                     <div className='flex-1 min-w-0 w-full'>
-                        <h2 className='text-xl font-bold text-gray-900 mb-3'>Dados do Responsável</h2>
+                        <h2 className='text-xl font-extrabold text-cifa-navy mb-3'>Dados do Responsável</h2>
                         <CartaoInfo colunas={2}>
                             <LinhaInfo rotulo='Nome Completo' valor={responsavel?.nome || '-'} />
                             <LinhaInfo rotulo='CPF' valor={responsavel?.cpf ? mascaraCpf(responsavel.cpf) : '-'} />
@@ -73,7 +74,7 @@ function DetalhesFamilia() {
                 </div>
 
                 <div>
-                    <h2 className='text-xl font-bold text-gray-900 mb-3'>Dados do Endereço</h2>
+                    <h2 className='text-xl font-extrabold text-cifa-navy mb-3'>Dados do Endereço</h2>
                     <CartaoInfo colunas={3}>
                         <LinhaInfo rotulo='CEP' valor={endereco?.cep || '-'} />
                         <LinhaInfo rotulo='Rua' valor={endereco?.logradouro || '-'} />
@@ -85,7 +86,7 @@ function DetalhesFamilia() {
                 </div>
 
                 <div>
-                    <h2 className='text-xl font-bold text-gray-900 mb-3'>Dados dos Dependentes</h2>
+                    <h2 className='text-xl font-extrabold text-cifa-navy mb-3'>Dados dos Dependentes</h2>
 
                     <ListaStatus
                         carregando={false}
@@ -106,7 +107,7 @@ function DetalhesFamilia() {
                 </div>
 
                 <div>
-                    <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/familias/${id}/editar-familia`)} />
+                    <Botao nome='Editar' cor='#137D91' acao={() => navigate(`/familias/${id}/editar-familia`)} />
                 </div>
             </ListaContainer>
         </PaginaFormulario>

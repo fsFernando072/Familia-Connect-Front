@@ -1,15 +1,16 @@
 import { Search } from 'lucide-react';
+import { CLASSE_INPUT } from '../estilosCampo';
 
 function CampoBusca({ value, onChange, placeholder = 'Buscar' }) {
     return (
         <div className='relative flex-1'>
-            <Search size={18} className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none' />
+            <Search size={18} className='absolute left-3.5 top-1/2 -translate-y-1/2 text-cifa-apagado pointer-events-none' />
             <input
                 type='text'
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className='w-full pl-10 pr-3 py-2.5 border border-gray-800 rounded-md text-base bg-white placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                className={`${CLASSE_INPUT} pl-10`}
             />
         </div>
     );

@@ -57,7 +57,7 @@ function CadastroCargo() {
                 campos={campos}
                 colunas={2}
                 nomeBotao='Cadastrar'
-                corBotao='#34C759'
+                corBotao='#44BEB7'
                 acaoBotao={handleCadastrar}
                 alinhamentoBotao="end"
             />

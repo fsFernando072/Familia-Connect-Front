@@ -104,8 +104,8 @@ function ListaFamilias() {
                         )}
                         acoes={(
                             <>
-                                <Botao nome='Ver Detalhes' cor='#FF9500' acao={() => navigate(`/familias/${familia.idFamilia}`)} />
-                                <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/familias/${familia.idFamilia}/editar-familia`)} />
+                                <Botao nome='Ver Detalhes' cor='#08425D' acao={() => navigate(`/familias/${familia.idFamilia}`)} />
+                                <Botao nome='Editar' cor='#137D91' acao={() => navigate(`/familias/${familia.idFamilia}/editar-familia`)} />
                                 <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(familia)} />
                             </>
                         )}

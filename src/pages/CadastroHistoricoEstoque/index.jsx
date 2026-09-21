@@ -38,7 +38,7 @@ function CadastroHistoricoEstoque() {
             value: produtoId,
             onChange: (e) => setProdutoId(e.target.value),
             opcoes: produtos,
-            acao: { nome: 'Criar Produto', cor: '#2C2C2C', onClick: () => navigate('/produtos/cadastro-produto') }
+            acao: { nome: 'Criar Produto', cor: '#0A243E', onClick: () => navigate('/produtos/cadastro-produto') }
         },
         {
             id: 'quantidade',
@@ -58,7 +58,7 @@ function CadastroHistoricoEstoque() {
                 campos={campos}
                 colunas={1}
                 nomeBotao='Cadastrar'
-                corBotao='#34C759'
+                corBotao='#44BEB7'
                 acaoBotao={handleCadastrar}
                 alinhamentoBotao='end'
             />

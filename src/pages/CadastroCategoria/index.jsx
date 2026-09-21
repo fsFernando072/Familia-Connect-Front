@@ -33,7 +33,7 @@ function CadastroCategoria() {
             <Formulario
                 campos={campos}
                 nomeBotao='Cadastrar'
-                corBotao='#34C759'
+                corBotao='#44BEB7'
                 acaoBotao={handleCadastrar}
                 alinhamentoBotao='end'
             />

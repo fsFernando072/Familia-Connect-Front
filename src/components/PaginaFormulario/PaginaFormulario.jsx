@@ -1,5 +1,4 @@
-import Header from '../Header/Header';
-import Navegabilidade from '../Navegabilidade/Navegabilidade';
+import CabecalhoPagina from '../CabecalhoPagina/CabecalhoPagina';
 import FeedbackToast from '../FeedbackToast/FeedbackToast';
 
 function PaginaFormulario({
@@ -11,27 +10,30 @@ function PaginaFormulario({
     naoEncontradoTexto = 'Registro não encontrado.',
     feedback,
     onFecharFeedback,
-    containerClassName = 'px-4 sm:px-6 py-6 max-w-4xl mx-auto',
+    comCartao = true,
     children,
 }) {
     return (
-        <div className='w-full min-h-screen overflow-x-hidden bg-gray-100'>
-            <Header nomeTela={nomeTela} />
-            <Navegabilidade {...navegabilidade} />
+        <div className='w-full max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-8'>
+            <CabecalhoPagina nomeTela={nomeTela} navegabilidade={navegabilidade} />
             <FeedbackToast tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} onClose={onFecharFeedback} />
 
             {carregando && (
-                <p className='text-gray-500 text-center mt-10'>{carregandoTexto}</p>
+                <p className='text-cifa-apagado text-center mt-10'>{carregandoTexto}</p>
             )}
 
             {!carregando && !encontrado && (
-                <p className='text-gray-500 text-center mt-10'>{naoEncontradoTexto}</p>
+                <p className='text-cifa-apagado text-center mt-10'>{naoEncontradoTexto}</p>
             )}
 
             {!carregando && encontrado && (
-                <div className={containerClassName}>
-                    {children}
-                </div>
+                comCartao ? (
+                    <div className='bg-white border border-cifa-linha rounded-3xl shadow-sm p-5 sm:p-8'>
+                        {children}
+                    </div>
+                ) : (
+                    children
+                )
             )}
         </div>
     );

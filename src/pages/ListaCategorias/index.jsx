@@ -53,14 +53,9 @@ function ListaCategorias() {
                 {itens.map((categoria) => (
                     <ListaItem
                         key={categoria.id}
-                        imagem={(
-                            <ImagemLista tamanho='w-14 h-14'>
-                                <Package size={24} className='text-gray-400' />
-                            </ImagemLista>
-                        )}
                         acoes={(
                             <>
-                                <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/categorias/${categoria.id}/editar-categoria`)} />
+                                <Botao nome='Editar' cor='#137D91' acao={() => navigate(`/categorias/${categoria.id}/editar-categoria`)} />
                                 <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(categoria)} />
                             </>
                         )}

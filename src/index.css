@@ -1,1 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Paleta do CIFA */
+  --color-cifa-navy: #0a243e;      /* menu lateral, títulos, hero */
+  --color-cifa-petroleo: #08425d;  /* item ativo do menu, ações secundárias */
+  --color-cifa-turquesa: #137d91;  /* ações principais, ícones de destaque */
+  --color-cifa-menta: #44beb7;     /* cor de destaque (botão principal, marca) */
+  --color-cifa-fundo: #ebf4f5;     /* fundo das páginas */
+  --color-cifa-suave: #d9eaeb;     /* fundos suaves (ícones, chips) */
+  --color-cifa-linha: #cbdfe3;     /* bordas */
+  --color-cifa-apagado: #4b7187;   /* textos secundários */
+  --color-cifa-menu: #9abece;      /* texto do menu lateral */
+}
+
+body {
+  background-color: var(--color-cifa-fundo);
+  color: var(--color-cifa-navy);
+}

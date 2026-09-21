@@ -8,18 +8,18 @@ function Carrossel({ passos, passoAtual }) {
                             <div
                                 className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm transition-colors duration-300 ${
                                     index <= passoAtual
-                                        ? 'bg-[#1E66F5] text-white'
-                                        : 'bg-gray-200 text-gray-500'
+                                        ? 'bg-cifa-turquesa text-white'
+                                        : 'bg-cifa-suave text-cifa-apagado'
                                 }`}
                             >
                                 {index + 1}
                             </div>
-                            <span className={`text-xs font-medium whitespace-nowrap ${index <= passoAtual ? 'text-gray-900' : 'text-gray-400'}`}>
+                            <span className={`text-xs font-medium whitespace-nowrap ${index <= passoAtual ? 'text-cifa-navy' : 'text-cifa-apagado'}`}>
                                 {passo.titulo}
                             </span>
                         </div>
                         {index < passos.length - 1 && (
-                            <div className={`w-12 md:w-20 h-0.5 mx-2 mb-5 transition-colors duration-300 ${index < passoAtual ? 'bg-[#1E66F5]' : 'bg-gray-200'}`} />
+                            <div className={`w-12 md:w-20 h-0.5 mx-2 mb-5 transition-colors duration-300 ${index < passoAtual ? 'bg-cifa-turquesa' : 'bg-cifa-suave'}`} />
                         )}
                     </div>
                 ))}

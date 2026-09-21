@@ -66,7 +66,7 @@ function ListaFuncionarios() {
                         )}
                         acoes={(
                             <>
-                                <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/funcionarios/${funcionario.id}/editar-funcionario`)} />
+                                <Botao nome='Editar' cor='#137D91' acao={() => navigate(`/funcionarios/${funcionario.id}/editar-funcionario`)} />
                                 <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(funcionario)} />
                             </>
                         )}

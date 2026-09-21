@@ -4,7 +4,7 @@ import Formulario from "../Formulario/Formulario";
 
 function CartaoDependente({ campos, podeRemover, onRemover }) {
     return (
-        <div className='relative border border-gray-800 rounded-md p-4'>
+        <div className='relative bg-white border border-cifa-linha rounded-2xl p-5'>
             {podeRemover && (
                 <BotaoIcone
                     icone={Trash2}

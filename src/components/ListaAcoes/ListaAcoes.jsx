@@ -10,7 +10,7 @@ function ListaAcoes({ busca, onBuscaChange, placeholderBusca, onOrdenar, onCadas
             <div className='flex flex-wrap items-center gap-3'>
                 <BotaoSecundario nome='Ordenar' icone={ArrowUpDown} acao={onOrdenar} />
                 {children}
-                <Botao nome={textoCadastrar} icone={Plus} cor='#34C759' acao={onCadastrar} />
+                <Botao nome={textoCadastrar} icone={Plus} cor='#44BEB7' acao={onCadastrar} />
             </div>
         </div>
     );

@@ -54,14 +54,9 @@ function ListaCargos() {
                     return (
                         <ListaItem
                             key={cargo.id}
-                            imagem={(
-                                <ImagemLista tamanho='w-14 h-14'>
-                                    <Briefcase size={24} className='text-gray-400' />
-                                </ImagemLista>
-                            )}
                             acoes={(
                                 <>
-                                    <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/cargos/${cargo.id}/editar-cargo`)} />
+                                    <Botao nome='Editar' cor='#137D91' acao={() => navigate(`/cargos/${cargo.id}/editar-cargo`)} />
                                     <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(cargo)} />
                                 </>
                             )}

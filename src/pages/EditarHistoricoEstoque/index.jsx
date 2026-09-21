@@ -6,6 +6,7 @@ import { listarProdutos } from "../../services/produtoService";
 import { buscarHistoricoEstoquePorId, atualizarHistoricoEstoque } from "../../services/historicoEstoqueService";
 import { converterDataParaBr } from "../../utils/formatadores";
 import { useFeedback } from "../../hooks/useFeedback";
+import { CLASSE_LABEL } from "../../components/estilosCampo";
 
 function EditarHistoricoEstoque() {
 
@@ -60,7 +61,7 @@ function EditarHistoricoEstoque() {
             value: produtoId,
             onChange: (e) => setProdutoId(e.target.value),
             opcoes: produtos,
-            acao: { nome: 'Criar Produto', cor: '#2C2C2C', onClick: () => navigate('/produtos/cadastro-produto') }
+            acao: { nome: 'Criar Produto', cor: '#0A243E', onClick: () => navigate('/produtos/cadastro-produto') }
         },
         {
             id: 'quantidade',
@@ -78,8 +79,8 @@ function EditarHistoricoEstoque() {
             coluna: 1,
             render: () => (
                 <div>
-                    <label className='block text-lg font-bold text-gray-900 mb-1'>Data do Registro</label>
-                    <p className='w-full px-3 py-2.5 border border-gray-200 rounded-md text-base bg-gray-100 text-gray-500'>
+                    <label className={CLASSE_LABEL}>Data do Registro</label>
+                    <p className='w-full px-3.5 py-2.5 border border-cifa-linha rounded-xl text-base bg-cifa-suave/50 text-cifa-apagado'>
                         {converterDataParaBr(dataEstoque) || '-'}
                     </p>
                 </div>
@@ -101,7 +102,7 @@ function EditarHistoricoEstoque() {
                 campos={campos}
                 colunas={1}
                 nomeBotao='Confirmar'
-                corBotao='#34C759'
+                corBotao='#44BEB7'
                 acaoBotao={handleAtualizar}
                 alinhamentoBotao='end'
             />

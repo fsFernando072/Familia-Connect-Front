@@ -54,14 +54,9 @@ function ListaHistoricoEstoque() {
                 {itens.map((historico) => (
                     <ListaItem
                         key={historico.id}
-                        imagem={(
-                            <ImagemLista>
-                                <Archive size={28} className='text-gray-400' />
-                            </ImagemLista>
-                        )}
                         acoes={(
                             <>
-                                <Botao nome='Editar' cor='#167AFA' acao={() => navigate(`/historico-estoque/${historico.id}/editar-estoque`)} />
+                                <Botao nome='Editar' cor='#137D91' acao={() => navigate(`/historico-estoque/${historico.id}/editar-estoque`)} />
                                 <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(historico)} />
                             </>
                         )}

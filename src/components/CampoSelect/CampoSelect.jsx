@@ -1,11 +1,13 @@
+import { CLASSE_LABEL, CLASSE_INPUT } from '../estilosCampo';
+
 function CampoSelect({ label, value, onChange, opcoes, placeholder = 'Selecionar' }) {
     return (
         <div>
-            <label className='block text-lg font-bold text-gray-900 mb-1'>{label}</label>
+            <label className={CLASSE_LABEL}>{label}</label>
             <select
                 value={value}
                 onChange={onChange}
-                className='w-full px-3 py-2.5 border border-gray-800 rounded-md text-base bg-white text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                className={CLASSE_INPUT}
             >
                 <option value=''>{placeholder}</option>
                 {opcoes.map((opcao) => (

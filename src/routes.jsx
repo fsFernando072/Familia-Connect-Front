@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import LayoutPrincipal from "./components/LayoutPrincipal/LayoutPrincipal";
 import Login from "./pages/Login";
 import CadastroFuncionario from "./pages/CadastroFuncionario";
 import CadastroFamilia from "./pages/CadastroFamilia";
@@ -26,32 +27,34 @@ function AppRoutes() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Login />}/>
-                <Route path="/pagina-inicial" element={<PaginaInicial />}/>
+                <Route element={<LayoutPrincipal />}>
+                    <Route path="/pagina-inicial" element={<PaginaInicial />}/>
                   
-                <Route path="/familias" element={<ListaFamilias />}/>
-                <Route path="/familias/:id" element={<DetalhesFamilia />}/>
-                <Route path="/familias/cadastro-familia" element={<CadastroFamilia />}/>
-                <Route path="/familias/:id/editar-familia" element={<EditarFamilia />}/>
+                    <Route path="/familias" element={<ListaFamilias />}/>
+                    <Route path="/familias/:id" element={<DetalhesFamilia />}/>
+                    <Route path="/familias/cadastro-familia" element={<CadastroFamilia />}/>
+                    <Route path="/familias/:id/editar-familia" element={<EditarFamilia />}/>
                   
-                <Route path="/produtos" element={<ListaProdutos />}/>
-                <Route path="/produtos/cadastro-produto" element={<CadastroProduto />}/>
-                <Route path="/produtos/:id/editar-produto" element={<EditarProduto />}/>
+                    <Route path="/produtos" element={<ListaProdutos />}/>
+                    <Route path="/produtos/cadastro-produto" element={<CadastroProduto />}/>
+                    <Route path="/produtos/:id/editar-produto" element={<EditarProduto />}/>
 
-                <Route path="/categorias" element={<ListaCategorias />}/>
-                <Route path="/categorias/cadastro-categoria" element={<CadastroCategoria />}/>
-                <Route path="/categorias/:id/editar-categoria" element={<EditarCategoria />}/>
+                    <Route path="/categorias" element={<ListaCategorias />}/>
+                    <Route path="/categorias/cadastro-categoria" element={<CadastroCategoria />}/>
+                    <Route path="/categorias/:id/editar-categoria" element={<EditarCategoria />}/>
                   
-                <Route path="/funcionarios" element={<ListaFuncionarios />}/>
-                <Route path="/funcionarios/cadastro-funcionario" element={<CadastroFuncionario />}/>
-                <Route path="/funcionarios/:id/editar-funcionario" element={<EditarFuncionario />}/>
+                    <Route path="/funcionarios" element={<ListaFuncionarios />}/>
+                    <Route path="/funcionarios/cadastro-funcionario" element={<CadastroFuncionario />}/>
+                    <Route path="/funcionarios/:id/editar-funcionario" element={<EditarFuncionario />}/>
                   
-                <Route path="/cargos" element={<ListaCargos />} />
-                <Route path="/cargos/cadastro-cargo" element={<CadastroCargo />} />
-                <Route path="/cargos/:id/editar-cargo" element={<EditarCargo />} />
+                    <Route path="/cargos" element={<ListaCargos />} />
+                    <Route path="/cargos/cadastro-cargo" element={<CadastroCargo />} />
+                    <Route path="/cargos/:id/editar-cargo" element={<EditarCargo />} />
 
-                <Route path="/historico-estoque" element={<ListaHistoricoEstoque />} />
-                <Route path="/historico-estoque/cadastro-estoque" element={<CadastroHistoricoEstoque />} />
-                <Route path="/historico-estoque/:id/editar-estoque" element={<EditarHistoricoEstoque />} />
+                    <Route path="/historico-estoque" element={<ListaHistoricoEstoque />} />
+                    <Route path="/historico-estoque/cadastro-estoque" element={<CadastroHistoricoEstoque />} />
+                    <Route path="/historico-estoque/:id/editar-estoque" element={<EditarHistoricoEstoque />} />
+                </Route>
             </Routes>
         </BrowserRouter>
     )

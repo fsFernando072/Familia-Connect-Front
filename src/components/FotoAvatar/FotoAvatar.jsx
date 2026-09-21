@@ -6,7 +6,7 @@ function FotoAvatar({ caminho, alt, Icone, tamanhoIcone = 28 }) {
     return url ? (
         <img src={url} alt={alt} className='w-full h-full object-cover' />
     ) : (
-        <Icone size={tamanhoIcone} className='text-gray-400' />
+        <Icone size={tamanhoIcone} className='text-cifa-apagado' />
     );
 }
 

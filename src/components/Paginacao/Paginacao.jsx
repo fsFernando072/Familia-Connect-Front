@@ -36,14 +36,14 @@ function Paginacao({ paginaAtual, totalPaginas, onMudarPagina }) {
                 onClick={() => onMudarPagina(paginaAtual - 1)}
                 disabled={paginaAtual === 0}
                 aria-label='Página anterior'
-                className='flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white cursor-pointer transition'
+                className='flex items-center justify-center w-9 h-9 rounded-lg border border-cifa-linha bg-white text-cifa-apagado hover:bg-cifa-suave/60 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white cursor-pointer transition'
             >
                 <ChevronLeft size={18} />
             </button>
 
             {paginas.map((pagina, indice) =>
                 pagina === '...' ? (
-                    <span key={`reticencias-${indice}`} className='w-9 h-9 flex items-center justify-center text-gray-400 select-none'>
+                    <span key={`reticencias-${indice}`} className='w-9 h-9 flex items-center justify-center text-cifa-apagado select-none'>
                         ...
                     </span>
                 ) : (
@@ -53,8 +53,8 @@ function Paginacao({ paginaAtual, totalPaginas, onMudarPagina }) {
                         onClick={() => onMudarPagina(pagina)}
                         aria-current={pagina === paginaAtual ? 'page' : undefined}
                         className={`w-9 h-9 rounded-lg text-base font-medium cursor-pointer transition ${pagina === paginaAtual
-                                ? 'bg-[#1E66F5] text-white'
-                                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                ? 'bg-cifa-navy text-white'
+                                : 'bg-white text-cifa-navy border border-cifa-linha hover:bg-cifa-suave/60'
                             }`}
                     >
                         {pagina + 1}
@@ -67,7 +67,7 @@ function Paginacao({ paginaAtual, totalPaginas, onMudarPagina }) {
                 onClick={() => onMudarPagina(paginaAtual + 1)}
                 disabled={paginaAtual >= totalPaginas - 1}
                 aria-label='Próxima página'
-                className='flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white cursor-pointer transition'
+                className='flex items-center justify-center w-9 h-9 rounded-lg border border-cifa-linha bg-white text-cifa-apagado hover:bg-cifa-suave/60 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white cursor-pointer transition'
             >
                 <ChevronRight size={18} />
             </button>
