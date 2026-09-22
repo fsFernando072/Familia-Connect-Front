@@ -65,6 +65,12 @@ export function useListaPaginada({ listar, apagar, chaveBusca = "nome", obterId 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [buscaComAtraso, ordemCrescente, paginaAtual]);
 
+    // Ao trocar de página, volta o scroll para o topo (senão a lista nova
+    // troca com a tela ainda rolada no meio da lista anterior).
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [paginaAtual]);
+
     const alternarOrdem = () => setOrdemCrescente((v) => !v);
 
     const pedirConfirmacao = (item) => setItemParaApagar(item);

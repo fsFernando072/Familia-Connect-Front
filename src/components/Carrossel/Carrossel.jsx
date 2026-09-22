@@ -1,4 +1,37 @@
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+
+// Slider de passos (Responsável / Endereço / Dependentes) do cadastro de família.
+// Como os 3 passos ficam lado a lado num único `flex` que desliza com translateX,
+// a altura da faixa por padrão é a do passo mais alto — sobrando espaço em branco
+// nos passos mais curtos. Para evitar isso, medimos a altura real do passo ativo
+// e aplicamos como altura do contêiner, animando a transição junto com o slide.
 function Carrossel({ passos, passoAtual }) {
+    const paineisRef = useRef([]);
+    const [altura, setAltura] = useState(0);
+
+    useLayoutEffect(() => {
+        const painelAtivo = paineisRef.current[passoAtual];
+        if (!painelAtivo) return undefined;
+
+        const atualizarAltura = () => setAltura(painelAtivo.scrollHeight);
+        atualizarAltura();
+
+        if (typeof ResizeObserver === "undefined") return undefined;
+
+        // Reage a mudanças de conteúdo dentro do próprio passo (ex: mensagem de
+        // "Buscando endereço...", campo de erro, dependente adicionado/removido).
+        const observer = new ResizeObserver(atualizarAltura);
+        observer.observe(painelAtivo);
+        return () => observer.disconnect();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [passoAtual]);
+
+    // Ao trocar de passo, volta o scroll para o topo (senão o passo novo troca
+    // com a tela ainda rolada no meio do passo anterior).
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [passoAtual]);
+
     return (
         <div className='w-full'>
             <div className='flex items-center justify-center gap-2 mb-8'>
@@ -25,13 +58,20 @@ function Carrossel({ passos, passoAtual }) {
                 ))}
             </div>
 
-            <div className='relative overflow-hidden'>
+            <div
+                className='relative overflow-hidden transition-[height] duration-500 ease-in-out'
+                style={{ height: altura || 'auto' }}
+            >
                 <div
-                    className='flex transition-transform duration-500 ease-in-out'
+                    className='flex items-start transition-transform duration-500 ease-in-out'
                     style={{ transform: `translateX(-${passoAtual * 100}%)` }}
                 >
-                    {passos.map((passo) => (
-                        <div key={passo.titulo} className='w-full flex-shrink-0 px-1'>
+                    {passos.map((passo, index) => (
+                        <div
+                            key={passo.titulo}
+                            ref={(el) => { paineisRef.current[index] = el; }}
+                            className='w-full shrink-0 px-1'
+                        >
                             {passo.conteudo}
                         </div>
                     ))}

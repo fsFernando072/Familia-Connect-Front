@@ -26,14 +26,14 @@ function FeedbackToast({ tipo, msg, loading, onClose }) {
                 className='flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg text-sm font-medium'
             >
                 {loading
-                    ? <Loader2 size={18} className='animate-spin flex-shrink-0' />
+                    ? <Loader2 size={18} className='animate-spin shrink-0' />
                     : tipo === 'sucesso'
-                        ? <CheckCircle2 size={18} className='flex-shrink-0' />
-                        : <XCircle size={18} className='flex-shrink-0' />
+                        ? <CheckCircle2 size={18} className='shrink-0' />
+                        : <XCircle size={18} className='shrink-0' />
                 }
                 <span className='flex-1'>{msg}</span>
                 {!loading && (
-                    <button onClick={onClose} className='opacity-60 hover:opacity-100 cursor-pointer flex-shrink-0'>
+                    <button onClick={onClose} className='opacity-60 hover:opacity-100 cursor-pointer shrink-0'>
                         <X size={16} />
                     </button>
                 )}

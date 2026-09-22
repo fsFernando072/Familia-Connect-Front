@@ -8,7 +8,7 @@ function ListaItem({ imagem, acoes, children, className = '' }) {
                 </div>
             </div>
 
-            <div className='flex flex-wrap items-center gap-3 sm:flex-shrink-0'>
+            <div className='flex flex-wrap items-center gap-3 sm:shrink-0'>
                 {acoes}
             </div>
         </div>

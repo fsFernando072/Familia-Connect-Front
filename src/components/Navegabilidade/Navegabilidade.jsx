@@ -38,7 +38,7 @@ function Navegabilidade({ sufixoUltimo }) {
 
                 return (
                     <Fragment key={rota}>
-                        <ChevronRight size={14} className="flex-shrink-0" aria-hidden="true" />
+                        <ChevronRight size={14} className="shrink-0" aria-hidden="true" />
                         {ehUltimo ? (
                             <span aria-current="page" className="font-semibold text-cifa-navy">{texto}</span>
                         ) : (

@@ -33,7 +33,7 @@ function PaginaInicial() {
             >
                 <div
                     aria-hidden='true'
-                    className='pointer-events-none absolute inset-0 bg-white/[0.06]'
+                    className='pointer-events-none absolute inset-0 bg-white/6'
                     style={{ clipPath: "polygon(33% 32%, 74% 0, 100% 0, 100% 24%)" }}
                 />
 
@@ -74,7 +74,7 @@ function PaginaInicial() {
                     >
                         <div className='flex items-center justify-between gap-3'>
                             <p className='text-sm font-medium uppercase tracking-wide text-cifa-apagado'>{rotulo}</p>
-                            <Icone size={22} className='flex-shrink-0 text-cifa-turquesa' />
+                            <Icone size={22} className='shrink-0 text-cifa-turquesa' />
                         </div>
                         <p className='mt-5 text-3xl font-extrabold tracking-tight text-cifa-navy'>Consultar</p>
                         <p className='mt-3 text-lg text-cifa-apagado'>{descricao}</p>

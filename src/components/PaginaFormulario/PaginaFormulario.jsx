@@ -3,6 +3,7 @@ import FeedbackToast from '../FeedbackToast/FeedbackToast';
 
 function PaginaFormulario({
     nomeTela,
+    acao,
     navegabilidade,
     carregando = false,
     carregandoTexto = 'Carregando...',
@@ -15,7 +16,7 @@ function PaginaFormulario({
 }) {
     return (
         <div className='w-full max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-8'>
-            <CabecalhoPagina nomeTela={nomeTela} navegabilidade={navegabilidade} />
+            <CabecalhoPagina nomeTela={nomeTela} acao={acao} navegabilidade={navegabilidade} />
             <FeedbackToast tipo={feedback.tipo} msg={feedback.msg} loading={feedback.loading} onClose={onFecharFeedback} />
 
             {carregando && (

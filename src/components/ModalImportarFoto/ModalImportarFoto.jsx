@@ -1,7 +1,10 @@
+import { createPortal } from "react-dom";
 import { UploadCloud, Info } from "lucide-react";
 import BotaoSecundario from "../BotaoSecundario/BotaoSecundario";
 import { TAMANHO_MAXIMO_ARQUIVO_MB, LIMITE_IMPORTACOES_POR_HORA } from "../../services/ocrService";
 
+// Renderizado via portal em document.body: veja o comentário em ModalRecorteImagem
+// sobre por que isso é necessário para `position: fixed` funcionar corretamente.
 function ModalImportarFoto({ aberto, carregando = false, erro = "", onFechar, onSelecionarArquivo }) {
     if (!aberto) return null;
 
@@ -11,7 +14,7 @@ function ModalImportarFoto({ aberto, carregando = false, erro = "", onFechar, on
         if (arquivo) onSelecionarArquivo(arquivo);
     };
 
-    return (
+    return createPortal(
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-cifa-navy/60 backdrop-blur-sm px-4"
             onClick={carregando ? undefined : onFechar}
@@ -32,7 +35,7 @@ function ModalImportarFoto({ aberto, carregando = false, erro = "", onFechar, on
                 </div>
 
                 <div className="w-full flex items-start gap-2 bg-cifa-fundo border border-cifa-linha rounded-xl p-3 text-left">
-                    <Info size={16} className="text-cifa-apagado flex-shrink-0 mt-0.5" />
+                    <Info size={16} className="text-cifa-apagado shrink-0 mt-0.5" />
                     <p className="text-xs text-cifa-apagado">
                         A foto deve ter no máximo {TAMANHO_MAXIMO_ARQUIVO_MB}MB e o limite é de{" "}
                         {LIMITE_IMPORTACOES_POR_HORA} fotos importadas por hora.
@@ -68,7 +71,8 @@ function ModalImportarFoto({ aberto, carregando = false, erro = "", onFechar, on
                     </label>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 

@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import Cropper from "react-easy-crop";
 import { Crop } from "lucide-react";
 import Botao from "../Botao/Botao";
@@ -8,6 +9,11 @@ import { gerarImagemRecortada } from "../../utils/recorteImagem";
 // Modal de recorte quadrado (1:1), usado antes de qualquer upload de foto
 // (funcionário ou família), mantendo o mesmo avatar quadrado exibido em
 // todas as telas do sistema.
+//
+// Renderizado via portal em document.body: como o modal usa `position: fixed`,
+// ele precisa ficar fora de qualquer ancestral com `transform` (ex: o Carrossel
+// do cadastro de família), senão o navegador passa a posicioná-lo em relação a
+// esse ancestral em vez da tela inteira, quebrando o layout.
 function ModalRecorteImagem({ aberto, imagemSrc, onCancelar, onConfirmar }) {
     const [posicao, setPosicao] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
@@ -34,7 +40,7 @@ function ModalRecorteImagem({ aberto, imagemSrc, onCancelar, onConfirmar }) {
         }
     }
 
-    return (
+    return createPortal(
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-cifa-navy/60 backdrop-blur-sm px-4"
             onClick={processando ? undefined : onCancelar}
@@ -95,7 +101,8 @@ function ModalRecorteImagem({ aberto, imagemSrc, onCancelar, onConfirmar }) {
                     />
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 

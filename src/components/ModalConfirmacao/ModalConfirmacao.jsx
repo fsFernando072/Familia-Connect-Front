@@ -1,7 +1,10 @@
+import { createPortal } from "react-dom";
 import { AlertTriangle } from "lucide-react";
 import Botao from "../Botao/Botao";
 import BotaoSecundario from "../BotaoSecundario/BotaoSecundario";
 
+// Renderizado via portal em document.body: veja o comentário em ModalRecorteImagem
+// sobre por que isso é necessário para `position: fixed` funcionar corretamente.
 function ModalConfirmacao({
     aberto,
     titulo = "Tem certeza?",
@@ -15,7 +18,7 @@ function ModalConfirmacao({
 }) {
     if (!aberto) return null;
 
-    return (
+    return createPortal(
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-cifa-navy/60 backdrop-blur-sm px-4"
             onClick={onCancelar}
@@ -49,7 +52,8 @@ function ModalConfirmacao({
                     />
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 
