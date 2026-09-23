@@ -39,10 +39,7 @@ function UploadImagem({ label, setImagem, imagemInicial }) {
         <>
             <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-xl bg-cifa-suave border border-cifa-linha flex items-center justify-center overflow-hidden shrink-0">
-                    {preview
-                        ? <img src={preview} alt="Prévia da imagem" className="w-full h-full object-cover" />
-                        : <UploadCloud size={28} className="text-cifa-turquesa" />
-                    }
+                    {preview ? <img src={preview} alt="Prévia da imagem" className="w-full h-full object-cover" /> : <UploadCloud size={28} className="text-cifa-turquesa" />}
                 </div>
                 <label className="px-6 py-2.5 rounded-xl cursor-pointer whitespace-nowrap bg-cifa-navy text-white font-bold text-center shadow-sm transition duration-300 hover:brightness-125 active:scale-[0.98]">
                     {label}
@@ -50,12 +47,7 @@ function UploadImagem({ label, setImagem, imagemInicial }) {
                 </label>
             </div>
 
-            <ModalRecorteImagem
-                aberto={Boolean(imagemParaRecorte)}
-                imagemSrc={imagemParaRecorte}
-                onCancelar={handleCancelarRecorte}
-                onConfirmar={handleConfirmarRecorte}
-            />
+            <ModalRecorteImagem aberto={Boolean(imagemParaRecorte)} imagemSrc={imagemParaRecorte} onCancelar={handleCancelarRecorte} onConfirmar={handleConfirmarRecorte} />
         </>
     );
 }

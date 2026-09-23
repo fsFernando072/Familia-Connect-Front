@@ -27,11 +27,21 @@ function ListaFamilias() {
     const [erroImportacao, setErroImportacao] = useState("");
 
     const {
-        itens, carregando,
-        busca, setBusca, alternarOrdem,
-        paginaAtual, setPaginaAtual, totalPaginas,
-        feedback, fecharFeedback,
-        itemParaApagar, pedirConfirmacao, cancelarApagar, confirmarApagar, apagando,
+        itens,
+        carregando,
+        busca,
+        setBusca,
+        alternarOrdem,
+        paginaAtual,
+        setPaginaAtual,
+        totalPaginas,
+        feedback,
+        fecharFeedback,
+        itemParaApagar,
+        pedirConfirmacao,
+        cancelarApagar,
+        confirmarApagar,
+        apagando,
     } = useListaPaginada({
         listar: listarFamilias,
         apagar: deletarFamilia,
@@ -83,33 +93,24 @@ function ListaFamilias() {
                 <BotaoSecundario nome="Importar Arquivo" icone={Upload} acao={handleAbrirImportar} />
             </ListaAcoes>
 
-            <ListaStatus
-                carregando={carregando}
-                vazio={itens.length === 0}
-                mensagemCarregando="Carregando famílias..."
-                mensagemVazia="Nenhuma família encontrada."
-            />
+            <ListaStatus carregando={carregando} vazio={itens.length === 0} mensagemCarregando="Carregando famílias..." mensagemVazia="Nenhuma família encontrada." />
 
             <ListaContainer>
                 {itens.map((familia) => (
                     <ListaItem
                         key={familia.idFamilia}
-                        imagem={(
+                        imagem={
                             <ImagemLista>
-                                <FotoAvatar
-                                    caminho={familia.fotoFamilia}
-                                    alt={`Foto da família ${familia.nomeFamilia}`}
-                                    Icone={Users}
-                                />
+                                <FotoAvatar caminho={familia.fotoFamilia} alt={`Foto da família ${familia.nomeFamilia}`} Icone={Users} />
                             </ImagemLista>
-                        )}
-                        acoes={(
+                        }
+                        acoes={
                             <>
                                 <Botao nome="Ver Detalhes" cor={COR_PETROLEO} acao={() => navigate(`/familias/${familia.idFamilia}`)} />
                                 <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/familias/${familia.idFamilia}/editar-familia`)} />
                                 <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(familia)} />
                             </>
-                        )}
+                        }
                     >
                         <LinhaInfo rotulo="Família" valor={familia.nomeFamilia} />
                         <LinhaInfo rotulo="Nome do Responsável" valor={familia.nomeResponsavel} />
@@ -120,13 +121,7 @@ function ListaFamilias() {
 
             <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
-            <ModalImportarFoto
-                aberto={modalImportarAberto}
-                carregando={importando}
-                erro={erroImportacao}
-                onFechar={handleFecharImportar}
-                onSelecionarArquivo={handleSelecionarArquivoImportacao}
-            />
+            <ModalImportarFoto aberto={modalImportarAberto} carregando={importando} erro={erroImportacao} onFechar={handleFecharImportar} onSelecionarArquivo={handleSelecionarArquivoImportacao} />
 
             <ModalConfirmacao
                 aberto={Boolean(itemParaApagar)}

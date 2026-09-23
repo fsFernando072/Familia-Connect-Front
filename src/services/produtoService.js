@@ -8,9 +8,7 @@ export const buscarProdutoPorId = base.buscarPorId;
 export const deletarProduto = base.deletar;
 
 function validarDadosProduto(produto) {
-    return (!produto.nome || !produto.categoriaId)
-        ? "Preencha o nome do produto e selecione uma categoria."
-        : null;
+    return !produto.nome || !produto.categoriaId ? "Preencha o nome do produto e selecione uma categoria." : null;
 }
 
 function montarPayloadProduto(produto) {

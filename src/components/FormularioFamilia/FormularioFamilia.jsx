@@ -24,16 +24,7 @@ const MSG_RG_INVALIDO = "RG inválido (deve ter entre 7 e 9 dígitos)";
  * - onSalvar:        (responsavel, endereco, dependentes) => void, já com os dados prontos para o service
  * - preSelecionarSP: no cadastro, seleciona SP assim que a lista de estados chega
  */
-function FormularioFamilia({
-    dadosIniciais,
-    opcoes,
-    labelImagem = "Imagem da Família",
-    nomeBotaoFinal = "Confirmar",
-    preSelecionarSP = false,
-    onSalvar,
-    setFeedback,
-    fecharFeedback,
-}) {
+function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Família", nomeBotaoFinal = "Confirmar", preSelecionarSP = false, onSalvar, setFeedback, fecharFeedback }) {
     const { responsavel: respInicial, endereco: endInicial } = dadosIniciais;
     const { estados, profissoes, grausParentesco } = opcoes;
 
@@ -110,16 +101,18 @@ function FormularioFamilia({
     };
 
     const validarDependenteCampo = (id, campo) => {
-        setDependentes((atuais) => atuais.map((dep) => {
-            if (dep.id !== id) return dep;
-            if (campo === "rg") {
-                return { ...dep, erroRg: dep.rg && !validarRg(dep.rg) ? "RG inválido" : "" };
-            }
-            if (campo === "cpf") {
-                return { ...dep, erroCpf: dep.cpf && !validarCpf(dep.cpf) ? "CPF inválido" : "" };
-            }
-            return dep;
-        }));
+        setDependentes((atuais) =>
+            atuais.map((dep) => {
+                if (dep.id !== id) return dep;
+                if (campo === "rg") {
+                    return { ...dep, erroRg: dep.rg && !validarRg(dep.rg) ? "RG inválido" : "" };
+                }
+                if (campo === "cpf") {
+                    return { ...dep, erroCpf: dep.cpf && !validarCpf(dep.cpf) ? "CPF inválido" : "" };
+                }
+                return dep;
+            })
+        );
     };
 
     const handleProximo = () => {
@@ -169,14 +162,24 @@ function FormularioFamilia({
         }
 
         const responsavel = {
-            nome, rg: somenteDigitos(rg), cpf: somenteDigitos(cpf),
-            telefone: somenteDigitos(telefone), dataNascimento, sexo,
+            nome,
+            rg: somenteDigitos(rg),
+            cpf: somenteDigitos(cpf),
+            telefone: somenteDigitos(telefone),
+            dataNascimento,
+            sexo,
             possuiPne: possuiPne === "Sim",
             profissao: profissaoSelecionada === "outra" ? profissaoNova.trim() : profissaoSelecionada,
             imagem: imagemFamilia,
         };
         const endereco = {
-            cep: somenteDigitos(cep), rua, numero, complemento, bairro, cidade, estadoId,
+            cep: somenteDigitos(cep),
+            rua,
+            numero,
+            complemento,
+            bairro,
+            cidade,
+            estadoId,
         };
         const dependentesFormatados = dependentesValidados.map((dep) => ({
             ...dep,
@@ -194,14 +197,48 @@ function FormularioFamilia({
 
     const camposResponsavel = [
         { id: "nome", tipo: "texto", coluna: 1, label: "Nome do Responsável", value: nome, onChange: (e) => setNome(e.target.value), placeholder: "Digite o nome" },
-        { id: "rg", tipo: "texto", coluna: 1, label: "RG do Responsável", value: rg, onChange: (e) => setRg(mascaraRg(e.target.value)), onBlur: handleBlurRg, placeholder: "22.222.222-2", erro: erroRg },
-        { id: "cpf", tipo: "texto", coluna: 1, label: "CPF do Responsável", value: cpf, onChange: (e) => setCpf(mascaraCpf(e.target.value)), onBlur: handleBlurCpf, placeholder: "444.444.444-44", erro: erroCpf },
-        { id: "telefone", tipo: "texto", coluna: 1, label: "Telefone do Responsável", value: telefone, onChange: (e) => setTelefone(mascaraTelefone(e.target.value)), placeholder: "(11) 99999-9999" },
-        { id: "dataNascimento", tipo: "texto", coluna: 2, label: "Data de Nascimento do Responsável", value: dataNascimento, onChange: (e) => setDataNascimento(mascaraData(e.target.value)), placeholder: "__/__/____" },
         {
-            id: "profissao", tipo: "profissao", coluna: 2, label: "Profissão", profissoes: profissoes,
-            selecionada: profissaoSelecionada, onChangeSelecionada: (e) => setProfissaoSelecionada(e.target.value),
-            nova: profissaoNova, onChangeNova: (e) => setProfissaoNova(e.target.value),
+            id: "rg",
+            tipo: "texto",
+            coluna: 1,
+            label: "RG do Responsável",
+            value: rg,
+            onChange: (e) => setRg(mascaraRg(e.target.value)),
+            onBlur: handleBlurRg,
+            placeholder: "22.222.222-2",
+            erro: erroRg,
+        },
+        {
+            id: "cpf",
+            tipo: "texto",
+            coluna: 1,
+            label: "CPF do Responsável",
+            value: cpf,
+            onChange: (e) => setCpf(mascaraCpf(e.target.value)),
+            onBlur: handleBlurCpf,
+            placeholder: "444.444.444-44",
+            erro: erroCpf,
+        },
+        { id: "telefone", tipo: "texto", coluna: 1, label: "Telefone do Responsável", value: telefone, onChange: (e) => setTelefone(mascaraTelefone(e.target.value)), placeholder: "(11) 99999-9999" },
+        {
+            id: "dataNascimento",
+            tipo: "texto",
+            coluna: 2,
+            label: "Data de Nascimento do Responsável",
+            value: dataNascimento,
+            onChange: (e) => setDataNascimento(mascaraData(e.target.value)),
+            placeholder: "__/__/____",
+        },
+        {
+            id: "profissao",
+            tipo: "profissao",
+            coluna: 2,
+            label: "Profissão",
+            profissoes: profissoes,
+            selecionada: profissaoSelecionada,
+            onChangeSelecionada: (e) => setProfissaoSelecionada(e.target.value),
+            nova: profissaoNova,
+            onChangeNova: (e) => setProfissaoNova(e.target.value),
         },
         { id: "sexo", tipo: "radio", coluna: 2, label: "Sexo do Responsável", name: "sexoResponsavel", opcoes: ["Masculino", "Feminino", "Outro"], value: sexo, onChange: setSexo },
         { id: "possuiPne", tipo: "radio", coluna: 2, label: "A Família possui PNE?", name: "possuiPne", opcoes: ["Não", "Sim"], value: possuiPne, onChange: setPossuiPne },
@@ -217,52 +254,97 @@ function FormularioFamilia({
         { id: "cidade", tipo: "texto", coluna: 2, label: "Cidade", value: cidade, onChange: (e) => setCidade(e.target.value), placeholder: "São Paulo" },
         { id: "estado", tipo: "select", coluna: 2, label: "Estado", value: estadoId, onChange: (e) => setEstadoId(e.target.value), opcoes: opcoesEstado },
         {
-            id: "buscandoCep", tipo: "custom", coluna: 2,
-            render: () => buscandoCep ? <span className="text-sm text-cifa-apagado">Buscando endereço...</span> : null,
+            id: "buscandoCep",
+            tipo: "custom",
+            coluna: 2,
+            render: () => (buscandoCep ? <span className="text-sm text-cifa-apagado">Buscando endereço...</span> : null),
         },
     ];
 
-    const camposDependente = (dep) => ([
+    const camposDependente = (dep) => [
         { id: "nome", tipo: "texto", coluna: 1, label: "Nome do Dependente", value: dep.nome, onChange: (e) => atualizarDependente(dep.id, "nome", e.target.value), placeholder: "Maria Ferreira" },
-        { id: "parentesco", tipo: "select", coluna: 1, label: "Parentesco", value: dep.parentesco, onChange: (e) => atualizarDependente(dep.id, "parentesco", e.target.value), opcoes: opcoesGrauParentesco, placeholder: "Selecionar" },
-        { id: "rg", tipo: "texto", coluna: 1, label: "RG do Dependente (Opcional)", value: dep.rg, onChange: (e) => atualizarDependente(dep.id, "rg", mascaraRg(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, "rg"), placeholder: "22.222.222-2", erro: dep.erroRg },
-        { id: "cpf", tipo: "texto", coluna: 1, label: "CPF do Dependente (Opcional)", value: dep.cpf, onChange: (e) => atualizarDependente(dep.id, "cpf", mascaraCpf(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, "cpf"), placeholder: "444.444.444-44", erro: dep.erroCpf },
-        { id: "dataNascimento", tipo: "texto", coluna: 2, label: "Data de Nascimento do Dependente", value: dep.dataNascimento, onChange: (e) => atualizarDependente(dep.id, "dataNascimento", mascaraData(e.target.value)), placeholder: "__/__/____" },
-        { id: "sexo", tipo: "radio", coluna: 2, label: "Sexo do Dependente", name: `sexoDependente-${dep.id}`, opcoes: ["Masculino", "Feminino", "Outro"], value: dep.sexo, onChange: (valor) => atualizarDependente(dep.id, "sexo", valor) },
-        { id: "telefone", tipo: "texto", coluna: 2, label: "Telefone do Dependente (Opcional)", value: dep.telefone, onChange: (e) => atualizarDependente(dep.id, "telefone", mascaraTelefone(e.target.value)), placeholder: "(11) 99999-9999" },
         {
-            id: "profissao", tipo: "profissao", coluna: 2, label: "Profissão do Dependente", profissoes: profissoes,
-            selecionada: dep.profissaoSelecionada, onChangeSelecionada: (e) => atualizarDependente(dep.id, "profissaoSelecionada", e.target.value),
-            nova: dep.profissaoNova, onChangeNova: (e) => atualizarDependente(dep.id, "profissaoNova", e.target.value),
+            id: "parentesco",
+            tipo: "select",
+            coluna: 1,
+            label: "Parentesco",
+            value: dep.parentesco,
+            onChange: (e) => atualizarDependente(dep.id, "parentesco", e.target.value),
+            opcoes: opcoesGrauParentesco,
+            placeholder: "Selecionar",
         },
-    ]);
+        {
+            id: "rg",
+            tipo: "texto",
+            coluna: 1,
+            label: "RG do Dependente (Opcional)",
+            value: dep.rg,
+            onChange: (e) => atualizarDependente(dep.id, "rg", mascaraRg(e.target.value)),
+            onBlur: () => validarDependenteCampo(dep.id, "rg"),
+            placeholder: "22.222.222-2",
+            erro: dep.erroRg,
+        },
+        {
+            id: "cpf",
+            tipo: "texto",
+            coluna: 1,
+            label: "CPF do Dependente (Opcional)",
+            value: dep.cpf,
+            onChange: (e) => atualizarDependente(dep.id, "cpf", mascaraCpf(e.target.value)),
+            onBlur: () => validarDependenteCampo(dep.id, "cpf"),
+            placeholder: "444.444.444-44",
+            erro: dep.erroCpf,
+        },
+        {
+            id: "dataNascimento",
+            tipo: "texto",
+            coluna: 2,
+            label: "Data de Nascimento do Dependente",
+            value: dep.dataNascimento,
+            onChange: (e) => atualizarDependente(dep.id, "dataNascimento", mascaraData(e.target.value)),
+            placeholder: "__/__/____",
+        },
+        {
+            id: "sexo",
+            tipo: "radio",
+            coluna: 2,
+            label: "Sexo do Dependente",
+            name: `sexoDependente-${dep.id}`,
+            opcoes: ["Masculino", "Feminino", "Outro"],
+            value: dep.sexo,
+            onChange: (valor) => atualizarDependente(dep.id, "sexo", valor),
+        },
+        {
+            id: "telefone",
+            tipo: "texto",
+            coluna: 2,
+            label: "Telefone do Dependente (Opcional)",
+            value: dep.telefone,
+            onChange: (e) => atualizarDependente(dep.id, "telefone", mascaraTelefone(e.target.value)),
+            placeholder: "(11) 99999-9999",
+        },
+        {
+            id: "profissao",
+            tipo: "profissao",
+            coluna: 2,
+            label: "Profissão do Dependente",
+            profissoes: profissoes,
+            selecionada: dep.profissaoSelecionada,
+            onChangeSelecionada: (e) => atualizarDependente(dep.id, "profissaoSelecionada", e.target.value),
+            nova: dep.profissaoNova,
+            onChangeNova: (e) => atualizarDependente(dep.id, "profissaoNova", e.target.value),
+        },
+    ];
 
     const passos = [
         {
             titulo: "Responsável",
-            conteudo: (
-                <Formulario
-                    campos={camposResponsavel}
-                    colunas={2}
-                    nomeBotao="Próximo"
-                    corBotao={COR_TURQUESA}
-                    acaoBotao={handleProximo}
-                    alinhamentoBotao="end"
-                />
-            ),
+            conteudo: <Formulario campos={camposResponsavel} colunas={2} nomeBotao="Próximo" corBotao={COR_TURQUESA} acaoBotao={handleProximo} alinhamentoBotao="end" />,
         },
         {
             titulo: "Endereço",
             conteudo: (
-                <Formulario
-                    campos={camposEndereco}
-                    colunas={2}
-                    nomeBotao="Próximo"
-                    corBotao={COR_TURQUESA}
-                    acaoBotao={handleProximo}
-                    alinhamentoBotao="end"
-                    botaoVoltar={{ onClick: handleVoltar }}
-                />
+                <Formulario campos={camposEndereco} colunas={2} nomeBotao="Próximo" corBotao={COR_TURQUESA} acaoBotao={handleProximo} alinhamentoBotao="end" botaoVoltar={{ onClick: handleVoltar }} />
             ),
         },
         {
@@ -270,24 +352,12 @@ function FormularioFamilia({
             conteudo: (
                 <ListaContainer>
                     {dependentes.map((dep) => (
-                        <CartaoDependente
-                            key={dep.id}
-                            campos={camposDependente(dep)}
-                            podeRemover={dependentes.length > 1}
-                            onRemover={() => removerDependente(dep.id)}
-                        />
+                        <CartaoDependente key={dep.id} campos={camposDependente(dep)} podeRemover={dependentes.length > 1} onRemover={() => removerDependente(dep.id)} />
                     ))}
 
                     <Botao nome="Adicionar" icone={Plus} cor={COR_NAVY} acao={adicionarDependente} larguraBotao="w-fit" />
 
-                    <Formulario
-                        campos={[]}
-                        nomeBotao={nomeBotaoFinal}
-                        corBotao={COR_MENTA}
-                        acaoBotao={handleSalvar}
-                        alinhamentoBotao="end"
-                        botaoVoltar={{ onClick: handleVoltar }}
-                    />
+                    <Formulario campos={[]} nomeBotao={nomeBotaoFinal} corBotao={COR_MENTA} acaoBotao={handleSalvar} alinhamentoBotao="end" botaoVoltar={{ onClick: handleVoltar }} />
                 </ListaContainer>
             ),
         },

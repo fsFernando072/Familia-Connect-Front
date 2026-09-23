@@ -98,14 +98,7 @@ function CadastroFuncionario() {
 
     return (
         <PaginaFormulario nomeTela="Cadastro de Funcionário" feedback={feedback} onFecharFeedback={fecharFeedback}>
-            <Formulario
-                campos={campos}
-                colunas={2}
-                nomeBotao="Cadastrar"
-                corBotao={COR_MENTA}
-                acaoBotao={handleCadastrar}
-                alinhamentoBotao="end"
-            />
+            <Formulario campos={campos} colunas={2} nomeBotao="Cadastrar" corBotao={COR_MENTA} acaoBotao={handleCadastrar} alinhamentoBotao="end" />
         </PaginaFormulario>
     );
 }

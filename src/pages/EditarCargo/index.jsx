@@ -22,10 +22,7 @@ function EditarCargo() {
         async function carregarCargo() {
             setCarregando(true);
 
-            const [cargo, todasAssociacoes] = await Promise.all([
-                buscarCargoPorId(id),
-                listarCargosAcessos(),
-            ]);
+            const [cargo, todasAssociacoes] = await Promise.all([buscarCargoPorId(id), listarCargosAcessos()]);
 
             if (!cargo) {
                 setCargoEncontrado(false);
@@ -88,14 +85,7 @@ function EditarCargo() {
             feedback={feedback}
             onFecharFeedback={fecharFeedback}
         >
-            <Formulario
-                campos={campos}
-                colunas={2}
-                nomeBotao="Confirmar"
-                corBotao={COR_MENTA}
-                acaoBotao={handleAtualizar}
-                alinhamentoBotao="end"
-            />
+            <Formulario campos={campos} colunas={2} nomeBotao="Confirmar" corBotao={COR_MENTA} acaoBotao={handleAtualizar} alinhamentoBotao="end" />
         </PaginaFormulario>
     );
 }

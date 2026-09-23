@@ -26,10 +26,7 @@ function EditarHistoricoEstoque() {
         async function carregarDadosIniciais() {
             setCarregando(true);
 
-            const [dadosProdutos, historico] = await Promise.all([
-                listarProdutos({ size: 100 }),
-                buscarHistoricoEstoquePorId(id),
-            ]);
+            const [dadosProdutos, historico] = await Promise.all([listarProdutos({ size: 100 }), buscarHistoricoEstoquePorId(id)]);
 
             setProdutos(dadosProdutos?.content || []);
 
@@ -80,9 +77,7 @@ function EditarHistoricoEstoque() {
             render: () => (
                 <div>
                     <label className={CLASSE_LABEL}>Data do Registro</label>
-                    <p className="w-full px-3.5 py-2.5 border border-cifa-linha rounded-xl text-base bg-cifa-suave/50 text-cifa-apagado">
-                        {converterDataParaBr(dataEstoque) || "-"}
-                    </p>
+                    <p className="w-full px-3.5 py-2.5 border border-cifa-linha rounded-xl text-base bg-cifa-suave/50 text-cifa-apagado">{converterDataParaBr(dataEstoque) || "-"}</p>
                 </div>
             ),
         },
@@ -98,13 +93,7 @@ function EditarHistoricoEstoque() {
             feedback={feedback}
             onFecharFeedback={fecharFeedback}
         >
-            <Formulario
-                campos={campos}
-                nomeBotao="Confirmar"
-                corBotao={COR_MENTA}
-                acaoBotao={handleAtualizar}
-                alinhamentoBotao="end"
-            />
+            <Formulario campos={campos} nomeBotao="Confirmar" corBotao={COR_MENTA} acaoBotao={handleAtualizar} alinhamentoBotao="end" />
         </PaginaFormulario>
     );
 }

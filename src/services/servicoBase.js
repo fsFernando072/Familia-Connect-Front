@@ -1,8 +1,4 @@
-import {
-    feedbackCarregando,
-    feedbackErro,
-    feedbackSucesso,
-} from "../utils/feedback";
+import { feedbackCarregando, feedbackErro, feedbackSucesso } from "../utils/feedback";
 import api from "./apiClient";
 
 export const ATRASO_REDIRECIONAMENTO_MS = 2000;
@@ -82,10 +78,7 @@ export async function buscarLista(endpoint, descricao) {
 export function montarFormData(nomeParteJson, payload, arquivo) {
     const formData = new FormData();
 
-    formData.append(
-        nomeParteJson,
-        new Blob([JSON.stringify(payload)], { type: "application/json" })
-    );
+    formData.append(nomeParteJson, new Blob([JSON.stringify(payload)], { type: "application/json" }));
 
     if (arquivo instanceof Blob) {
         formData.append("arquivo", arquivo);
@@ -101,9 +94,7 @@ export function mensagemDeErro(status, erros = {}, msgErro) {
 // O apiClient usa validateStatus: () => true, então um 4xx/5xx NÃO rejeita a Promise.
 // Por isso o "rejected" sozinho não basta para saber se um Promise.allSettled deu certo.
 export function algumaRequisicaoFalhou(resultados) {
-    return resultados.some(
-        (resultado) => resultado.status === "rejected" || resultado.value.status >= 400
-    );
+    return resultados.some((resultado) => resultado.status === "rejected" || resultado.value.status >= 400);
 }
 
 /**
@@ -117,18 +108,7 @@ export function algumaRequisicaoFalhou(resultados) {
  * - aposSucesso:   async (response) => string | null. Roda depois do status de sucesso
  *                  (ex.: associar permissões ao cargo). Se devolver string, ela vira erro e não redireciona.
  */
-export async function enviarComFeedback({
-    requisicao,
-    navigate,
-    setFeedback,
-    msgCarregando,
-    sucesso,
-    erros = {},
-    msgErro,
-    msgConexao = MSG_CONEXAO_PADRAO,
-    erroValidacao = null,
-    aposSucesso,
-}) {
+export async function enviarComFeedback({ requisicao, navigate, setFeedback, msgCarregando, sucesso, erros = {}, msgErro, msgConexao = MSG_CONEXAO_PADRAO, erroValidacao = null, aposSucesso }) {
     if (erroValidacao) {
         setFeedback(feedbackErro(erroValidacao));
         return;

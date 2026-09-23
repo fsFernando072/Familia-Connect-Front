@@ -52,10 +52,9 @@ function Paginacao({ paginaAtual, totalPaginas, onMudarPagina }) {
                         key={pagina}
                         onClick={() => onMudarPagina(pagina)}
                         aria-current={pagina === paginaAtual ? "page" : undefined}
-                        className={`w-9 h-9 rounded-lg text-base font-medium cursor-pointer transition ${pagina === paginaAtual
-                                ? "bg-cifa-navy text-white"
-                                : "bg-white text-cifa-navy border border-cifa-linha hover:bg-cifa-suave/60"
-                            }`}
+                        className={`w-9 h-9 rounded-lg text-base font-medium cursor-pointer transition ${
+                            pagina === paginaAtual ? "bg-cifa-navy text-white" : "bg-white text-cifa-navy border border-cifa-linha hover:bg-cifa-suave/60"
+                        }`}
                     >
                         {pagina + 1}
                     </button>

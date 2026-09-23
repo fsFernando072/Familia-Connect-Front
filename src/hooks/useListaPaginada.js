@@ -109,10 +109,20 @@ export function useListaPaginada({ listar, apagar, chaveBusca = "nome", obterId 
     };
 
     return {
-        itens, carregando,
-        busca, setBusca, alternarOrdem,
-        paginaAtual, setPaginaAtual, totalPaginas,
-        feedback, fecharFeedback,
-        itemParaApagar, pedirConfirmacao, cancelarApagar, confirmarApagar, apagando,
+        itens,
+        carregando,
+        busca,
+        setBusca,
+        alternarOrdem,
+        paginaAtual,
+        setPaginaAtual,
+        totalPaginas,
+        feedback,
+        fecharFeedback,
+        itemParaApagar,
+        pedirConfirmacao,
+        cancelarApagar,
+        confirmarApagar,
+        apagando,
     };
 }

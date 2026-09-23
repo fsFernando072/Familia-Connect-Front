@@ -26,9 +26,7 @@ export const mascaraTelefone = (valor) => {
     return digitos.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
 };
 
-export const mascaraCep = (valor) =>
-    somenteDigitos(valor, 8)
-        .replace(/(\d{5})(\d{1,3})$/, "$1-$2");
+export const mascaraCep = (valor) => somenteDigitos(valor, 8).replace(/(\d{5})(\d{1,3})$/, "$1-$2");
 
 export const mascaraData = (valor) =>
     somenteDigitos(valor, 8)

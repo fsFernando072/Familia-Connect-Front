@@ -8,16 +8,10 @@ function CabecalhoPagina({ nomeTela, acao, navegabilidade }) {
             <Navegabilidade {...navegabilidade} />
             <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
-                    <h1 className="text-2xl font-extrabold tracking-tight text-cifa-navy sm:text-3xl">
-                        {nomeTela}
-                    </h1>
+                    <h1 className="text-2xl font-extrabold tracking-tight text-cifa-navy sm:text-3xl">{nomeTela}</h1>
                 </div>
 
-                {acao && (
-                    <div className="shrink-0">
-                        {acao}
-                    </div>
-                )}
+                {acao && <div className="shrink-0">{acao}</div>}
             </div>
         </header>
     );

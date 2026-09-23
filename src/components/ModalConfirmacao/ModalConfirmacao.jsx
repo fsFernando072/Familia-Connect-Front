@@ -6,28 +6,12 @@ import { COR_PERIGO } from "../../utils/cores";
 
 // Renderizado via portal em document.body: veja o comentário em ModalRecorteImagem
 // sobre por que isso é necessário para `position: fixed` funcionar corretamente.
-function ModalConfirmacao({
-    aberto,
-    titulo = "Tem certeza?",
-    mensagem,
-    textoConfirmar = "Sim",
-    textoCancelar = "Não",
-    corConfirmar = COR_PERIGO,
-    carregando = false,
-    onConfirmar,
-    onCancelar,
-}) {
+function ModalConfirmacao({ aberto, titulo = "Tem certeza?", mensagem, textoConfirmar = "Sim", textoCancelar = "Não", corConfirmar = COR_PERIGO, carregando = false, onConfirmar, onCancelar }) {
     if (!aberto) return null;
 
     return createPortal(
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-cifa-navy/60 backdrop-blur-sm px-4"
-            onClick={onCancelar}
-        >
-            <div
-                className="w-full max-w-sm bg-white rounded-3xl border border-cifa-linha shadow-xl p-6 flex flex-col items-center text-center gap-4"
-                onClick={(e) => e.stopPropagation()}
-            >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-cifa-navy/60 backdrop-blur-sm px-4" onClick={onCancelar}>
+            <div className="w-full max-w-sm bg-white rounded-3xl border border-cifa-linha shadow-xl p-6 flex flex-col items-center text-center gap-4" onClick={(e) => e.stopPropagation()}>
                 <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
                     <AlertTriangle size={28} className="text-red-600" />
                 </div>
@@ -38,19 +22,8 @@ function ModalConfirmacao({
                 </div>
 
                 <div className="flex items-center justify-center gap-3 w-full mt-2">
-                    <BotaoSecundario
-                        nome={textoCancelar}
-                        acao={onCancelar}
-                        desabilitado={carregando}
-                        larguraBotao="flex-1"
-                    />
-                    <Botao
-                        nome={carregando ? "Aguarde..." : textoConfirmar}
-                        cor={corConfirmar}
-                        acao={onConfirmar}
-                        desabilitado={carregando}
-                        larguraBotao="flex-1"
-                    />
+                    <BotaoSecundario nome={textoCancelar} acao={onCancelar} desabilitado={carregando} larguraBotao="flex-1" />
+                    <Botao nome={carregando ? "Aguarde..." : textoConfirmar} cor={corConfirmar} acao={onConfirmar} desabilitado={carregando} larguraBotao="flex-1" />
                 </div>
             </div>
         </div>,

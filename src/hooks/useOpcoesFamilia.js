@@ -16,18 +16,19 @@ export function useOpcoesFamilia() {
     useEffect(() => {
         let ativo = true;
 
-        Promise.all([buscarEstados(), buscarProfissoes(), buscarGrausParentesco()])
-            .then(([estados, profissoes, grausParentesco]) => {
-                if (!ativo) return;
-                setOpcoes({
-                    estados: estados || [],
-                    profissoes: profissoes || [],
-                    grausParentesco: grausParentesco || [],
-                    carregando: false,
-                });
+        Promise.all([buscarEstados(), buscarProfissoes(), buscarGrausParentesco()]).then(([estados, profissoes, grausParentesco]) => {
+            if (!ativo) return;
+            setOpcoes({
+                estados: estados || [],
+                profissoes: profissoes || [],
+                grausParentesco: grausParentesco || [],
+                carregando: false,
             });
+        });
 
-        return () => { ativo = false; };
+        return () => {
+            ativo = false;
+        };
     }, []);
 
     return opcoes;

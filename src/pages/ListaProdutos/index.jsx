@@ -16,11 +16,21 @@ function ListaProdutos() {
     const navigate = useNavigate();
 
     const {
-        itens, carregando,
-        busca, setBusca, alternarOrdem,
-        paginaAtual, setPaginaAtual, totalPaginas,
-        feedback, fecharFeedback,
-        itemParaApagar, pedirConfirmacao, cancelarApagar, confirmarApagar, apagando,
+        itens,
+        carregando,
+        busca,
+        setBusca,
+        alternarOrdem,
+        paginaAtual,
+        setPaginaAtual,
+        totalPaginas,
+        feedback,
+        fecharFeedback,
+        itemParaApagar,
+        pedirConfirmacao,
+        cancelarApagar,
+        confirmarApagar,
+        apagando,
     } = useListaPaginada({
         listar: listarProdutos,
         apagar: deletarProduto,
@@ -41,23 +51,18 @@ function ListaProdutos() {
                 onCadastrar={() => navigate("/produtos/cadastro-produto")}
             />
 
-            <ListaStatus
-                carregando={carregando}
-                vazio={itens.length === 0}
-                mensagemCarregando="Carregando produtos..."
-                mensagemVazia="Nenhum produto encontrado."
-            />
+            <ListaStatus carregando={carregando} vazio={itens.length === 0} mensagemCarregando="Carregando produtos..." mensagemVazia="Nenhum produto encontrado." />
 
             <ListaContainer>
                 {itens.map((produto) => (
                     <ListaItem
                         key={produto.id}
-                        acoes={(
+                        acoes={
                             <>
                                 <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/produtos/${produto.id}/editar-produto`)} />
                                 <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(produto)} />
                             </>
-                        )}
+                        }
                     >
                         <LinhaInfo rotulo="Nome" valor={produto.nome} />
                         <LinhaInfo rotulo="Descrição" valor={produto.descricao} clamp />

@@ -5,12 +5,8 @@
 function CampoDetalhe({ rotulo, valor, ocultarRotuloEmTelasGrandes = false }) {
     return (
         <div className="min-w-0">
-            <p className={`text-xs font-bold tracking-wide text-cifa-apagado uppercase ${ocultarRotuloEmTelasGrandes ? "sm:hidden" : ""}`}>
-                {rotulo}
-            </p>
-            <p className="mt-1 text-sm font-bold text-cifa-navy truncate">
-                {valor || "-"}
-            </p>
+            <p className={`text-xs font-bold tracking-wide text-cifa-apagado uppercase ${ocultarRotuloEmTelasGrandes ? "sm:hidden" : ""}`}>{rotulo}</p>
+            <p className="mt-1 text-sm font-bold text-cifa-navy truncate">{valor || "-"}</p>
         </div>
     );
 }

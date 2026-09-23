@@ -20,11 +20,21 @@ function ListaFuncionarios() {
     const navigate = useNavigate();
 
     const {
-        itens, carregando,
-        busca, setBusca, alternarOrdem,
-        paginaAtual, setPaginaAtual, totalPaginas,
-        feedback, fecharFeedback,
-        itemParaApagar, pedirConfirmacao, cancelarApagar, confirmarApagar, apagando,
+        itens,
+        carregando,
+        busca,
+        setBusca,
+        alternarOrdem,
+        paginaAtual,
+        setPaginaAtual,
+        totalPaginas,
+        feedback,
+        fecharFeedback,
+        itemParaApagar,
+        pedirConfirmacao,
+        cancelarApagar,
+        confirmarApagar,
+        apagando,
     } = useListaPaginada({
         listar: listarFuncionarios,
         apagar: deletarFuncionario,
@@ -45,32 +55,23 @@ function ListaFuncionarios() {
                 onCadastrar={() => navigate("/funcionarios/cadastro-funcionario")}
             />
 
-            <ListaStatus
-                carregando={carregando}
-                vazio={itens.length === 0}
-                mensagemCarregando="Carregando funcionários..."
-                mensagemVazia="Nenhum funcionário encontrado."
-            />
+            <ListaStatus carregando={carregando} vazio={itens.length === 0} mensagemCarregando="Carregando funcionários..." mensagemVazia="Nenhum funcionário encontrado." />
 
             <ListaContainer>
                 {itens.map((funcionario) => (
                     <ListaItem
                         key={funcionario.id}
-                        imagem={(
+                        imagem={
                             <ImagemLista>
-                                <FotoAvatar
-                                    caminho={funcionario.fotoFuncionario}
-                                    alt={`Foto do funcionário ${funcionario.nome}`}
-                                    Icone={UserRound}
-                                />
+                                <FotoAvatar caminho={funcionario.fotoFuncionario} alt={`Foto do funcionário ${funcionario.nome}`} Icone={UserRound} />
                             </ImagemLista>
-                        )}
-                        acoes={(
+                        }
+                        acoes={
                             <>
                                 <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/funcionarios/${funcionario.id}/editar-funcionario`)} />
                                 <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(funcionario)} />
                             </>
-                        )}
+                        }
                     >
                         <LinhaInfo rotulo="Nome" valor={funcionario.nome} />
                         <LinhaInfo rotulo="CPF" valor={funcionario.cpf && mascaraCpf(funcionario.cpf)} />

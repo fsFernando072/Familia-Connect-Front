@@ -16,8 +16,7 @@ export function validarCpf(cpf) {
     if (cpfLimpo.length !== 11) return false;
     if (/^(\d)\1{10}$/.test(cpfLimpo)) return false; // ex: 111.111.111-11
 
-    return calcularDigitoCpf(cpfLimpo, 9) === Number(cpfLimpo[9])
-        && calcularDigitoCpf(cpfLimpo, 10) === Number(cpfLimpo[10]);
+    return calcularDigitoCpf(cpfLimpo, 9) === Number(cpfLimpo[9]) && calcularDigitoCpf(cpfLimpo, 10) === Number(cpfLimpo[10]);
 }
 
 export function validarRg(rg) {

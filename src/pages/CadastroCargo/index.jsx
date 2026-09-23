@@ -49,19 +49,8 @@ function CadastroCargo() {
     ];
 
     return (
-        <PaginaFormulario
-            nomeTela="Cadastro de Cargo"
-            feedback={feedback}
-            onFecharFeedback={fecharFeedback}
-        >
-            <Formulario
-                campos={campos}
-                colunas={2}
-                nomeBotao="Cadastrar"
-                corBotao={COR_MENTA}
-                acaoBotao={handleCadastrar}
-                alinhamentoBotao="end"
-            />
+        <PaginaFormulario nomeTela="Cadastro de Cargo" feedback={feedback} onFecharFeedback={fecharFeedback}>
+            <Formulario campos={campos} colunas={2} nomeBotao="Cadastrar" corBotao={COR_MENTA} acaoBotao={handleCadastrar} alinhamentoBotao="end" />
         </PaginaFormulario>
     );
 }

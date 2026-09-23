@@ -24,10 +24,7 @@ function EditarProduto() {
         async function carregarDadosIniciais() {
             setCarregando(true);
 
-            const [dadosCategorias, produto] = await Promise.all([
-                listarCategorias({ size: 100 }),
-                buscarProdutoPorId(id),
-            ]);
+            const [dadosCategorias, produto] = await Promise.all([listarCategorias({ size: 100 }), buscarProdutoPorId(id)]);
 
             setCategorias(dadosCategorias?.content || []);
 
@@ -92,14 +89,7 @@ function EditarProduto() {
             feedback={feedback}
             onFecharFeedback={fecharFeedback}
         >
-            <Formulario
-                campos={campos}
-                colunas={2}
-                nomeBotao="Confirmar"
-                corBotao={COR_MENTA}
-                acaoBotao={handleAtualizar}
-                alinhamentoBotao="end"
-            />
+            <Formulario campos={campos} colunas={2} nomeBotao="Confirmar" corBotao={COR_MENTA} acaoBotao={handleAtualizar} alinhamentoBotao="end" />
         </PaginaFormulario>
     );
 }

@@ -17,11 +17,21 @@ function ListaHistoricoEstoque() {
     const navigate = useNavigate();
 
     const {
-        itens, carregando,
-        busca, setBusca, alternarOrdem,
-        paginaAtual, setPaginaAtual, totalPaginas,
-        feedback, fecharFeedback,
-        itemParaApagar, pedirConfirmacao, cancelarApagar, confirmarApagar, apagando,
+        itens,
+        carregando,
+        busca,
+        setBusca,
+        alternarOrdem,
+        paginaAtual,
+        setPaginaAtual,
+        totalPaginas,
+        feedback,
+        fecharFeedback,
+        itemParaApagar,
+        pedirConfirmacao,
+        cancelarApagar,
+        confirmarApagar,
+        apagando,
     } = useListaPaginada({
         listar: listarHistoricoEstoque,
         apagar: deletarHistoricoEstoque,
@@ -42,23 +52,18 @@ function ListaHistoricoEstoque() {
                 onCadastrar={() => navigate("/historico-estoque/cadastro-estoque")}
             />
 
-            <ListaStatus
-                carregando={carregando}
-                vazio={itens.length === 0}
-                mensagemCarregando="Carregando histórico de estoque..."
-                mensagemVazia="Nenhum registro de estoque encontrado."
-            />
+            <ListaStatus carregando={carregando} vazio={itens.length === 0} mensagemCarregando="Carregando histórico de estoque..." mensagemVazia="Nenhum registro de estoque encontrado." />
 
             <ListaContainer>
                 {itens.map((historico) => (
                     <ListaItem
                         key={historico.id}
-                        acoes={(
+                        acoes={
                             <>
                                 <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/historico-estoque/${historico.id}/editar-estoque`)} />
                                 <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(historico)} />
                             </>
-                        )}
+                        }
                     >
                         <LinhaInfo rotulo="Produto" valor={historico.produto?.nome} />
                         <LinhaInfo rotulo="Categoria" valor={historico.produto?.categoria?.nome || "Sem categoria"} />

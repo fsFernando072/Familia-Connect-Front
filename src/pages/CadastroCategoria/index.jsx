@@ -30,13 +30,7 @@ function CadastroCategoria() {
 
     return (
         <PaginaFormulario nomeTela="Cadastro de Categoria" feedback={feedback} onFecharFeedback={fecharFeedback}>
-            <Formulario
-                campos={campos}
-                nomeBotao="Cadastrar"
-                corBotao={COR_MENTA}
-                acaoBotao={handleCadastrar}
-                alinhamentoBotao="end"
-            />
+            <Formulario campos={campos} nomeBotao="Cadastrar" corBotao={COR_MENTA} acaoBotao={handleCadastrar} alinhamentoBotao="end" />
         </PaginaFormulario>
     );
 }

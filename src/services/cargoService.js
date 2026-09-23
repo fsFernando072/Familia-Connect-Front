@@ -1,10 +1,5 @@
 import api from "./apiClient";
-import {
-    algumaRequisicaoFalhou,
-    buscarLista,
-    criarServicoBase,
-    enviarComFeedback,
-} from "./servicoBase";
+import { algumaRequisicaoFalhou, buscarLista, criarServicoBase, enviarComFeedback } from "./servicoBase";
 
 const base = criarServicoBase("/cargos", { singular: "cargo", plural: "cargos" });
 
@@ -91,9 +86,7 @@ export function cadastrarCargo(nome, descricao, permissoesIds, navigate, setFeed
                 )
             );
 
-            return algumaRequisicaoFalhou(resultados)
-                ? "O cargo foi cadastrado, mas alguns acessos não puderam ser associados."
-                : null;
+            return algumaRequisicaoFalhou(resultados) ? "O cargo foi cadastrado, mas alguns acessos não puderam ser associados." : null;
         },
     });
 }
@@ -103,13 +96,9 @@ function sincronizarAcessosDoCargo(cargoId, idsSelecionados, associacoesAtuais) 
     const selecionados = idsSelecionados.map(Number);
     const idsAtuais = associacoesAtuais.map((associacao) => Number(associacao.acesso?.id));
 
-    const inclusoes = selecionados
-        .filter((acessoId) => !idsAtuais.includes(acessoId))
-        .map((acessoId) => api.post("/cargos-acessos", { cargoId: Number(cargoId), acessoId }));
+    const inclusoes = selecionados.filter((acessoId) => !idsAtuais.includes(acessoId)).map((acessoId) => api.post("/cargos-acessos", { cargoId: Number(cargoId), acessoId }));
 
-    const exclusoes = associacoesAtuais
-        .filter((associacao) => !selecionados.includes(Number(associacao.acesso?.id)))
-        .map((associacao) => api.delete(`/cargos-acessos/${associacao.id}`));
+    const exclusoes = associacoesAtuais.filter((associacao) => !selecionados.includes(Number(associacao.acesso?.id))).map((associacao) => api.delete(`/cargos-acessos/${associacao.id}`));
 
     return Promise.allSettled([...inclusoes, ...exclusoes]);
 }
@@ -127,9 +116,7 @@ export function atualizarCargo(id, nome, descricao, permissoesIds, associacoesAt
         aposSucesso: async () => {
             const resultados = await sincronizarAcessosDoCargo(id, permissoesIds, associacoesAtuais);
 
-            return algumaRequisicaoFalhou(resultados)
-                ? "O cargo foi atualizado, mas alguns acessos não puderam ser alterados."
-                : null;
+            return algumaRequisicaoFalhou(resultados) ? "O cargo foi atualizado, mas alguns acessos não puderam ser alterados." : null;
         },
     });
 }

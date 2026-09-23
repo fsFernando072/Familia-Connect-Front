@@ -1,15 +1,4 @@
-import {
-    Home,
-    FolderHeart,
-    Users,
-    Package,
-    Briefcase,
-    Tag,
-    History,
-    Archive,
-    LayoutDashboard,
-    ClipboardClock,
-} from "lucide-react";
+import { Home, FolderHeart, Users, Package, Briefcase, Tag, History, Archive, LayoutDashboard, ClipboardClock } from "lucide-react";
 
 // Itens do menu lateral, na ordem em que aparecem.
 export const itensMenu = [

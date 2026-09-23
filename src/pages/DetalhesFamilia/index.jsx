@@ -38,21 +38,12 @@ function DetalhesFamilia() {
     const endereco = familia?.endereco;
     const dependentes = familia?.dependentes || [];
 
-    const logradouroCompleto = endereco?.logradouro
-        ? `${endereco.logradouro}${endereco.numero ? `, ${endereco.numero}` : ""}`
-        : "-";
+    const logradouroCompleto = endereco?.logradouro ? `${endereco.logradouro}${endereco.numero ? `, ${endereco.numero}` : ""}` : "-";
 
     return (
         <PaginaFormulario
             nomeTela="Detalhes da Família"
-            acao={
-                <Botao
-                    nome="Editar Cadastro"
-                    icone={Pencil}
-                    cor={COR_TURQUESA}
-                    acao={() => navigate(`/familias/${id}/editar-familia`)}
-                />
-            }
+            acao={<Botao nome="Editar Cadastro" icone={Pencil} cor={COR_TURQUESA} acao={() => navigate(`/familias/${id}/editar-familia`)} />}
             comCartao={false}
             carregando={carregando}
             carregandoTexto="Carregando família..."
@@ -62,19 +53,10 @@ function DetalhesFamilia() {
             onFecharFeedback={fecharFeedback}
         >
             <ListaContainer gap="gap-6">
-                <CartaoSecao
-                    titulo="Dados do Responsável"
-                    Icone={User}
-                    extra={<Selo texto="Cadastro Ativo" />}
-                >
+                <CartaoSecao titulo="Dados do Responsável" Icone={User} extra={<Selo texto="Cadastro Ativo" />}>
                     <div className="flex flex-col sm:flex-row items-start gap-6">
                         <ImagemLista tamanho="w-28 h-28">
-                            <FotoAvatar
-                                caminho={familia?.fotoFamilia}
-                                alt={`Foto da família ${familia?.nomeFamilia}`}
-                                Icone={Users}
-                                tamanhoIcone={36}
-                            />
+                            <FotoAvatar caminho={familia?.fotoFamilia} alt={`Foto da família ${familia?.nomeFamilia}`} Icone={Users} tamanhoIcone={36} />
                         </ImagemLista>
 
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-4 flex-1 min-w-0 w-full">
@@ -109,11 +91,7 @@ function DetalhesFamilia() {
                         </span>
                     }
                 >
-                    <ListaStatus
-                        carregando={false}
-                        vazio={dependentes.length === 0}
-                        mensagemVazia="Nenhum dependente cadastrado."
-                    />
+                    <ListaStatus carregando={false} vazio={dependentes.length === 0} mensagemVazia="Nenhum dependente cadastrado." />
 
                     {dependentes.length > 0 && (
                         <div className="rounded-xl border border-cifa-linha overflow-hidden">

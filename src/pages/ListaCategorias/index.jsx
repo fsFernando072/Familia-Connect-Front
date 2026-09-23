@@ -16,11 +16,21 @@ function ListaCategorias() {
     const navigate = useNavigate();
 
     const {
-        itens, carregando,
-        busca, setBusca, alternarOrdem,
-        paginaAtual, setPaginaAtual, totalPaginas,
-        feedback, fecharFeedback,
-        itemParaApagar, pedirConfirmacao, cancelarApagar, confirmarApagar, apagando,
+        itens,
+        carregando,
+        busca,
+        setBusca,
+        alternarOrdem,
+        paginaAtual,
+        setPaginaAtual,
+        totalPaginas,
+        feedback,
+        fecharFeedback,
+        itemParaApagar,
+        pedirConfirmacao,
+        cancelarApagar,
+        confirmarApagar,
+        apagando,
     } = useListaPaginada({
         listar: listarCategorias,
         apagar: deletarCategoria,
@@ -41,23 +51,18 @@ function ListaCategorias() {
                 onCadastrar={() => navigate("/categorias/cadastro-categoria")}
             />
 
-            <ListaStatus
-                carregando={carregando}
-                vazio={itens.length === 0}
-                mensagemCarregando="Carregando categorias..."
-                mensagemVazia="Nenhuma categoria encontrada."
-            />
+            <ListaStatus carregando={carregando} vazio={itens.length === 0} mensagemCarregando="Carregando categorias..." mensagemVazia="Nenhuma categoria encontrada." />
 
             <ListaContainer>
                 {itens.map((categoria) => (
                     <ListaItem
                         key={categoria.id}
-                        acoes={(
+                        acoes={
                             <>
                                 <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/categorias/${categoria.id}/editar-categoria`)} />
                                 <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(categoria)} />
                             </>
-                        )}
+                        }
                     >
                         <LinhaInfo rotulo="Nome" valor={categoria.nome} />
                     </ListaItem>

@@ -16,11 +16,21 @@ function ListaCargos() {
     const navigate = useNavigate();
 
     const {
-        itens, carregando,
-        busca, setBusca, alternarOrdem,
-        paginaAtual, setPaginaAtual, totalPaginas,
-        feedback, fecharFeedback,
-        itemParaApagar, pedirConfirmacao, cancelarApagar, confirmarApagar, apagando,
+        itens,
+        carregando,
+        busca,
+        setBusca,
+        alternarOrdem,
+        paginaAtual,
+        setPaginaAtual,
+        totalPaginas,
+        feedback,
+        fecharFeedback,
+        itemParaApagar,
+        pedirConfirmacao,
+        cancelarApagar,
+        confirmarApagar,
+        apagando,
     } = useListaPaginada({
         listar: listarCargos,
         apagar: deletarCargo,
@@ -41,23 +51,18 @@ function ListaCargos() {
                 onCadastrar={() => navigate("/cargos/cadastro-cargo")}
             />
 
-            <ListaStatus
-                carregando={carregando}
-                vazio={itens.length === 0}
-                mensagemCarregando="Carregando cargos..."
-                mensagemVazia="Nenhum cargo encontrado."
-            />
+            <ListaStatus carregando={carregando} vazio={itens.length === 0} mensagemCarregando="Carregando cargos..." mensagemVazia="Nenhum cargo encontrado." />
 
             <ListaContainer>
                 {itens.map((cargo) => (
                     <ListaItem
                         key={cargo.id}
-                        acoes={(
+                        acoes={
                             <>
                                 <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/cargos/${cargo.id}/editar-cargo`)} />
                                 <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(cargo)} />
                             </>
-                        )}
+                        }
                     >
                         <LinhaInfo rotulo="Nome" valor={cargo.nome} />
                         <LinhaInfo rotulo="Descrição" valor={cargo.descricao || "Sem descrição"} />

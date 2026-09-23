@@ -10,17 +10,13 @@ function CartaoSecao({ titulo, Icone, extra, children }) {
                             <Icone size={17} />
                         </span>
                     )}
-                    <h2 className="text-sm font-extrabold tracking-wide text-cifa-navy uppercase truncate">
-                        {titulo}
-                    </h2>
+                    <h2 className="text-sm font-extrabold tracking-wide text-cifa-navy uppercase truncate">{titulo}</h2>
                 </div>
 
                 {extra && <div className="shrink-0">{extra}</div>}
             </header>
 
-            <div className="p-5">
-                {children}
-            </div>
+            <div className="p-5">{children}</div>
         </section>
     );
 }

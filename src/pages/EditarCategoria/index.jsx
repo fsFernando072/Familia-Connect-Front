@@ -59,13 +59,7 @@ function EditarCategoria() {
             feedback={feedback}
             onFecharFeedback={fecharFeedback}
         >
-            <Formulario
-                campos={campos}
-                nomeBotao="Confirmar"
-                corBotao={COR_MENTA}
-                acaoBotao={handleAtualizar}
-                alinhamentoBotao="end"
-            />
+            <Formulario campos={campos} nomeBotao="Confirmar" corBotao={COR_MENTA} acaoBotao={handleAtualizar} alinhamentoBotao="end" />
         </PaginaFormulario>
     );
 }

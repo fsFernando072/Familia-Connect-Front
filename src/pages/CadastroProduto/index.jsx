@@ -64,14 +64,7 @@ function CadastroProduto() {
 
     return (
         <PaginaFormulario nomeTela="Cadastro de Produto" feedback={feedback} onFecharFeedback={fecharFeedback}>
-            <Formulario
-                campos={campos}
-                colunas={2}
-                nomeBotao="Cadastrar"
-                corBotao={COR_MENTA}
-                acaoBotao={handleCadastrar}
-                alinhamentoBotao="end"
-            />
+            <Formulario campos={campos} colunas={2} nomeBotao="Cadastrar" corBotao={COR_MENTA} acaoBotao={handleCadastrar} alinhamentoBotao="end" />
         </PaginaFormulario>
     );
 }

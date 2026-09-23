@@ -25,23 +25,9 @@ export async function gerarImagemRecortada(imagemSrc, areaRecortePx, tamanhoSaid
     canvas.height = tamanhoSaida;
 
     const contexto = canvas.getContext("2d");
-    contexto.drawImage(
-        imagem,
-        areaRecortePx.x,
-        areaRecortePx.y,
-        areaRecortePx.width,
-        areaRecortePx.height,
-        0,
-        0,
-        tamanhoSaida,
-        tamanhoSaida
-    );
+    contexto.drawImage(imagem, areaRecortePx.x, areaRecortePx.y, areaRecortePx.width, areaRecortePx.height, 0, 0, tamanhoSaida, tamanhoSaida);
 
     return new Promise((resolve, reject) => {
-        canvas.toBlob(
-            (blob) => (blob ? resolve(blob) : reject(new Error("Falha ao gerar a imagem recortada."))),
-            "image/jpeg",
-            0.9
-        );
+        canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("Falha ao gerar a imagem recortada."))), "image/jpeg", 0.9);
     });
 }

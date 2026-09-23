@@ -6,20 +6,9 @@ function CampoTexto({ label, value, onChange, onBlur, placeholder, type = "text"
         <div>
             <label className={CLASSE_LABEL}>{label}</label>
             <div className="relative">
-                <input
-                    type={type}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    placeholder={placeholder}
-                    className={erro ? CLASSE_INPUT_ERRO : CLASSE_INPUT}
-                />
+                <input type={type} value={value} onChange={onChange} onBlur={onBlur} placeholder={placeholder} className={erro ? CLASSE_INPUT_ERRO : CLASSE_INPUT} />
                 {toggle && (
-                    <button
-                        type="button"
-                        onClick={toggle}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-cifa-apagado hover:text-cifa-navy cursor-pointer"
-                    >
+                    <button type="button" onClick={toggle} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-cifa-apagado hover:text-cifa-navy cursor-pointer">
                         {mostrar ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                 )}

@@ -12,24 +12,16 @@ function FeedbackToast({ tipo, msg, loading, onClose }) {
 
     const estilos = {
         sucesso: { bg: "#dcfce7", borda: "#16a34a", texto: "#15803d" },
-        erro:    { bg: "#fee2e2", borda: "#dc2626", texto: "#b91c1c" },
-        "":      { bg: "#d9eaeb", borda: "#137d91", texto: "#08425d" }, // loading
+        erro: { bg: "#fee2e2", borda: "#dc2626", texto: "#b91c1c" },
+        "": { bg: "#d9eaeb", borda: "#137d91", texto: "#08425d" }, // loading
     };
 
     const { bg, borda, texto } = estilos[tipo] ?? estilos[""];
 
     return (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md">
-            <div
-                style={{ backgroundColor: bg, border: `1px solid ${borda}`, color: texto }}
-                className="flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg text-sm font-medium"
-            >
-                {loading
-                    ? <Loader2 size={18} className="animate-spin shrink-0" />
-                    : tipo === "sucesso"
-                        ? <CheckCircle2 size={18} className="shrink-0" />
-                        : <XCircle size={18} className="shrink-0" />
-                }
+            <div style={{ backgroundColor: bg, border: `1px solid ${borda}`, color: texto }} className="flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg text-sm font-medium">
+                {loading ? <Loader2 size={18} className="animate-spin shrink-0" /> : tipo === "sucesso" ? <CheckCircle2 size={18} className="shrink-0" /> : <XCircle size={18} className="shrink-0" />}
                 <span className="flex-1">{msg}</span>
                 {!loading && (
                     <button type="button" onClick={onClose} aria-label="Fechar" className="opacity-60 hover:opacity-100 cursor-pointer shrink-0">

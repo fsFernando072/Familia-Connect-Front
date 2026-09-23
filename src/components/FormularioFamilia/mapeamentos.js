@@ -8,17 +8,32 @@ import { converterDataParaBr, converterSexoParaLabel } from "../../utils/formata
 export function dependenteVazio() {
     return {
         id: Date.now() + Math.random(),
-        nome: "", parentesco: "", dataNascimento: "", sexo: "Masculino",
-        rg: "", cpf: "", telefone: "", profissaoSelecionada: "", profissaoNova: "",
-        erroRg: "", erroCpf: "",
+        nome: "",
+        parentesco: "",
+        dataNascimento: "",
+        sexo: "Masculino",
+        rg: "",
+        cpf: "",
+        telefone: "",
+        profissaoSelecionada: "",
+        profissaoNova: "",
+        erroRg: "",
+        erroCpf: "",
     };
 }
 
 export function dadosIniciaisVazios() {
     return {
         responsavel: {
-            nome: "", rg: "", cpf: "", telefone: "", dataNascimento: "",
-            sexo: "Masculino", possuiPne: "Não", profissaoSelecionada: "", profissaoNova: "",
+            nome: "",
+            rg: "",
+            cpf: "",
+            telefone: "",
+            dataNascimento: "",
+            sexo: "Masculino",
+            possuiPne: "Não",
+            profissaoSelecionada: "",
+            profissaoNova: "",
         },
         endereco: { cep: "", rua: "", numero: "", complemento: "", bairro: "", cidade: "", estadoId: "" },
         dependentes: [dependenteVazio()],
@@ -53,14 +68,15 @@ export function dadosIniciaisDeOcr(dadosOcr) {
             bairro: enderecoOcr?.bairro || "",
             cidade: enderecoOcr?.cidade || "",
         },
-        dependentes: dependentesOcr.length > 0
-            ? dependentesOcr.map((dep) => ({
-                ...dependenteVazio(),
-                nome: dep.nome || "",
-                parentesco: dep.grauParentesco || "",
-                dataNascimento: dep.dataNascimento ? converterDataParaBr(dep.dataNascimento) : "",
-            }))
-            : vazios.dependentes,
+        dependentes:
+            dependentesOcr.length > 0
+                ? dependentesOcr.map((dep) => ({
+                      ...dependenteVazio(),
+                      nome: dep.nome || "",
+                      parentesco: dep.grauParentesco || "",
+                      dataNascimento: dep.dataNascimento ? converterDataParaBr(dep.dataNascimento) : "",
+                  }))
+                : vazios.dependentes,
     };
 }
 
@@ -76,13 +92,17 @@ function separarProfissao(profissao, profissoes) {
 
 function dependenteDaApi(dep, profissoes) {
     return {
-        id: dep.id ?? (Date.now() + Math.random()),
-        nome: dep.nome || "", parentesco: dep.grauParentesco || "",
-        dataNascimento: converterDataParaBr(dep.dataNascimento), sexo: converterSexoParaLabel(dep.sexo),
-        rg: dep.rg ? mascaraRg(dep.rg) : "", cpf: dep.cpf ? mascaraCpf(dep.cpf) : "",
+        id: dep.id ?? Date.now() + Math.random(),
+        nome: dep.nome || "",
+        parentesco: dep.grauParentesco || "",
+        dataNascimento: converterDataParaBr(dep.dataNascimento),
+        sexo: converterSexoParaLabel(dep.sexo),
+        rg: dep.rg ? mascaraRg(dep.rg) : "",
+        cpf: dep.cpf ? mascaraCpf(dep.cpf) : "",
         telefone: dep.telefone ? mascaraTelefone(dep.telefone) : "",
         ...separarProfissao(dep.profissao, profissoes),
-        erroRg: "", erroCpf: "",
+        erroRg: "",
+        erroCpf: "",
     };
 }
 
@@ -112,9 +132,7 @@ export function dadosIniciaisDaFamilia(familia, profissoes) {
             cidade: endereco.cidade || "",
             estadoId: endereco.enderecoEstado?.id ? String(endereco.enderecoEstado.id) : "",
         },
-        dependentes: dependentes.length > 0
-            ? dependentes.map((dep) => dependenteDaApi(dep, profissoes))
-            : [dependenteVazio()],
+        dependentes: dependentes.length > 0 ? dependentes.map((dep) => dependenteDaApi(dep, profissoes)) : [dependenteVazio()],
         fotoInicial: familia.fotoFamilia || "",
     };
 }

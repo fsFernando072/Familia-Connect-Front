@@ -12,16 +12,13 @@ const CLASSE_LINK = "transition-colors hover:text-cifa-turquesa";
 function Navegabilidade({ sufixoUltimo }) {
     const location = useLocation();
 
-    const caminhos = location.pathname
-        .split("/")
-        .filter(Boolean);
+    const caminhos = location.pathname.split("/").filter(Boolean);
 
     return (
-        <nav
-            aria-label="Você está em"
-            className="flex items-center gap-1.5 overflow-x-auto whitespace-nowrap text-sm font-medium text-cifa-apagado"
-        >
-            <Link to="/pagina-inicial" className={CLASSE_LINK}>Página Inicial</Link>
+        <nav aria-label="Você está em" className="flex items-center gap-1.5 overflow-x-auto whitespace-nowrap text-sm font-medium text-cifa-apagado">
+            <Link to="/pagina-inicial" className={CLASSE_LINK}>
+                Página Inicial
+            </Link>
 
             {caminhos.map((caminho, index) => {
                 const rota = "/" + caminhos.slice(0, index + 1).join("/");
@@ -32,17 +29,19 @@ function Navegabilidade({ sufixoUltimo }) {
                 if (ehIdentificador(caminho) && !ehUltimo) return null;
 
                 // Último segmento sendo um id (ex: /familias/12): é a tela de detalhes.
-                const texto = ehIdentificador(caminho)
-                    ? "Detalhes da Família"
-                    : `${nomesRotas[caminho] || caminho}${ehUltimo && sufixoUltimo ? ` ${sufixoUltimo}` : ""}`;
+                const texto = ehIdentificador(caminho) ? "Detalhes da Família" : `${nomesRotas[caminho] || caminho}${ehUltimo && sufixoUltimo ? ` ${sufixoUltimo}` : ""}`;
 
                 return (
                     <Fragment key={rota}>
                         <ChevronRight size={14} className="shrink-0" aria-hidden="true" />
                         {ehUltimo ? (
-                            <span aria-current="page" className="font-semibold text-cifa-navy">{texto}</span>
+                            <span aria-current="page" className="font-semibold text-cifa-navy">
+                                {texto}
+                            </span>
                         ) : (
-                            <Link to={rota} className={CLASSE_LINK}>{texto}</Link>
+                            <Link to={rota} className={CLASSE_LINK}>
+                                {texto}
+                            </Link>
                         )}
                     </Fragment>
                 );

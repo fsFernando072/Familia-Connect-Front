@@ -31,10 +31,7 @@ function EditarFuncionario() {
         async function carregarDadosIniciais() {
             setCarregando(true);
 
-            const [funcionario, dadosCargos] = await Promise.all([
-                buscarFuncionarioPorId(id),
-                listarCargos({ size: 100 }),
-            ]);
+            const [funcionario, dadosCargos] = await Promise.all([buscarFuncionarioPorId(id), listarCargos({ size: 100 })]);
 
             setCargos(dadosCargos?.content || []);
 
@@ -131,14 +128,7 @@ function EditarFuncionario() {
             feedback={feedback}
             onFecharFeedback={fecharFeedback}
         >
-            <Formulario
-                campos={campos}
-                colunas={2}
-                nomeBotao="Confirmar"
-                corBotao={COR_MENTA}
-                acaoBotao={handleAtualizar}
-                alinhamentoBotao="end"
-            />
+            <Formulario campos={campos} colunas={2} nomeBotao="Confirmar" corBotao={COR_MENTA} acaoBotao={handleAtualizar} alinhamentoBotao="end" />
         </PaginaFormulario>
     );
 }

@@ -42,23 +42,15 @@ function ModalRecorteImagem({ aberto, imagemSrc, onCancelar, onConfirmar }) {
     };
 
     return createPortal(
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-cifa-navy/60 backdrop-blur-sm px-4"
-            onClick={processando ? undefined : onCancelar}
-        >
-            <div
-                className="w-full max-w-sm bg-white rounded-3xl border border-cifa-linha shadow-xl p-6 flex flex-col items-center text-center gap-4"
-                onClick={(e) => e.stopPropagation()}
-            >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-cifa-navy/60 backdrop-blur-sm px-4" onClick={processando ? undefined : onCancelar}>
+            <div className="w-full max-w-sm bg-white rounded-3xl border border-cifa-linha shadow-xl p-6 flex flex-col items-center text-center gap-4" onClick={(e) => e.stopPropagation()}>
                 <div className="w-14 h-14 rounded-full bg-cifa-suave flex items-center justify-center">
                     <Crop size={26} className="text-cifa-turquesa" />
                 </div>
 
                 <div className="flex flex-col gap-1">
                     <h2 className="text-lg font-extrabold text-cifa-navy">Ajustar foto</h2>
-                    <p className="text-sm text-cifa-apagado">
-                        Arraste para posicionar e use o controle abaixo para dar zoom.
-                    </p>
+                    <p className="text-sm text-cifa-apagado">Arraste para posicionar e use o controle abaixo para dar zoom.</p>
                 </div>
 
                 <div className="relative w-full h-64 rounded-xl overflow-hidden bg-cifa-suave">
@@ -75,31 +67,11 @@ function ModalRecorteImagem({ aberto, imagemSrc, onCancelar, onConfirmar }) {
                     />
                 </div>
 
-                <input
-                    type="range"
-                    min={1}
-                    max={3}
-                    step={0.01}
-                    value={zoom}
-                    onChange={(e) => setZoom(Number(e.target.value))}
-                    className="w-full accent-cifa-turquesa"
-                    aria-label="Zoom da imagem"
-                />
+                <input type="range" min={1} max={3} step={0.01} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} className="w-full accent-cifa-turquesa" aria-label="Zoom da imagem" />
 
                 <div className="flex items-center justify-center gap-3 w-full mt-2">
-                    <BotaoSecundario
-                        nome="Cancelar"
-                        acao={onCancelar}
-                        desabilitado={processando}
-                        larguraBotao="flex-1"
-                    />
-                    <Botao
-                        nome={processando ? "Salvando..." : "Usar foto"}
-                        cor={COR_TURQUESA}
-                        acao={handleConfirmar}
-                        desabilitado={processando}
-                        larguraBotao="flex-1"
-                    />
+                    <BotaoSecundario nome="Cancelar" acao={onCancelar} desabilitado={processando} larguraBotao="flex-1" />
+                    <Botao nome={processando ? "Salvando..." : "Usar foto"} cor={COR_TURQUESA} acao={handleConfirmar} desabilitado={processando} larguraBotao="flex-1" />
                 </div>
             </div>
         </div>,

@@ -29,14 +29,13 @@ function EditarFamilia() {
         }
         carregarFamilia();
 
-        return () => { ativo = false; };
+        return () => {
+            ativo = false;
+        };
     }, [id]);
 
     // Só monta os dados iniciais quando a família e as listas dos selects já chegaram.
-    const dadosIniciais = useMemo(
-        () => (familia && !opcoes.carregando) ? dadosIniciaisDaFamilia(familia, opcoes.profissoes) : null,
-        [familia, opcoes.carregando, opcoes.profissoes]
-    );
+    const dadosIniciais = useMemo(() => (familia && !opcoes.carregando ? dadosIniciaisDaFamilia(familia, opcoes.profissoes) : null), [familia, opcoes.carregando, opcoes.profissoes]);
 
     return (
         <PaginaFormulario
@@ -54,8 +53,7 @@ function EditarFamilia() {
                 opcoes={opcoes}
                 labelImagem="Trocar Imagem"
                 nomeBotaoFinal="Confirmar"
-                onSalvar={(responsavel, endereco, dependentes) =>
-                    atualizarFamilia(id, responsavel, endereco, dependentes, navigate, setFeedback)}
+                onSalvar={(responsavel, endereco, dependentes) => atualizarFamilia(id, responsavel, endereco, dependentes, navigate, setFeedback)}
                 setFeedback={setFeedback}
                 fecharFeedback={fecharFeedback}
             />

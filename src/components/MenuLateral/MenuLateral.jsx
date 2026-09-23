@@ -15,13 +15,7 @@ function MenuLateral({ aberto, onFechar }) {
     return (
         <>
             {/* Fundo escurecido: só aparece no mobile, com o menu aberto */}
-            {aberto && (
-                <div
-                    className="fixed inset-0 z-30 bg-cifa-navy/60 backdrop-blur-sm lg:hidden"
-                    onClick={onFechar}
-                    aria-hidden="true"
-                />
-            )}
+            {aberto && <div className="fixed inset-0 z-30 bg-cifa-navy/60 backdrop-blur-sm lg:hidden" onClick={onFechar} aria-hidden="true" />}
 
             <aside
                 className={`fixed inset-y-0 left-0 z-40 flex w-72 flex-col bg-cifa-navy transition-transform duration-300 ease-in-out lg:translate-x-0 ${
@@ -30,9 +24,7 @@ function MenuLateral({ aberto, onFechar }) {
                 aria-label="Menu principal"
             >
                 <div className="flex items-center gap-3 px-6 pt-7 pb-6">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cifa-menta text-lg font-extrabold text-cifa-navy">
-                        C
-                    </div>
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cifa-menta text-lg font-extrabold text-cifa-navy">C</div>
                     <div className="leading-tight">
                         <p className="text-lg font-extrabold tracking-tight text-white">CIFA</p>
                         <p className="text-[11px] font-medium uppercase tracking-wide text-[#92b3c0]">Assistência Social</p>
@@ -47,11 +39,7 @@ function MenuLateral({ aberto, onFechar }) {
                                     to={rota}
                                     onClick={onFechar}
                                     className={({ isActive }) =>
-                                        `${CLASSE_ITEM} ${
-                                            isActive
-                                                ? "bg-cifa-petroleo text-white shadow-sm ring-1 ring-white/5"
-                                                : "text-cifa-menu hover:bg-white/5 hover:text-white"
-                                        }`
+                                        `${CLASSE_ITEM} ${isActive ? "bg-cifa-petroleo text-white shadow-sm ring-1 ring-white/5" : "text-cifa-menu hover:bg-white/5 hover:text-white"}`
                                     }
                                 >
                                     {({ isActive }) => (
@@ -67,11 +55,7 @@ function MenuLateral({ aberto, onFechar }) {
                 </nav>
 
                 <div className="border-t border-white/10 px-3 py-4">
-                    <button
-                        type="button"
-                        onClick={handleSair}
-                        className={`${CLASSE_ITEM} cursor-pointer text-cifa-menu hover:bg-white/5 hover:text-white`}
-                    >
+                    <button type="button" onClick={handleSair} className={`${CLASSE_ITEM} cursor-pointer text-cifa-menu hover:bg-white/5 hover:text-white`}>
                         <LogOut size={20} />
                         Sair
                     </button>

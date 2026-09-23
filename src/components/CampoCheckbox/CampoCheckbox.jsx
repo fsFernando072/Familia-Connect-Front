@@ -15,12 +15,7 @@ function CampoCheckbox({ label, opcoes, valoresSelecionados, onChange }) {
             <div className="flex flex-col gap-2">
                 {opcoes.map((opcao) => (
                     <label key={opcao.id} className="flex items-center gap-2.5 cursor-pointer text-base text-cifa-navy">
-                        <input
-                            type="checkbox"
-                            checked={valoresSelecionados.includes(opcao.id)}
-                            onChange={() => alternar(opcao.id)}
-                            className="w-4 h-4 accent-cifa-turquesa cursor-pointer"
-                        />
+                        <input type="checkbox" checked={valoresSelecionados.includes(opcao.id)} onChange={() => alternar(opcao.id)} className="w-4 h-4 accent-cifa-turquesa cursor-pointer" />
                         {opcao.nome}
                     </label>
                 ))}

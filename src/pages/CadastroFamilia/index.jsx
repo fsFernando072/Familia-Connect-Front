@@ -16,16 +16,12 @@ function CadastroFamilia() {
     // Vem preenchido quando o usuário importa uma foto na tela de lista.
     const dadosOcr = location.state?.dadosOcr;
 
-    const { feedback, setFeedback, fecharFeedback } = useFeedback(() => dadosOcr
-        ? feedbackSucesso("Dados preenchidos a partir da foto importada. Confira e complete as informações antes de cadastrar.")
-        : FEEDBACK_VAZIO
+    const { feedback, setFeedback, fecharFeedback } = useFeedback(() =>
+        dadosOcr ? feedbackSucesso("Dados preenchidos a partir da foto importada. Confira e complete as informações antes de cadastrar.") : FEEDBACK_VAZIO
     );
     const opcoes = useOpcoesFamilia();
 
-    const dadosIniciais = useMemo(
-        () => dadosOcr ? dadosIniciaisDeOcr(dadosOcr) : dadosIniciaisVazios(),
-        [dadosOcr]
-    );
+    const dadosIniciais = useMemo(() => (dadosOcr ? dadosIniciaisDeOcr(dadosOcr) : dadosIniciaisVazios()), [dadosOcr]);
 
     return (
         <PaginaFormulario nomeTela="Cadastro de Família" feedback={feedback} onFecharFeedback={fecharFeedback}>
@@ -34,8 +30,7 @@ function CadastroFamilia() {
                 opcoes={opcoes}
                 nomeBotaoFinal="Cadastrar"
                 preSelecionarSP
-                onSalvar={(responsavel, endereco, dependentes) =>
-                    cadastrarFamilia(responsavel, endereco, dependentes, navigate, setFeedback)}
+                onSalvar={(responsavel, endereco, dependentes) => cadastrarFamilia(responsavel, endereco, dependentes, navigate, setFeedback)}
                 setFeedback={setFeedback}
                 fecharFeedback={fecharFeedback}
             />

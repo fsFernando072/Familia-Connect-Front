@@ -10,34 +10,11 @@ import { CLASSE_LABEL, CLASSE_INPUT } from "../estilosCampo";
 function renderCampo(campo) {
     switch (campo.tipo) {
         case "checkbox":
-            return (
-                <CampoCheckbox
-                    label={campo.label}
-                    opcoes={campo.opcoes}
-                    valoresSelecionados={campo.value}
-                    onChange={campo.onChange}
-                />
-            );
+            return <CampoCheckbox label={campo.label} opcoes={campo.opcoes} valoresSelecionados={campo.value} onChange={campo.onChange} />;
         case "radio":
-            return (
-                <CampoRadio
-                    label={campo.label}
-                    name={campo.name}
-                    opcoes={campo.opcoes}
-                    value={campo.value}
-                    onChange={campo.onChange}
-                />
-            );
+            return <CampoRadio label={campo.label} name={campo.name} opcoes={campo.opcoes} value={campo.value} onChange={campo.onChange} />;
         case "select":
-            return (
-                <CampoSelect
-                    label={campo.label}
-                    value={campo.value}
-                    onChange={campo.onChange}
-                    opcoes={campo.opcoes}
-                    placeholder={campo.placeholder}
-                />
-            );
+            return <CampoSelect label={campo.label} value={campo.value} onChange={campo.onChange} opcoes={campo.opcoes} placeholder={campo.placeholder} />;
         case "profissao":
             return (
                 <CampoProfissao
@@ -50,24 +27,12 @@ function renderCampo(campo) {
                 />
             );
         case "imagem":
-            return (
-                <UploadImagem
-                    label={campo.label}
-                    setImagem={campo.setImagem}
-                    imagemInicial={campo.imagemInicial}
-                />
-            );
+            return <UploadImagem label={campo.label} setImagem={campo.setImagem} imagemInicial={campo.imagemInicial} />;
         case "textarea":
             return (
                 <div>
                     <label className={CLASSE_LABEL}>{campo.label}</label>
-                    <textarea
-                        value={campo.value}
-                        onChange={campo.onChange}
-                        rows={campo.rows || 9}
-                        placeholder={campo.placeholder}
-                        className={`${CLASSE_INPUT} resize-none`}
-                    />
+                    <textarea value={campo.value} onChange={campo.onChange} rows={campo.rows || 9} placeholder={campo.placeholder} className={`${CLASSE_INPUT} resize-none`} />
                     {campo.ajuda && <span className="text-xs text-cifa-apagado mt-1 block">{campo.ajuda}</span>}
                 </div>
             );
@@ -76,19 +41,15 @@ function renderCampo(campo) {
                 <div>
                     <label className={CLASSE_LABEL}>{campo.label}</label>
                     <div className="flex gap-2 items-center">
-                        <select
-                            value={campo.value ?? ""}
-                            onChange={campo.onChange}
-                            className={`${CLASSE_INPUT} flex-1 min-w-0`}
-                        >
+                        <select value={campo.value ?? ""} onChange={campo.onChange} className={`${CLASSE_INPUT} flex-1 min-w-0`}>
                             <option value="">Selecionar</option>
                             {campo.opcoes.map((item) => (
-                                <option key={item.id} value={item.id}>{item.nome}</option>
+                                <option key={item.id} value={item.id}>
+                                    {item.nome}
+                                </option>
                             ))}
                         </select>
-                        {campo.acao && (
-                            <Botao nome={campo.acao.nome} cor={campo.acao.cor} acao={campo.acao.onClick} />
-                        )}
+                        {campo.acao && <Botao nome={campo.acao.nome} cor={campo.acao.cor} acao={campo.acao.onClick} />}
                     </div>
                 </div>
             );
@@ -112,16 +73,7 @@ function renderCampo(campo) {
     }
 }
 
-function Formulario({
-    campos = [],
-    colunas = 1,
-    nomeBotao,
-    corBotao,
-    acaoBotao,
-    larguraBotao = "w-full sm:w-auto",
-    alinhamentoBotao = "start",
-    botaoVoltar,
-}) {
+function Formulario({ campos = [], colunas = 1, nomeBotao, corBotao, acaoBotao, larguraBotao = "w-full sm:w-auto", alinhamentoBotao = "start", botaoVoltar }) {
     const duasColunas = colunas === 2;
     const camposColuna1 = duasColunas ? campos.filter((campo) => (campo.coluna ?? 1) === 1) : campos;
     const camposColuna2 = duasColunas ? campos.filter((campo) => campo.coluna === 2) : [];
@@ -138,23 +90,13 @@ function Formulario({
     const posicaoBotao = alinhamentos[alinhamentoBotao] || "justify-center";
 
     const rodape = temRodape && (
-        <div
-            className={`mt-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center ${
-                posicaoBotao
-            }`}
-        >
+        <div className={`mt-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center ${posicaoBotao}`}>
             {botaoVoltar && (
-                <button
-                    type="button"
-                    onClick={botaoVoltar.onClick}
-                    className="text-cifa-apagado font-semibold hover:text-cifa-navy hover:underline cursor-pointer text-center sm:text-left"
-                >
+                <button type="button" onClick={botaoVoltar.onClick} className="text-cifa-apagado font-semibold hover:text-cifa-navy hover:underline cursor-pointer text-center sm:text-left">
                     {botaoVoltar.nome || "Voltar"}
                 </button>
             )}
-            {nomeBotao && (
-                <Botao nome={nomeBotao} cor={corBotao} acao={acaoBotao} larguraBotao={larguraBotao} />
-            )}
+            {nomeBotao && <Botao nome={nomeBotao} cor={corBotao} acao={acaoBotao} larguraBotao={larguraBotao} />}
         </div>
     );
 
