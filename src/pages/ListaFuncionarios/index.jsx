@@ -11,13 +11,14 @@ import Botao from "../../components/Botao/Botao";
 import Paginacao from "../../components/Paginacao/Paginacao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
 import FotoAvatar from "../../components/FotoAvatar/FotoAvatar";
-import { mascaraCpf } from "../../utils/mascaras";
-import { listarFuncionarios, deletarFuncionario } from "../../services/funcionarioService";
 import { useListaPaginada } from "../../hooks/useListaPaginada";
+import { listarFuncionarios, deletarFuncionario } from "../../services/funcionarioService";
+import { mascaraCpf } from "../../utils/mascaras";
+import { COR_PERIGO, COR_TURQUESA } from "../../utils/cores";
 
 function ListaFuncionarios() {
-
     const navigate = useNavigate();
+
     const {
         itens, carregando,
         busca, setBusca, alternarOrdem,
@@ -28,27 +29,27 @@ function ListaFuncionarios() {
         listar: listarFuncionarios,
         apagar: deletarFuncionario,
         mensagens: {
-            apagando: 'Apagando funcionário...',
-            sucesso: 'Funcionário apagado com sucesso!',
-            erro: 'Não foi possível apagar o funcionário.',
+            apagando: "Apagando funcionário...",
+            sucesso: "Funcionário apagado com sucesso!",
+            erro: "Não foi possível apagar o funcionário.",
         },
     });
 
     return (
-        <PaginaLista nomeTela='Lista de Funcionários' feedback={feedback} onFecharFeedback={fecharFeedback}>
+        <PaginaLista nomeTela="Lista de Funcionários" feedback={feedback} onFecharFeedback={fecharFeedback}>
             <ListaAcoes
                 busca={busca}
                 onBuscaChange={(e) => setBusca(e.target.value)}
-                placeholderBusca='Buscar Funcionário'
+                placeholderBusca="Buscar Funcionário"
                 onOrdenar={alternarOrdem}
-                onCadastrar={() => navigate('/funcionarios/cadastro-funcionario')}
+                onCadastrar={() => navigate("/funcionarios/cadastro-funcionario")}
             />
 
             <ListaStatus
                 carregando={carregando}
                 vazio={itens.length === 0}
-                mensagemCarregando='Carregando funcionários...'
-                mensagemVazia='Nenhum funcionário encontrado.'
+                mensagemCarregando="Carregando funcionários..."
+                mensagemVazia="Nenhum funcionário encontrado."
             />
 
             <ListaContainer>
@@ -66,14 +67,14 @@ function ListaFuncionarios() {
                         )}
                         acoes={(
                             <>
-                                <Botao nome='Editar' cor='#137D91' acao={() => navigate(`/funcionarios/${funcionario.id}/editar-funcionario`)} />
-                                <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(funcionario)} />
+                                <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/funcionarios/${funcionario.id}/editar-funcionario`)} />
+                                <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(funcionario)} />
                             </>
                         )}
                     >
-                        <LinhaInfo rotulo='Nome' valor={funcionario.nome} />
-                        <LinhaInfo rotulo='CPF' valor={funcionario.cpf ? mascaraCpf(funcionario.cpf) : '-'} />
-                        <LinhaInfo rotulo='Cargo' valor={funcionario.cargo?.nome || '-'} />
+                        <LinhaInfo rotulo="Nome" valor={funcionario.nome} />
+                        <LinhaInfo rotulo="CPF" valor={funcionario.cpf && mascaraCpf(funcionario.cpf)} />
+                        <LinhaInfo rotulo="Cargo" valor={funcionario.cargo?.nome} />
                     </ListaItem>
                 ))}
             </ListaContainer>
@@ -81,12 +82,12 @@ function ListaFuncionarios() {
             <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
             <ModalConfirmacao
-                aberto={!!itemParaApagar}
+                aberto={Boolean(itemParaApagar)}
                 titulo="Apagar funcionário"
-                mensagem={itemParaApagar ? `Deseja realmente apagar o funcionário ${itemParaApagar.nome}? Essa ação não pode ser desfeita.` : ''}
+                mensagem={itemParaApagar ? `Deseja realmente apagar o funcionário "${itemParaApagar.nome}"? Essa ação não pode ser desfeita.` : ""}
                 textoConfirmar="Sim, apagar"
                 textoCancelar="Não"
-                corConfirmar="#DC2626"
+                corConfirmar={COR_PERIGO}
                 carregando={apagando}
                 onConfirmar={confirmarApagar}
                 onCancelar={cancelarApagar}

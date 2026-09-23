@@ -8,12 +8,13 @@ import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
 import Paginacao from "../../components/Paginacao/Paginacao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
-import { listarCategorias, deletarCategoria } from "../../services/categoriaService";
 import { useListaPaginada } from "../../hooks/useListaPaginada";
+import { listarCategorias, deletarCategoria } from "../../services/categoriaService";
+import { COR_PERIGO, COR_TURQUESA } from "../../utils/cores";
 
 function ListaCategorias() {
-
     const navigate = useNavigate();
+
     const {
         itens, carregando,
         busca, setBusca, alternarOrdem,
@@ -24,27 +25,27 @@ function ListaCategorias() {
         listar: listarCategorias,
         apagar: deletarCategoria,
         mensagens: {
-            apagando: 'Apagando categoria...',
-            sucesso: 'Categoria apagada com sucesso!',
-            erro: 'Não foi possível apagar a categoria.',
+            apagando: "Apagando categoria...",
+            sucesso: "Categoria apagada com sucesso!",
+            erro: "Não foi possível apagar a categoria.",
         },
     });
 
     return (
-        <PaginaLista nomeTela='Lista de Categorias' feedback={feedback} onFecharFeedback={fecharFeedback}>
+        <PaginaLista nomeTela="Lista de Categorias" feedback={feedback} onFecharFeedback={fecharFeedback}>
             <ListaAcoes
                 busca={busca}
                 onBuscaChange={(e) => setBusca(e.target.value)}
-                placeholderBusca='Buscar Categoria'
+                placeholderBusca="Buscar Categoria"
                 onOrdenar={alternarOrdem}
-                onCadastrar={() => navigate('/categorias/cadastro-categoria')}
+                onCadastrar={() => navigate("/categorias/cadastro-categoria")}
             />
 
             <ListaStatus
                 carregando={carregando}
                 vazio={itens.length === 0}
-                mensagemCarregando='Carregando categorias...'
-                mensagemVazia='Nenhuma categoria encontrada.'
+                mensagemCarregando="Carregando categorias..."
+                mensagemVazia="Nenhuma categoria encontrada."
             />
 
             <ListaContainer>
@@ -53,12 +54,12 @@ function ListaCategorias() {
                         key={categoria.id}
                         acoes={(
                             <>
-                                <Botao nome='Editar' cor='#137D91' acao={() => navigate(`/categorias/${categoria.id}/editar-categoria`)} />
-                                <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(categoria)} />
+                                <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/categorias/${categoria.id}/editar-categoria`)} />
+                                <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(categoria)} />
                             </>
                         )}
                     >
-                        <LinhaInfo rotulo='Nome' valor={categoria.nome} />
+                        <LinhaInfo rotulo="Nome" valor={categoria.nome} />
                     </ListaItem>
                 ))}
             </ListaContainer>
@@ -66,12 +67,12 @@ function ListaCategorias() {
             <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
             <ModalConfirmacao
-                aberto={!!itemParaApagar}
+                aberto={Boolean(itemParaApagar)}
                 titulo="Apagar categoria"
-                mensagem={itemParaApagar ? `Deseja realmente apagar a categoria "${itemParaApagar.nome}"? Essa ação não pode ser desfeita.` : ''}
+                mensagem={itemParaApagar ? `Deseja realmente apagar a categoria "${itemParaApagar.nome}"? Essa ação não pode ser desfeita.` : ""}
                 textoConfirmar="Sim, apagar"
                 textoCancelar="Não"
-                corConfirmar="#DC2626"
+                corConfirmar={COR_PERIGO}
                 carregando={apagando}
                 onConfirmar={confirmarApagar}
                 onCancelar={cancelarApagar}

@@ -1,6 +1,6 @@
 const COLUNAS = {
-    2: 'sm:grid-cols-2',
-    3: 'sm:grid-cols-3',
+    2: "sm:grid-cols-2",
+    3: "sm:grid-cols-3",
 };
 
 function CartaoInfo({ colunas = 2, children }) {

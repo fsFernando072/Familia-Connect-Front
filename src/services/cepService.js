@@ -1,5 +1,5 @@
-import api from "./apiClient";
 import { somenteDigitos } from "../utils/mascaras";
+import api from "./apiClient";
 
 export async function buscarEnderecoPorCep(cep) {
     const cepLimpo = somenteDigitos(cep);

@@ -2,6 +2,7 @@ import { createPortal } from "react-dom";
 import { AlertTriangle } from "lucide-react";
 import Botao from "../Botao/Botao";
 import BotaoSecundario from "../BotaoSecundario/BotaoSecundario";
+import { COR_PERIGO } from "../../utils/cores";
 
 // Renderizado via portal em document.body: veja o comentário em ModalRecorteImagem
 // sobre por que isso é necessário para `position: fixed` funcionar corretamente.
@@ -11,10 +12,10 @@ function ModalConfirmacao({
     mensagem,
     textoConfirmar = "Sim",
     textoCancelar = "Não",
-    corConfirmar = "#DC2626",
+    corConfirmar = COR_PERIGO,
     carregando = false,
     onConfirmar,
-    onCancelar
+    onCancelar,
 }) {
     if (!aberto) return null;
 

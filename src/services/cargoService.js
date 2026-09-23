@@ -63,36 +63,36 @@ const ACESSOS = [
 export const PERMISSOES_CARGO = ACESSOS.map(([id, nome]) => ({ id, acessoId: id, nome }));
 
 function validarDadosCargo(nome) {
-    return nome?.trim() ? null : 'O nome do cargo é obrigatório.';
+    return nome?.trim() ? null : "O nome do cargo é obrigatório.";
 }
 
 function montarPayloadCargo(nome, descricao) {
     return { nome: nome.trim(), descricao: (descricao || "").trim() };
 }
 
-export function cadastrarCargo(nome, descricao, idsPermissoesSelecionadas, navigate, setFeedback) {
+export function cadastrarCargo(nome, descricao, permissoesIds, navigate, setFeedback) {
     return enviarComFeedback({
         erroValidacao: validarDadosCargo(nome),
-        requisicao: () => api.post('/cargos', montarPayloadCargo(nome, descricao)),
-        msgCarregando: 'Cadastrando cargo...',
-        sucesso: { status: 201, msg: 'Cargo cadastrado com sucesso!', rota: '/cargos' },
-        msgErro: 'Não foi possível cadastrar o cargo.',
+        requisicao: () => api.post("/cargos", montarPayloadCargo(nome, descricao)),
+        msgCarregando: "Cadastrando cargo...",
+        sucesso: { status: 201, msg: "Cargo cadastrado com sucesso!", rota: "/cargos" },
+        msgErro: "Não foi possível cadastrar o cargo. Nenhum dado foi salvo.",
         navigate,
         setFeedback,
         aposSucesso: async (response) => {
-            if (!idsPermissoesSelecionadas?.length) return null;
+            if (!permissoesIds?.length) return null;
 
             const resultados = await Promise.allSettled(
-                idsPermissoesSelecionadas.map((acessoId) =>
-                    api.post('/cargos-acessos', {
+                permissoesIds.map((acessoId) =>
+                    api.post("/cargos-acessos", {
                         cargoId: Number(response.data.id),
-                        acessoId: Number(acessoId)
+                        acessoId: Number(acessoId),
                     })
                 )
             );
 
             return algumaRequisicaoFalhou(resultados)
-                ? 'O cargo foi cadastrado, mas alguns acessos não puderam ser associados.'
+                ? "O cargo foi cadastrado, mas alguns acessos não puderam ser associados."
                 : null;
         },
     });
@@ -105,7 +105,7 @@ function sincronizarAcessosDoCargo(cargoId, idsSelecionados, associacoesAtuais) 
 
     const inclusoes = selecionados
         .filter((acessoId) => !idsAtuais.includes(acessoId))
-        .map((acessoId) => api.post('/cargos-acessos', { cargoId: Number(cargoId), acessoId }));
+        .map((acessoId) => api.post("/cargos-acessos", { cargoId: Number(cargoId), acessoId }));
 
     const exclusoes = associacoesAtuais
         .filter((associacao) => !selecionados.includes(Number(associacao.acesso?.id)))
@@ -114,21 +114,21 @@ function sincronizarAcessosDoCargo(cargoId, idsSelecionados, associacoesAtuais) 
     return Promise.allSettled([...inclusoes, ...exclusoes]);
 }
 
-export function atualizarCargo(id, nome, descricao, idsPermissoesSelecionadas, associacoesAtuais, navigate, setFeedback) {
+export function atualizarCargo(id, nome, descricao, permissoesIds, associacoesAtuais, navigate, setFeedback) {
     return enviarComFeedback({
         erroValidacao: validarDadosCargo(nome),
         requisicao: () => api.put(`/cargos/${id}`, montarPayloadCargo(nome, descricao)),
-        msgCarregando: 'Atualizando cargo...',
-        sucesso: { status: 200, msg: 'Cargo atualizado com sucesso!', rota: '/cargos' },
-        erros: { 404: 'Cargo não encontrado.' },
-        msgErro: 'Não foi possível atualizar o cargo.',
+        msgCarregando: "Atualizando cargo...",
+        sucesso: { status: 200, msg: "Cargo atualizado com sucesso!", rota: "/cargos" },
+        erros: { 404: "Cargo não encontrado." },
+        msgErro: "Não foi possível atualizar o cargo.",
         navigate,
         setFeedback,
         aposSucesso: async () => {
-            const resultados = await sincronizarAcessosDoCargo(id, idsPermissoesSelecionadas, associacoesAtuais);
+            const resultados = await sincronizarAcessosDoCargo(id, permissoesIds, associacoesAtuais);
 
             return algumaRequisicaoFalhou(resultados)
-                ? 'O cargo foi atualizado, mas alguns acessos não puderam ser alterados.'
+                ? "O cargo foi atualizado, mas alguns acessos não puderam ser alterados."
                 : null;
         },
     });

@@ -1,9 +1,9 @@
-import api from "./apiClient";
 import {
     feedbackCarregando,
     feedbackErro,
     feedbackSucesso,
 } from "../utils/feedback";
+import api from "./apiClient";
 
 export const ATRASO_REDIRECIONAMENTO_MS = 2000;
 
@@ -21,14 +21,13 @@ const MSG_CONEXAO_PADRAO = "Erro de conexão. Nenhum dado foi salvo.";
  * - paramBusca: nome do query param que a API espera                   (padrão = argBusca)
  */
 export function criarServicoBase(endpoint, { singular, plural, argBusca = "nome", paramBusca = argBusca }) {
-
     async function listar(opcoes = {}) {
         const { page = 0, size = 10, direcao = "asc" } = opcoes;
         const busca = opcoes[argBusca];
 
         try {
             const response = await api.get(endpoint, {
-                params: { [paramBusca]: busca?.trim() || undefined, page, size, direcao }
+                params: { [paramBusca]: busca?.trim() || undefined, page, size, direcao },
             });
 
             if (response.status === 200) return response.data;

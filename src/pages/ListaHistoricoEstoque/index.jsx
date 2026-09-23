@@ -8,13 +8,14 @@ import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
 import Paginacao from "../../components/Paginacao/Paginacao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
+import { useListaPaginada } from "../../hooks/useListaPaginada";
 import { listarHistoricoEstoque, deletarHistoricoEstoque } from "../../services/historicoEstoqueService";
 import { converterDataParaBr } from "../../utils/formatadores";
-import { useListaPaginada } from "../../hooks/useListaPaginada";
+import { COR_PERIGO, COR_TURQUESA } from "../../utils/cores";
 
 function ListaHistoricoEstoque() {
-
     const navigate = useNavigate();
+
     const {
         itens, carregando,
         busca, setBusca, alternarOrdem,
@@ -25,27 +26,27 @@ function ListaHistoricoEstoque() {
         listar: listarHistoricoEstoque,
         apagar: deletarHistoricoEstoque,
         mensagens: {
-            apagando: 'Apagando registro de estoque...',
-            sucesso: 'Registro de estoque apagado com sucesso!',
-            erro: 'Não foi possível apagar o registro de estoque.',
+            apagando: "Apagando registro de estoque...",
+            sucesso: "Registro de estoque apagado com sucesso!",
+            erro: "Não foi possível apagar o registro de estoque.",
         },
     });
 
     return (
-        <PaginaLista nomeTela='Histórico de Estoque' feedback={feedback} onFecharFeedback={fecharFeedback}>
+        <PaginaLista nomeTela="Histórico de Estoque" feedback={feedback} onFecharFeedback={fecharFeedback}>
             <ListaAcoes
                 busca={busca}
                 onBuscaChange={(e) => setBusca(e.target.value)}
-                placeholderBusca='Buscar por Produto'
+                placeholderBusca="Buscar por Produto"
                 onOrdenar={alternarOrdem}
-                onCadastrar={() => navigate('/historico-estoque/cadastro-estoque')}
+                onCadastrar={() => navigate("/historico-estoque/cadastro-estoque")}
             />
 
             <ListaStatus
                 carregando={carregando}
                 vazio={itens.length === 0}
-                mensagemCarregando='Carregando histórico de estoque...'
-                mensagemVazia='Nenhum registro de estoque encontrado.'
+                mensagemCarregando="Carregando histórico de estoque..."
+                mensagemVazia="Nenhum registro de estoque encontrado."
             />
 
             <ListaContainer>
@@ -54,15 +55,15 @@ function ListaHistoricoEstoque() {
                         key={historico.id}
                         acoes={(
                             <>
-                                <Botao nome='Editar' cor='#137D91' acao={() => navigate(`/historico-estoque/${historico.id}/editar-estoque`)} />
-                                <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(historico)} />
+                                <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/historico-estoque/${historico.id}/editar-estoque`)} />
+                                <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(historico)} />
                             </>
                         )}
                     >
-                        <LinhaInfo rotulo='Produto' valor={historico.produto?.nome} />
-                        <LinhaInfo rotulo='Categoria' valor={historico.produto?.categoria?.nome || 'Sem categoria'} />
-                        <LinhaInfo rotulo='Quantidade' valor={historico.quantidade} />
-                        <LinhaInfo rotulo='Data' valor={converterDataParaBr(historico.dataEstoque)} />
+                        <LinhaInfo rotulo="Produto" valor={historico.produto?.nome} />
+                        <LinhaInfo rotulo="Categoria" valor={historico.produto?.categoria?.nome || "Sem categoria"} />
+                        <LinhaInfo rotulo="Quantidade" valor={historico.quantidade} />
+                        <LinhaInfo rotulo="Data" valor={converterDataParaBr(historico.dataEstoque)} />
                     </ListaItem>
                 ))}
             </ListaContainer>
@@ -70,12 +71,12 @@ function ListaHistoricoEstoque() {
             <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
             <ModalConfirmacao
-                aberto={!!itemParaApagar}
+                aberto={Boolean(itemParaApagar)}
                 titulo="Apagar registro de estoque"
-                mensagem={itemParaApagar ? `Deseja realmente apagar o registro de estoque do produto "${itemParaApagar.produto?.nome}"? Essa ação não pode ser desfeita.` : ''}
+                mensagem={itemParaApagar ? `Deseja realmente apagar o registro de estoque do produto "${itemParaApagar.produto?.nome}"? Essa ação não pode ser desfeita.` : ""}
                 textoConfirmar="Sim, apagar"
                 textoCancelar="Não"
-                corConfirmar="#DC2626"
+                corConfirmar={COR_PERIGO}
                 carregando={apagando}
                 onConfirmar={confirmarApagar}
                 onCancelar={cancelarApagar}

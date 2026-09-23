@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { feedbackCarregando, feedbackErro, feedbackSucesso } from "../utils/feedback";
 import { useDebounce } from "./useDebounce";
 import { useFeedback } from "./useFeedback";
-import { feedbackCarregando, feedbackErro, feedbackSucesso } from "../utils/feedback";
 
 /**
  * Toda a lógica das telas de listagem: busca com debounce, ordenação, paginação,
@@ -68,7 +68,7 @@ export function useListaPaginada({ listar, apagar, chaveBusca = "nome", obterId 
     // Ao trocar de página, volta o scroll para o topo (senão a lista nova
     // troca com a tela ainda rolada no meio da lista anterior).
     useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }, [paginaAtual]);
 
     const alternarOrdem = () => setOrdemCrescente((v) => !v);

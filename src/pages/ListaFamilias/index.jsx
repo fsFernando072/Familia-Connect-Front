@@ -14,16 +14,17 @@ import Paginacao from "../../components/Paginacao/Paginacao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
 import ModalImportarFoto from "../../components/ModalImportarFoto/ModalImportarFoto";
 import FotoAvatar from "../../components/FotoAvatar/FotoAvatar";
+import { useListaPaginada } from "../../hooks/useListaPaginada";
 import { listarFamilias, deletarFamilia } from "../../services/familiaService";
 import { extrairDadosFamiliaPorFoto } from "../../services/ocrService";
-import { useListaPaginada } from "../../hooks/useListaPaginada";
+import { COR_PERIGO, COR_PETROLEO, COR_TURQUESA } from "../../utils/cores";
 
 function ListaFamilias() {
-
     const navigate = useNavigate();
+
     const [modalImportarAberto, setModalImportarAberto] = useState(false);
     const [importando, setImportando] = useState(false);
-    const [erroImportacao, setErroImportacao] = useState('');
+    const [erroImportacao, setErroImportacao] = useState("");
 
     const {
         itens, carregando,
@@ -34,28 +35,28 @@ function ListaFamilias() {
     } = useListaPaginada({
         listar: listarFamilias,
         apagar: deletarFamilia,
-        chaveBusca: 'nomeResponsavel',
+        chaveBusca: "nomeResponsavel",
         obterId: (familia) => familia.idFamilia,
         mensagens: {
-            apagando: 'Apagando família...',
-            sucesso: 'Família apagada com sucesso!',
-            erro: 'Não foi possível apagar a família.',
+            apagando: "Apagando família...",
+            sucesso: "Família apagada com sucesso!",
+            erro: "Não foi possível apagar a família.",
         },
     });
 
     const handleAbrirImportar = () => {
-        setErroImportacao('');
+        setErroImportacao("");
         setModalImportarAberto(true);
     };
 
     const handleFecharImportar = () => {
         if (importando) return;
         setModalImportarAberto(false);
-        setErroImportacao('');
+        setErroImportacao("");
     };
 
     const handleSelecionarArquivoImportacao = async (arquivo) => {
-        setErroImportacao('');
+        setErroImportacao("");
         setImportando(true);
 
         const resultado = await extrairDadosFamiliaPorFoto(arquivo);
@@ -64,29 +65,29 @@ function ListaFamilias() {
 
         if (resultado.sucesso) {
             setModalImportarAberto(false);
-            navigate('/familias/cadastro-familia', { state: { dadosOcr: resultado.dados } });
+            navigate("/familias/cadastro-familia", { state: { dadosOcr: resultado.dados } });
         } else {
             setErroImportacao(resultado.erro);
         }
     };
 
     return (
-        <PaginaLista nomeTela='Lista de Famílias' feedback={feedback} onFecharFeedback={fecharFeedback}>
+        <PaginaLista nomeTela="Lista de Famílias" feedback={feedback} onFecharFeedback={fecharFeedback}>
             <ListaAcoes
                 busca={busca}
                 onBuscaChange={(e) => setBusca(e.target.value)}
-                placeholderBusca='Buscar Família'
+                placeholderBusca="Buscar Família"
                 onOrdenar={alternarOrdem}
-                onCadastrar={() => navigate('/familias/cadastro-familia')}
+                onCadastrar={() => navigate("/familias/cadastro-familia")}
             >
-                <BotaoSecundario nome='Importar Arquivo' icone={Upload} acao={handleAbrirImportar} />
+                <BotaoSecundario nome="Importar Arquivo" icone={Upload} acao={handleAbrirImportar} />
             </ListaAcoes>
 
             <ListaStatus
                 carregando={carregando}
                 vazio={itens.length === 0}
-                mensagemCarregando='Carregando famílias...'
-                mensagemVazia='Nenhuma família encontrada.'
+                mensagemCarregando="Carregando famílias..."
+                mensagemVazia="Nenhuma família encontrada."
             />
 
             <ListaContainer>
@@ -104,15 +105,15 @@ function ListaFamilias() {
                         )}
                         acoes={(
                             <>
-                                <Botao nome='Ver Detalhes' cor='#08425D' acao={() => navigate(`/familias/${familia.idFamilia}`)} />
-                                <Botao nome='Editar' cor='#137D91' acao={() => navigate(`/familias/${familia.idFamilia}/editar-familia`)} />
-                                <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(familia)} />
+                                <Botao nome="Ver Detalhes" cor={COR_PETROLEO} acao={() => navigate(`/familias/${familia.idFamilia}`)} />
+                                <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/familias/${familia.idFamilia}/editar-familia`)} />
+                                <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(familia)} />
                             </>
                         )}
                     >
-                        <LinhaInfo rotulo='Família' valor={familia.nomeFamilia} />
-                        <LinhaInfo rotulo='Nome do Responsável' valor={familia.nomeResponsavel} />
-                        <LinhaInfo rotulo='Telefone do Responsável' valor={familia.telefoneResponsavel} />
+                        <LinhaInfo rotulo="Família" valor={familia.nomeFamilia} />
+                        <LinhaInfo rotulo="Nome do Responsável" valor={familia.nomeResponsavel} />
+                        <LinhaInfo rotulo="Telefone do Responsável" valor={familia.telefoneResponsavel} />
                     </ListaItem>
                 ))}
             </ListaContainer>
@@ -128,12 +129,12 @@ function ListaFamilias() {
             />
 
             <ModalConfirmacao
-                aberto={!!itemParaApagar}
+                aberto={Boolean(itemParaApagar)}
                 titulo="Apagar família"
-                mensagem={itemParaApagar ? `Deseja realmente apagar a família de ${itemParaApagar.nomeResponsavel}? Essa ação não pode ser desfeita.` : ''}
+                mensagem={itemParaApagar ? `Deseja realmente apagar a família de "${itemParaApagar.nomeResponsavel}"? Essa ação não pode ser desfeita.` : ""}
                 textoConfirmar="Sim, apagar"
                 textoCancelar="Não"
-                corConfirmar="#DC2626"
+                corConfirmar={COR_PERIGO}
                 carregando={apagando}
                 onConfirmar={confirmarApagar}
                 onCancelar={cancelarApagar}

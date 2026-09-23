@@ -2,18 +2,18 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
-import { buscarCategoriaPorId, atualizarCategoria } from "../../services/categoriaService";
 import { useFeedback } from "../../hooks/useFeedback";
+import { buscarCategoriaPorId, atualizarCategoria } from "../../services/categoriaService";
+import { COR_MENTA } from "../../utils/cores";
 
 function EditarCategoria() {
-
     const { id } = useParams();
     const navigate = useNavigate();
+    const { feedback, setFeedback, fecharFeedback } = useFeedback();
+
     const [carregando, setCarregando] = useState(true);
     const [categoriaEncontrada, setCategoriaEncontrada] = useState(true);
-    const { feedback, setFeedback, fecharFeedback } = useFeedback();
-    const [nomeCategoria, setNomeCategoria] = useState("");
-
+    const [nome, setNome] = useState("");
 
     useEffect(() => {
         async function carregarCategoria() {
@@ -27,44 +27,44 @@ function EditarCategoria() {
                 return;
             }
 
-            setNomeCategoria(categoria.nome || "");
+            setNome(categoria.nome || "");
             setCarregando(false);
         }
         carregarCategoria();
     }, [id]);
 
     const handleAtualizar = () => {
-        atualizarCategoria(id, nomeCategoria, navigate, setFeedback);
+        atualizarCategoria(id, nome, navigate, setFeedback);
     };
 
     const campos = [
         {
-            id: 'nome',
-            tipo: 'texto',
+            id: "nome",
+            tipo: "texto",
             coluna: 1,
-            label: 'Nome da Categoria',
-            value: nomeCategoria,
-            onChange: (e) => setNomeCategoria(e.target.value),
-            placeholder: 'Vestimenta'
+            label: "Nome da Categoria",
+            value: nome,
+            onChange: (e) => setNome(e.target.value),
+            placeholder: "Vestimenta",
         },
     ];
 
     return (
         <PaginaFormulario
-            nomeTela='Editar Categoria'
+            nomeTela="Editar Categoria"
             carregando={carregando}
-            carregandoTexto='Carregando categoria...'
+            carregandoTexto="Carregando categoria..."
             encontrado={categoriaEncontrada}
-            naoEncontradoTexto='Categoria não encontrada.'
+            naoEncontradoTexto="Categoria não encontrada."
             feedback={feedback}
             onFecharFeedback={fecharFeedback}
         >
             <Formulario
                 campos={campos}
-                nomeBotao='Confirmar'
-                corBotao='#44BEB7'
+                nomeBotao="Confirmar"
+                corBotao={COR_MENTA}
                 acaoBotao={handleAtualizar}
-                alinhamentoBotao='end'
+                alinhamentoBotao="end"
             />
         </PaginaFormulario>
     );

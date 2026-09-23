@@ -1,10 +1,10 @@
 function ListaStatus({ carregando, vazio, mensagemCarregando, mensagemVazia }) {
     if (carregando) {
-        return <p className='text-cifa-apagado text-center mt-10'>{mensagemCarregando}</p>;
+        return <p className="text-cifa-apagado text-center mt-10">{mensagemCarregando}</p>;
     }
 
     if (vazio) {
-        return <p className='text-cifa-apagado text-center mt-10'>{mensagemVazia}</p>;
+        return <p className="text-cifa-apagado text-center mt-10">{mensagemVazia}</p>;
     }
 
     return null;

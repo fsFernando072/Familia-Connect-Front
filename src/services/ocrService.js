@@ -6,7 +6,7 @@ export const LIMITE_IMPORTACOES_POR_HORA = 60;
 const TAMANHO_MAXIMO_ARQUIVO_BYTES = TAMANHO_MAXIMO_ARQUIVO_MB * 1024 * 1024;
 
 export function validarTamanhoArquivo(arquivo) {
-    return !!arquivo && arquivo.size <= TAMANHO_MAXIMO_ARQUIVO_BYTES;
+    return Boolean(arquivo) && arquivo.size <= TAMANHO_MAXIMO_ARQUIVO_BYTES;
 }
 
 export async function extrairDadosFamiliaPorFoto(arquivo) {

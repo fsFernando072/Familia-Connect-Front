@@ -6,7 +6,6 @@ import Header from "../Header/Header";
 // Estrutura comum a todas as telas logadas: menu lateral + barra superior.
 // O conteúdo de cada tela entra no <Outlet />.
 function LayoutPrincipal() {
-
     const [menuAberto, setMenuAberto] = useState(false);
 
     useEffect(() => {

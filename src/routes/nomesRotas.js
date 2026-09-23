@@ -1,11 +1,11 @@
-const nomesRotas = {
+export const nomesRotas = {
     "cadastro-funcionario": "Cadastro de Funcionário",
     "cadastro-familia": "Cadastro de Família",
     "cadastro-produto": "Cadastro de Produto",
     "cadastro-categoria": "Cadastro de Categoria",
     "cadastro-cargo": "Cadastro de Cargo",
     "cadastro-estoque": "Cadastro de Estoque",
-    "historico-entrega": "Histórico de Entrega",
+    "historico-entrega": "Histórico de Entregas",
     "historico-estoque": "Histórico de Estoque",
     "dashboard": "Dashboard",
     "familias": "Lista de Famílias",
@@ -18,7 +18,5 @@ const nomesRotas = {
     "editar-produto": "Editar Produto",
     "editar-categoria": "Editar Categoria",
     "editar-cargo": "Editar Cargo",
-    "editar-estoque": "Editar Estoque"
+    "editar-estoque": "Editar Estoque",
 };
-
-export default nomesRotas;

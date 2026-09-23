@@ -2,19 +2,19 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
+import { useFeedback } from "../../hooks/useFeedback";
 import { listarProdutos } from "../../services/produtoService";
 import { cadastrarHistoricoEstoque } from "../../services/historicoEstoqueService";
-import { useFeedback } from "../../hooks/useFeedback";
+import { COR_MENTA, COR_NAVY } from "../../utils/cores";
 
 function CadastroHistoricoEstoque() {
-
     const navigate = useNavigate();
     const { feedback, setFeedback, fecharFeedback } = useFeedback();
+
     const [produtos, setProdutos] = useState([]);
 
     const [produtoId, setProdutoId] = useState("");
     const [quantidade, setQuantidade] = useState("");
-
 
     useEffect(() => {
         async function carregarProdutos() {
@@ -31,36 +31,35 @@ function CadastroHistoricoEstoque() {
 
     const campos = [
         {
-            id: 'produto',
-            tipo: 'select-com-acao',
+            id: "produto",
+            tipo: "select-com-acao",
             coluna: 1,
-            label: 'Produto',
+            label: "Produto",
             value: produtoId,
             onChange: (e) => setProdutoId(e.target.value),
             opcoes: produtos,
-            acao: { nome: 'Criar Produto', cor: '#0A243E', onClick: () => navigate('/produtos/cadastro-produto') }
+            acao: { nome: "Criar Produto", cor: COR_NAVY, onClick: () => navigate("/produtos/cadastro-produto") },
         },
         {
-            id: 'quantidade',
-            tipo: 'texto',
-            type: 'number',
+            id: "quantidade",
+            tipo: "texto",
+            type: "number",
             coluna: 1,
-            label: 'Quantidade em Estoque',
+            label: "Quantidade em Estoque",
             value: quantidade,
             onChange: (e) => setQuantidade(e.target.value),
-            placeholder: '20'
+            placeholder: "20",
         },
     ];
 
     return (
-        <PaginaFormulario nomeTela='Cadastro de Estoque' feedback={feedback} onFecharFeedback={fecharFeedback}>
+        <PaginaFormulario nomeTela="Cadastro de Estoque" feedback={feedback} onFecharFeedback={fecharFeedback}>
             <Formulario
                 campos={campos}
-                colunas={1}
-                nomeBotao='Cadastrar'
-                corBotao='#44BEB7'
+                nomeBotao="Cadastrar"
+                corBotao={COR_MENTA}
                 acaoBotao={handleCadastrar}
-                alinhamentoBotao='end'
+                alinhamentoBotao="end"
             />
         </PaginaFormulario>
     );

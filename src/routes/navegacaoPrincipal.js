@@ -19,8 +19,8 @@ export const itensMenu = [
     { titulo: "Produtos", rota: "/produtos", Icone: Package },
     { titulo: "Cargos", rota: "/cargos", Icone: Briefcase },
     { titulo: "Categorias", rota: "/categorias", Icone: Tag },
-    { titulo: "Histórico de entregas", rota: "/historico-entrega", Icone: History },
-    { titulo: "Histórico de estoque", rota: "/historico-estoque", Icone: Archive },
+    { titulo: "Histórico de Entregas", rota: "/historico-entrega", Icone: History },
+    { titulo: "Histórico de Estoque", rota: "/historico-estoque", Icone: Archive },
     { titulo: "Dashboard", rota: "/dashboard", Icone: LayoutDashboard },
 ];
 
@@ -33,6 +33,6 @@ export const atalhosPaginaInicial = [
     { titulo: "Funcionários", descricao: "Equipe e dados cadastrais", rota: "/funcionarios", Icone: Users, destaque: "suave" },
     { titulo: "Cargos", descricao: "Funções e responsabilidades", rota: "/cargos", Icone: Briefcase, destaque: "suave" },
     { titulo: "Categorias", descricao: "Organização dos produtos", rota: "/categorias", Icone: Tag, destaque: "suave" },
-    { titulo: "Histórico de estoque", descricao: "Entradas e saídas de itens", rota: "/historico-estoque", Icone: Archive, destaque: "suave" },
+    { titulo: "Histórico de Estoque", descricao: "Entradas e saídas de itens", rota: "/historico-estoque", Icone: Archive, destaque: "suave" },
     { titulo: "Dashboard", descricao: "Indicadores e visão geral", rota: "/dashboard", Icone: LayoutDashboard, destaque: "suave" },
 ];

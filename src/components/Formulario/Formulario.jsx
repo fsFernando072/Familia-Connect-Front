@@ -1,15 +1,15 @@
-import Botao from '../Botao/Botao';
-import CampoTexto from '../CampoTexto/CampoTexto';
-import CampoCheckbox from '../CampoCheckbox/CampoCheckbox';
-import CampoRadio from '../CampoRadio/CampoRadio';
-import CampoSelect from '../CampoSelect/CampoSelect';
-import CampoProfissao from '../CampoProfissao/CampoProfissao';
-import UploadImagem from '../UploadImagem/UploadImagem';
-import { CLASSE_LABEL, CLASSE_INPUT } from '../estilosCampo';
+import Botao from "../Botao/Botao";
+import CampoTexto from "../CampoTexto/CampoTexto";
+import CampoCheckbox from "../CampoCheckbox/CampoCheckbox";
+import CampoRadio from "../CampoRadio/CampoRadio";
+import CampoSelect from "../CampoSelect/CampoSelect";
+import CampoProfissao from "../CampoProfissao/CampoProfissao";
+import UploadImagem from "../UploadImagem/UploadImagem";
+import { CLASSE_LABEL, CLASSE_INPUT } from "../estilosCampo";
 
 function renderCampo(campo) {
     switch (campo.tipo) {
-        case 'checkbox':
+        case "checkbox":
             return (
                 <CampoCheckbox
                     label={campo.label}
@@ -18,7 +18,7 @@ function renderCampo(campo) {
                     onChange={campo.onChange}
                 />
             );
-        case 'radio':
+        case "radio":
             return (
                 <CampoRadio
                     label={campo.label}
@@ -28,7 +28,7 @@ function renderCampo(campo) {
                     onChange={campo.onChange}
                 />
             );
-        case 'select':
+        case "select":
             return (
                 <CampoSelect
                     label={campo.label}
@@ -38,7 +38,7 @@ function renderCampo(campo) {
                     placeholder={campo.placeholder}
                 />
             );
-        case 'profissao':
+        case "profissao":
             return (
                 <CampoProfissao
                     label={campo.label}
@@ -49,7 +49,7 @@ function renderCampo(campo) {
                     onChangeNova={campo.onChangeNova}
                 />
             );
-        case 'imagem':
+        case "imagem":
             return (
                 <UploadImagem
                     label={campo.label}
@@ -57,7 +57,7 @@ function renderCampo(campo) {
                     imagemInicial={campo.imagemInicial}
                 />
             );
-        case 'textarea':
+        case "textarea":
             return (
                 <div>
                     <label className={CLASSE_LABEL}>{campo.label}</label>
@@ -68,14 +68,14 @@ function renderCampo(campo) {
                         placeholder={campo.placeholder}
                         className={`${CLASSE_INPUT} resize-none`}
                     />
-                    {campo.ajuda && <span className='text-xs text-cifa-apagado mt-1 block'>{campo.ajuda}</span>}
+                    {campo.ajuda && <span className="text-xs text-cifa-apagado mt-1 block">{campo.ajuda}</span>}
                 </div>
             );
-        case 'select-com-acao':
+        case "select-com-acao":
             return (
                 <div>
                     <label className={CLASSE_LABEL}>{campo.label}</label>
-                    <div className='flex gap-2 items-center'>
+                    <div className="flex gap-2 items-center">
                         <select
                             value={campo.value ?? ""}
                             onChange={campo.onChange}
@@ -92,9 +92,9 @@ function renderCampo(campo) {
                     </div>
                 </div>
             );
-        case 'custom':
+        case "custom":
             return campo.render();
-        case 'texto':
+        case "texto":
         default:
             return (
                 <CampoTexto
@@ -118,8 +118,8 @@ function Formulario({
     nomeBotao,
     corBotao,
     acaoBotao,
-    larguraBotao = 'w-full sm:w-auto',
-    alinhamentoBotao = 'start',
+    larguraBotao = "w-full sm:w-auto",
+    alinhamentoBotao = "start",
     botaoVoltar,
 }) {
     const duasColunas = colunas === 2;
@@ -145,11 +145,11 @@ function Formulario({
         >
             {botaoVoltar && (
                 <button
-                    type='button'
+                    type="button"
                     onClick={botaoVoltar.onClick}
-                    className='text-cifa-apagado font-semibold hover:text-cifa-navy hover:underline cursor-pointer text-center sm:text-left'
+                    className="text-cifa-apagado font-semibold hover:text-cifa-navy hover:underline cursor-pointer text-center sm:text-left"
                 >
-                    {botaoVoltar.nome || 'Voltar'}
+                    {botaoVoltar.nome || "Voltar"}
                 </button>
             )}
             {nomeBotao && (
@@ -159,16 +159,16 @@ function Formulario({
     );
 
     return (
-        <div className={duasColunas ? 'w-full overflow-hidden' : `w-full ${campos.length > 0 ? 'max-w-md' : ''}`}>
-            <div className={duasColunas ? 'grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4' : ''}>
-                <div className='flex flex-col gap-4 min-w-0'>
+        <div className={duasColunas ? "w-full overflow-hidden" : `w-full ${campos.length > 0 ? "max-w-md" : ""}`}>
+            <div className={duasColunas ? "grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4" : ""}>
+                <div className="flex flex-col gap-4 min-w-0">
                     {camposColuna1.map((campo) => (
                         <div key={campo.id}>{renderCampo(campo)}</div>
                     ))}
                 </div>
 
                 {duasColunas && camposColuna2.length > 0 && (
-                    <div className='flex flex-col gap-4 min-w-0'>
+                    <div className="flex flex-col gap-4 min-w-0">
                         {camposColuna2.map((campo) => (
                             <div key={campo.id}>{renderCampo(campo)}</div>
                         ))}

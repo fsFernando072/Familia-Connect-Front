@@ -5,6 +5,7 @@ import { Crop } from "lucide-react";
 import Botao from "../Botao/Botao";
 import BotaoSecundario from "../BotaoSecundario/BotaoSecundario";
 import { gerarImagemRecortada } from "../../utils/recorteImagem";
+import { COR_TURQUESA } from "../../utils/cores";
 
 // Modal de recorte quadrado (1:1), usado antes de qualquer upload de foto
 // (funcionário ou família), mantendo o mesmo avatar quadrado exibido em
@@ -20,13 +21,13 @@ function ModalRecorteImagem({ aberto, imagemSrc, onCancelar, onConfirmar }) {
     const [areaRecortePx, setAreaRecortePx] = useState(null);
     const [processando, setProcessando] = useState(false);
 
-    const aoCompletarRecorte = useCallback((_areaPercentual, areaEmPixels) => {
+    const handleRecorteCompleto = useCallback((_areaPercentual, areaEmPixels) => {
         setAreaRecortePx(areaEmPixels);
     }, []);
 
     if (!aberto) return null;
 
-    async function confirmar() {
+    const handleConfirmar = async () => {
         if (!areaRecortePx || processando) return;
 
         setProcessando(true);
@@ -38,7 +39,7 @@ function ModalRecorteImagem({ aberto, imagemSrc, onCancelar, onConfirmar }) {
         } finally {
             setProcessando(false);
         }
-    }
+    };
 
     return createPortal(
         <div
@@ -70,7 +71,7 @@ function ModalRecorteImagem({ aberto, imagemSrc, onCancelar, onConfirmar }) {
                         showGrid={false}
                         onCropChange={setPosicao}
                         onZoomChange={setZoom}
-                        onCropComplete={aoCompletarRecorte}
+                        onCropComplete={handleRecorteCompleto}
                     />
                 </div>
 
@@ -94,8 +95,8 @@ function ModalRecorteImagem({ aberto, imagemSrc, onCancelar, onConfirmar }) {
                     />
                     <Botao
                         nome={processando ? "Salvando..." : "Usar foto"}
-                        cor="#137D91"
-                        acao={confirmar}
+                        cor={COR_TURQUESA}
+                        acao={handleConfirmar}
                         desabilitado={processando}
                         larguraBotao="flex-1"
                     />

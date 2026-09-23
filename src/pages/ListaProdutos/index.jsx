@@ -8,12 +8,13 @@ import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
 import Paginacao from "../../components/Paginacao/Paginacao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
-import { listarProdutos, deletarProduto } from "../../services/produtoService";
 import { useListaPaginada } from "../../hooks/useListaPaginada";
+import { listarProdutos, deletarProduto } from "../../services/produtoService";
+import { COR_PERIGO, COR_TURQUESA } from "../../utils/cores";
 
 function ListaProdutos() {
-
     const navigate = useNavigate();
+
     const {
         itens, carregando,
         busca, setBusca, alternarOrdem,
@@ -24,27 +25,27 @@ function ListaProdutos() {
         listar: listarProdutos,
         apagar: deletarProduto,
         mensagens: {
-            apagando: 'Apagando produto...',
-            sucesso: 'Produto apagado com sucesso!',
-            erro: 'Não foi possível apagar o produto.',
+            apagando: "Apagando produto...",
+            sucesso: "Produto apagado com sucesso!",
+            erro: "Não foi possível apagar o produto.",
         },
     });
 
     return (
-        <PaginaLista nomeTela='Lista de Produtos' feedback={feedback} onFecharFeedback={fecharFeedback}>
+        <PaginaLista nomeTela="Lista de Produtos" feedback={feedback} onFecharFeedback={fecharFeedback}>
             <ListaAcoes
                 busca={busca}
                 onBuscaChange={(e) => setBusca(e.target.value)}
-                placeholderBusca='Buscar Produto'
+                placeholderBusca="Buscar Produto"
                 onOrdenar={alternarOrdem}
-                onCadastrar={() => navigate('/produtos/cadastro-produto')}
+                onCadastrar={() => navigate("/produtos/cadastro-produto")}
             />
 
             <ListaStatus
                 carregando={carregando}
                 vazio={itens.length === 0}
-                mensagemCarregando='Carregando produtos...'
-                mensagemVazia='Nenhum produto encontrado.'
+                mensagemCarregando="Carregando produtos..."
+                mensagemVazia="Nenhum produto encontrado."
             />
 
             <ListaContainer>
@@ -53,13 +54,13 @@ function ListaProdutos() {
                         key={produto.id}
                         acoes={(
                             <>
-                                <Botao nome='Editar' cor='#137D91' acao={() => navigate(`/produtos/${produto.id}/editar-produto`)} />
-                                <Botao nome='Apagar' cor='#DC2626' acao={() => pedirConfirmacao(produto)} />
+                                <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/produtos/${produto.id}/editar-produto`)} />
+                                <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(produto)} />
                             </>
                         )}
                     >
-                        <LinhaInfo rotulo='Nome' valor={produto.nome} />
-                        <LinhaInfo rotulo='Descrição' valor={produto.descricao} clamp />
+                        <LinhaInfo rotulo="Nome" valor={produto.nome} />
+                        <LinhaInfo rotulo="Descrição" valor={produto.descricao} clamp />
                     </ListaItem>
                 ))}
             </ListaContainer>
@@ -67,12 +68,12 @@ function ListaProdutos() {
             <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
             <ModalConfirmacao
-                aberto={!!itemParaApagar}
+                aberto={Boolean(itemParaApagar)}
                 titulo="Apagar produto"
-                mensagem={itemParaApagar ? `Deseja realmente apagar o produto "${itemParaApagar.nome}"? Essa ação não pode ser desfeita.` : ''}
+                mensagem={itemParaApagar ? `Deseja realmente apagar o produto "${itemParaApagar.nome}"? Essa ação não pode ser desfeita.` : ""}
                 textoConfirmar="Sim, apagar"
                 textoCancelar="Não"
-                corConfirmar="#DC2626"
+                corConfirmar={COR_PERIGO}
                 carregando={apagando}
                 onConfirmar={confirmarApagar}
                 onCancelar={cancelarApagar}

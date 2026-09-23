@@ -1,5 +1,6 @@
-const COR_TEXTO_ESCURO = '#0A243E';
-const COR_TEXTO_CLARO = '#FFFFFF';
+import { COR_NAVY } from "../../utils/cores";
+const COR_TEXTO_ESCURO = COR_NAVY;
+const COR_TEXTO_CLARO = "#FFFFFF";
 
 // Luminância relativa (WCAG) de uma cor no formato #RRGGBB.
 function luminancia(hex) {
@@ -12,7 +13,7 @@ function luminancia(hex) {
 
 // Escolhe entre texto claro e escuro, o que tiver mais contraste com a cor do botão.
 function corDoTexto(corFundo) {
-    if (!/^#[0-9a-f]{6}$/i.test(corFundo ?? '')) return COR_TEXTO_CLARO;
+    if (!/^#[0-9a-f]{6}$/i.test(corFundo ?? "")) return COR_TEXTO_CLARO;
 
     const lum = luminancia(corFundo);
     const contrasteClaro = 1.05 / (lum + 0.05);
@@ -21,10 +22,10 @@ function corDoTexto(corFundo) {
     return contrasteEscuro > contrasteClaro ? COR_TEXTO_ESCURO : COR_TEXTO_CLARO;
 }
 
-function Botao({ cor, acao, nome, larguraBotao = '', icone: Icone, desabilitado = false }) {
+function Botao({ cor, acao, nome, larguraBotao = "", icone: Icone, desabilitado = false }) {
     return (
         <button
-            type='button'
+            type="button"
             style={{ backgroundColor: cor, color: corDoTexto(cor) }}
             onClick={acao}
             disabled={desabilitado}

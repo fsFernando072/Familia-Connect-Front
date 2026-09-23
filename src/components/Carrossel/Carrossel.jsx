@@ -23,54 +23,53 @@ function Carrossel({ passos, passoAtual }) {
         const observer = new ResizeObserver(atualizarAltura);
         observer.observe(painelAtivo);
         return () => observer.disconnect();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [passoAtual]);
 
     // Ao trocar de passo, volta o scroll para o topo (senão o passo novo troca
     // com a tela ainda rolada no meio do passo anterior).
     useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }, [passoAtual]);
 
     return (
-        <div className='w-full'>
-            <div className='flex items-center justify-center gap-2 mb-8'>
+        <div className="w-full">
+            <div className="flex items-center justify-center gap-2 mb-8">
                 {passos.map((passo, index) => (
-                    <div key={passo.titulo} className='flex items-center'>
-                        <div className='flex flex-col items-center gap-1'>
+                    <div key={passo.titulo} className="flex items-center">
+                        <div className="flex flex-col items-center gap-1">
                             <div
                                 className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm transition-colors duration-300 ${
                                     index <= passoAtual
-                                        ? 'bg-cifa-turquesa text-white'
-                                        : 'bg-cifa-suave text-cifa-apagado'
+                                        ? "bg-cifa-turquesa text-white"
+                                        : "bg-cifa-suave text-cifa-apagado"
                                 }`}
                             >
                                 {index + 1}
                             </div>
-                            <span className={`text-xs font-medium whitespace-nowrap ${index <= passoAtual ? 'text-cifa-navy' : 'text-cifa-apagado'}`}>
+                            <span className={`text-xs font-medium whitespace-nowrap ${index <= passoAtual ? "text-cifa-navy" : "text-cifa-apagado"}`}>
                                 {passo.titulo}
                             </span>
                         </div>
                         {index < passos.length - 1 && (
-                            <div className={`w-12 md:w-20 h-0.5 mx-2 mb-5 transition-colors duration-300 ${index < passoAtual ? 'bg-cifa-turquesa' : 'bg-cifa-suave'}`} />
+                            <div className={`w-12 md:w-20 h-0.5 mx-2 mb-5 transition-colors duration-300 ${index < passoAtual ? "bg-cifa-turquesa" : "bg-cifa-suave"}`} />
                         )}
                     </div>
                 ))}
             </div>
 
             <div
-                className='relative overflow-hidden transition-[height] duration-500 ease-in-out'
-                style={{ height: altura || 'auto' }}
+                className="relative overflow-hidden transition-[height] duration-500 ease-in-out"
+                style={{ height: altura || "auto" }}
             >
                 <div
-                    className='flex items-start transition-transform duration-500 ease-in-out'
+                    className="flex items-start transition-transform duration-500 ease-in-out"
                     style={{ transform: `translateX(-${passoAtual * 100}%)` }}
                 >
                     {passos.map((passo, index) => (
                         <div
                             key={passo.titulo}
                             ref={(el) => { paineisRef.current[index] = el; }}
-                            className='w-full shrink-0 px-1'
+                            className="w-full shrink-0 px-1"
                         >
                             {passo.conteudo}
                         </div>

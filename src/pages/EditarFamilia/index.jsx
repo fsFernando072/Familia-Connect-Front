@@ -3,15 +3,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import FormularioFamilia from "../../components/FormularioFamilia/FormularioFamilia";
 import { dadosIniciaisDaFamilia } from "../../components/FormularioFamilia/mapeamentos";
-import { buscarFamiliaPorId, atualizarFamilia } from "../../services/familiaService";
 import { useFeedback } from "../../hooks/useFeedback";
 import { useOpcoesFamilia } from "../../hooks/useOpcoesFamilia";
+import { buscarFamiliaPorId, atualizarFamilia } from "../../services/familiaService";
 
 function EditarFamilia() {
-
     const { id } = useParams();
     const navigate = useNavigate();
     const { feedback, setFeedback, fecharFeedback } = useFeedback();
+
     const opcoes = useOpcoesFamilia();
 
     const [familia, setFamilia] = useState(null);
@@ -40,11 +40,11 @@ function EditarFamilia() {
 
     return (
         <PaginaFormulario
-            nomeTela='Editar Família'
+            nomeTela="Editar Família"
             carregando={carregandoFamilia || opcoes.carregando}
-            carregandoTexto='Carregando família...'
-            encontrado={!!familia}
-            naoEncontradoTexto='Família não encontrada.'
+            carregandoTexto="Carregando família..."
+            encontrado={Boolean(familia)}
+            naoEncontradoTexto="Família não encontrada."
             feedback={feedback}
             onFecharFeedback={fecharFeedback}
         >
@@ -52,8 +52,8 @@ function EditarFamilia() {
                 key={id}
                 dadosIniciais={dadosIniciais}
                 opcoes={opcoes}
-                labelImagem='Trocar imagem'
-                nomeBotaoFinal='Confirmar'
+                labelImagem="Trocar Imagem"
+                nomeBotaoFinal="Confirmar"
                 onSalvar={(responsavel, endereco, dependentes) =>
                     atualizarFamilia(id, responsavel, endereco, dependentes, navigate, setFeedback)}
                 setFeedback={setFeedback}

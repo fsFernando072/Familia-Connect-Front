@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
-import nomesRotas from "../../routes/nomesRotas";
+import { nomesRotas } from "../../routes/nomesRotas";
 
 // Segmentos que representam um identificador (ex: /familias/12) não devem
 // aparecer "crus" na navegabilidade.

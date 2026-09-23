@@ -4,13 +4,13 @@ import Formulario from "../Formulario/Formulario";
 
 function CartaoDependente({ campos, podeRemover, onRemover }) {
     return (
-        <div className='relative bg-white border border-cifa-linha rounded-2xl p-5'>
+        <div className="relative bg-white border border-cifa-linha rounded-2xl p-5">
             {podeRemover && (
                 <BotaoIcone
                     icone={Trash2}
                     acao={onRemover}
-                    titulo='Remover dependente'
-                    className='absolute top-3 right-3'
+                    titulo="Remover dependente"
+                    className="absolute top-3 right-3"
                 />
             )}
             <Formulario campos={campos} colunas={2} />

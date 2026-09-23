@@ -10,7 +10,7 @@ export function dependenteVazio() {
         id: Date.now() + Math.random(),
         nome: "", parentesco: "", dataNascimento: "", sexo: "Masculino",
         rg: "", cpf: "", telefone: "", profissaoSelecionada: "", profissaoNova: "",
-        erroRg: "", erroCpf: ""
+        erroRg: "", erroCpf: "",
     };
 }
 
@@ -18,11 +18,11 @@ export function dadosIniciaisVazios() {
     return {
         responsavel: {
             nome: "", rg: "", cpf: "", telefone: "", dataNascimento: "",
-            sexo: "Masculino", possuiPne: "Não", profissaoSelecionada: "", profissaoNova: ""
+            sexo: "Masculino", possuiPne: "Não", profissaoSelecionada: "", profissaoNova: "",
         },
         endereco: { cep: "", rua: "", numero: "", complemento: "", bairro: "", cidade: "", estadoId: "" },
         dependentes: [dependenteVazio()],
-        fotoInicial: ""
+        fotoInicial: "",
     };
 }
 
@@ -42,7 +42,7 @@ export function dadosIniciaisDeOcr(dadosOcr) {
             cpf: responsavelOcr?.cpf ? mascaraCpf(responsavelOcr.cpf) : "",
             telefone: responsavelOcr?.telefone ? mascaraTelefone(responsavelOcr.telefone) : "",
             dataNascimento: responsavelOcr?.dataNascimento ? converterDataParaBr(responsavelOcr.dataNascimento) : "",
-            profissaoNova: responsavelOcr?.profissao || ""
+            profissaoNova: responsavelOcr?.profissao || "",
         },
         endereco: {
             ...vazios.endereco,
@@ -51,16 +51,16 @@ export function dadosIniciaisDeOcr(dadosOcr) {
             numero: enderecoOcr?.numero ? somenteDigitos(String(enderecoOcr.numero)) : "",
             complemento: enderecoOcr?.complemento || "",
             bairro: enderecoOcr?.bairro || "",
-            cidade: enderecoOcr?.cidade || ""
+            cidade: enderecoOcr?.cidade || "",
         },
         dependentes: dependentesOcr.length > 0
             ? dependentesOcr.map((dep) => ({
                 ...dependenteVazio(),
                 nome: dep.nome || "",
                 parentesco: dep.grauParentesco || "",
-                dataNascimento: dep.dataNascimento ? converterDataParaBr(dep.dataNascimento) : ""
+                dataNascimento: dep.dataNascimento ? converterDataParaBr(dep.dataNascimento) : "",
             }))
-            : vazios.dependentes
+            : vazios.dependentes,
     };
 }
 
@@ -69,8 +69,8 @@ function separarProfissao(profissao, profissoes) {
     const conhecida = profissao && profissoes.some((p) => p.nome === profissao);
 
     return {
-        profissaoSelecionada: profissao ? (conhecida ? profissao : 'outra') : "",
-        profissaoNova: profissao && !conhecida ? profissao : ""
+        profissaoSelecionada: profissao ? (conhecida ? profissao : "outra") : "",
+        profissaoNova: profissao && !conhecida ? profissao : "",
     };
 }
 
@@ -82,7 +82,7 @@ function dependenteDaApi(dep, profissoes) {
         rg: dep.rg ? mascaraRg(dep.rg) : "", cpf: dep.cpf ? mascaraCpf(dep.cpf) : "",
         telefone: dep.telefone ? mascaraTelefone(dep.telefone) : "",
         ...separarProfissao(dep.profissao, profissoes),
-        erroRg: "", erroCpf: ""
+        erroRg: "", erroCpf: "",
     };
 }
 
@@ -101,7 +101,7 @@ export function dadosIniciaisDaFamilia(familia, profissoes) {
             dataNascimento: converterDataParaBr(responsavel.dataNascimento),
             sexo: converterSexoParaLabel(responsavel.sexo),
             possuiPne: familia.possuiPrioridade ? "Sim" : "Não",
-            ...separarProfissao(responsavel.profissao, profissoes)
+            ...separarProfissao(responsavel.profissao, profissoes),
         },
         endereco: {
             cep: endereco.cep ? mascaraCep(endereco.cep) : "",
@@ -110,11 +110,11 @@ export function dadosIniciaisDaFamilia(familia, profissoes) {
             complemento: endereco.complemento || "",
             bairro: endereco.bairro || "",
             cidade: endereco.cidade || "",
-            estadoId: endereco.enderecoEstado?.id ? String(endereco.enderecoEstado.id) : ""
+            estadoId: endereco.enderecoEstado?.id ? String(endereco.enderecoEstado.id) : "",
         },
         dependentes: dependentes.length > 0
             ? dependentes.map((dep) => dependenteDaApi(dep, profissoes))
             : [dependenteVazio()],
-        fotoInicial: familia.fotoFamilia || ""
+        fotoInicial: familia.fotoFamilia || "",
     };
 }

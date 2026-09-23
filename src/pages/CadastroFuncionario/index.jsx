@@ -1,26 +1,26 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { cadastrarFuncionario } from "../../services/funcionarioService";
-import { listarCargos } from "../../services/cargoService";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
-import { mascaraCpf } from "../../utils/mascaras";
 import { useFeedback } from "../../hooks/useFeedback";
+import { cadastrarFuncionario } from "../../services/funcionarioService";
+import { listarCargos } from "../../services/cargoService";
+import { mascaraCpf } from "../../utils/mascaras";
+import { COR_MENTA, COR_NAVY } from "../../utils/cores";
 
-function Cadastro() {
+function CadastroFuncionario() {
+    const navigate = useNavigate();
+    const { feedback, setFeedback, fecharFeedback } = useFeedback();
 
     const [nome, setNome] = useState("");
     const [cpf, setCpf] = useState("");
     const [senha, setSenha] = useState("");
     const [senhaConfirmada, setSenhaConfirmada] = useState("");
-    const [idCargo, setIdCargo] = useState("");
+    const [cargoId, setCargoId] = useState("");
     const [foto, setFoto] = useState("");
     const [cargos, setCargos] = useState([]);
-    const navigate = useNavigate();
-    const { feedback, setFeedback, fecharFeedback } = useFeedback();
     const [mostrarSenha, setMostrarSenha] = useState(false);
-    const [mostrarSenha2, setMostrarSenha2] = useState(false);
-
+    const [mostrarConfirmacaoSenha, setMostrarConfirmacaoSenha] = useState(false);
 
     useEffect(() => {
         async function carregarCargos() {
@@ -30,84 +30,84 @@ function Cadastro() {
         carregarCargos();
     }, []);
 
-    const handleCadastrarFuncionario = () => {
-        cadastrarFuncionario(nome, cpf.replace(/\D/g, ""), senha, senhaConfirmada, idCargo, foto, navigate, setFeedback);
+    const handleCadastrar = () => {
+        cadastrarFuncionario(nome, cpf.replace(/\D/g, ""), senha, senhaConfirmada, cargoId, foto, navigate, setFeedback);
     };
 
     const campos = [
         {
-            id: 'nome',
-            tipo: 'texto',
+            id: "nome",
+            tipo: "texto",
             coluna: 1,
-            label: 'Nome do Funcionário',
+            label: "Nome do Funcionário",
             value: nome,
             onChange: (e) => setNome(e.target.value),
-            placeholder: 'Digite o nome'
+            placeholder: "Digite o nome",
         },
         {
-            id: 'cpf',
-            tipo: 'texto',
+            id: "cpf",
+            tipo: "texto",
             coluna: 1,
-            label: 'CPF do Funcionário',
+            label: "CPF do Funcionário",
             value: cpf,
             onChange: (e) => setCpf(mascaraCpf(e.target.value)),
-            placeholder: '000.000.000-00'
+            placeholder: "000.000.000-00",
         },
         {
-            id: 'senha',
-            tipo: 'texto',
+            id: "senha",
+            tipo: "texto",
             coluna: 1,
-            label: 'Senha do Funcionário',
-            type: mostrarSenha ? 'text' : 'password',
+            label: "Senha do Funcionário",
+            type: mostrarSenha ? "text" : "password",
             value: senha,
             onChange: (e) => setSenha(e.target.value),
-            placeholder: '********',
-            toggle: () => setMostrarSenha(v => !v),
-            mostrar: mostrarSenha
+            placeholder: "********",
+            toggle: () => setMostrarSenha((v) => !v),
+            mostrar: mostrarSenha,
         },
         {
-            id: 'senha_confirmada',
-            tipo: 'texto',
+            id: "senha_confirmada",
+            tipo: "texto",
             coluna: 1,
-            label: 'Confirmar Senha',
-            type: mostrarSenha2 ? 'text' : 'password',
+            label: "Confirmar Senha",
+            type: mostrarConfirmacaoSenha ? "text" : "password",
             value: senhaConfirmada,
             onChange: (e) => setSenhaConfirmada(e.target.value),
-            placeholder: '********',
-            toggle: () => setMostrarSenha2(v => !v),
-            mostrar: mostrarSenha2
+            placeholder: "********",
+            toggle: () => setMostrarConfirmacaoSenha((v) => !v),
+            mostrar: mostrarConfirmacaoSenha,
         },
         {
-            id: 'cargo',
-            tipo: 'select-com-acao',
+            id: "cargo",
+            tipo: "select-com-acao",
             coluna: 2,
-            label: 'Cargo do Funcionário',
-            value: idCargo,
-            onChange: (e) => setIdCargo(e.target.value),
+            label: "Cargo do Funcionário",
+            value: cargoId,
+            onChange: (e) => setCargoId(e.target.value),
             opcoes: cargos,
-            acao: { nome: 'Criar cargo', cor: '#0A243E' }
+            acao: { nome: "Criar Cargo", cor: COR_NAVY, onClick: () => navigate("/cargos/cadastro-cargo") },
         },
         {
-            id: 'foto',
-            tipo: 'imagem',
+            id: "foto",
+            tipo: "imagem",
             coluna: 2,
-            label: 'Imagem do Funcionário',
+            label: "Imagem do Funcionário",
             setImagem: setFoto,
         },
     ];
 
     return (
-        <PaginaFormulario nomeTela='Cadastro de Funcionário' feedback={feedback} onFecharFeedback={fecharFeedback}>
+        <PaginaFormulario nomeTela="Cadastro de Funcionário" feedback={feedback} onFecharFeedback={fecharFeedback}>
             <Formulario
                 campos={campos}
                 colunas={2}
                 nomeBotao="Cadastrar"
-                corBotao="#44BEB7"
-                acaoBotao={handleCadastrarFuncionario}
+                corBotao={COR_MENTA}
+                acaoBotao={handleCadastrar}
                 alinhamentoBotao="end"
             />
         </PaginaFormulario>
     );
 }
 
-export default Cadastro;
+export default CadastroFuncionario;

@@ -5,13 +5,14 @@ import Carrossel from "../Carrossel/Carrossel";
 import Botao from "../Botao/Botao";
 import ListaContainer from "../ListaContainer/ListaContainer";
 import CartaoDependente from "../CartaoDependente/CartaoDependente";
+import { buscarEnderecoPorCep } from "../../services/cepService";
 import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, mascaraData, somenteDigitos } from "../../utils/mascaras";
 import { validarCpf, validarRg } from "../../utils/validadores";
 import { feedbackErro } from "../../utils/feedback";
-import { buscarEnderecoPorCep } from "../../services/cepService";
+import { COR_MENTA, COR_NAVY, COR_TURQUESA } from "../../utils/cores";
 import { dependenteVazio } from "./mapeamentos";
 
-const MSG_RG_INVALIDO = 'RG inválido (deve ter entre 7 e 9 dígitos)';
+const MSG_RG_INVALIDO = "RG inválido (deve ter entre 7 e 9 dígitos)";
 
 /**
  * Formulário em 3 passos (responsável, endereço, dependentes) compartilhado por
@@ -26,8 +27,8 @@ const MSG_RG_INVALIDO = 'RG inválido (deve ter entre 7 e 9 dígitos)';
 function FormularioFamilia({
     dadosIniciais,
     opcoes,
-    labelImagem = 'Imagem da família',
-    nomeBotaoFinal = 'Confirmar',
+    labelImagem = "Imagem da Família",
+    nomeBotaoFinal = "Confirmar",
     preSelecionarSP = false,
     onSalvar,
     setFeedback,
@@ -69,7 +70,7 @@ function FormularioFamilia({
         if (!preSelecionarSP) return;
 
         // Pré-seleciona SP (o real, vindo do back), já que é o estado mais comum pra esse cadastro.
-        const spEncontrado = estados.find((uf) => uf.sigla === 'SP');
+        const spEncontrado = estados.find((uf) => uf.sigla === "SP");
         // eslint-disable-next-line react-hooks/set-state-in-effect
         if (spEncontrado) setEstadoId((atual) => atual || String(spEncontrado.id));
     }, [preSelecionarSP, estados]);
@@ -89,11 +90,11 @@ function FormularioFamilia({
     };
 
     const handleBlurRg = () => {
-        setErroRg(rg && !validarRg(rg) ? MSG_RG_INVALIDO : '');
+        setErroRg(rg && !validarRg(rg) ? MSG_RG_INVALIDO : "");
     };
 
     const handleBlurCpf = () => {
-        setErroCpf(cpf && !validarCpf(cpf) ? 'CPF inválido' : '');
+        setErroCpf(cpf && !validarCpf(cpf) ? "CPF inválido" : "");
     };
 
     const adicionarDependente = () => {
@@ -111,11 +112,11 @@ function FormularioFamilia({
     const validarDependenteCampo = (id, campo) => {
         setDependentes((atuais) => atuais.map((dep) => {
             if (dep.id !== id) return dep;
-            if (campo === 'rg') {
-                return { ...dep, erroRg: dep.rg && !validarRg(dep.rg) ? 'RG inválido' : '' };
+            if (campo === "rg") {
+                return { ...dep, erroRg: dep.rg && !validarRg(dep.rg) ? "RG inválido" : "" };
             }
-            if (campo === 'cpf') {
-                return { ...dep, erroCpf: dep.cpf && !validarCpf(dep.cpf) ? 'CPF inválido' : '' };
+            if (campo === "cpf") {
+                return { ...dep, erroCpf: dep.cpf && !validarCpf(dep.cpf) ? "CPF inválido" : "" };
             }
             return dep;
         }));
@@ -124,22 +125,22 @@ function FormularioFamilia({
     const handleProximo = () => {
         if (passoAtual === 0) {
             if (!nome || !rg || !cpf || !telefone || !dataNascimento) {
-                setFeedback(feedbackErro('Preencha todos os campos obrigatórios do responsável.'));
+                setFeedback(feedbackErro("Preencha todos os campos obrigatórios do responsável."));
                 return;
             }
             if (!validarRg(rg)) {
                 setErroRg(MSG_RG_INVALIDO);
-                setFeedback(feedbackErro('O RG do responsável é inválido.'));
+                setFeedback(feedbackErro("O RG do responsável é inválido."));
                 return;
             }
             if (!validarCpf(cpf)) {
-                setErroCpf('CPF inválido');
-                setFeedback(feedbackErro('O CPF do responsável é inválido.'));
+                setErroCpf("CPF inválido");
+                setFeedback(feedbackErro("O CPF do responsável é inválido."));
                 return;
             }
         }
         if (passoAtual === 1 && (!rua || !numero || !cidade || !estadoId)) {
-            setFeedback(feedbackErro('Preencha os dados obrigatórios do endereço.'));
+            setFeedback(feedbackErro("Preencha os dados obrigatórios do endereço."));
             return;
         }
         fecharFeedback();
@@ -155,34 +156,34 @@ function FormularioFamilia({
         // Valida CPF/RG de todos os dependentes de uma vez, marcando os campos com erro.
         let dependentesValidos = true;
         const dependentesValidados = dependentes.map((dep) => {
-            const erroRgDep = dep.rg && !validarRg(dep.rg) ? 'RG inválido' : '';
-            const erroCpfDep = dep.cpf && !validarCpf(dep.cpf) ? 'CPF inválido' : '';
+            const erroRgDep = dep.rg && !validarRg(dep.rg) ? "RG inválido" : "";
+            const erroCpfDep = dep.cpf && !validarCpf(dep.cpf) ? "CPF inválido" : "";
             if (erroRgDep || erroCpfDep) dependentesValidos = false;
             return { ...dep, erroRg: erroRgDep, erroCpf: erroCpfDep };
         });
         setDependentes(dependentesValidados);
 
         if (!dependentesValidos) {
-            setFeedback(feedbackErro('Corrija o RG/CPF destacado nos dependentes.'));
+            setFeedback(feedbackErro("Corrija o RG/CPF destacado nos dependentes."));
             return;
         }
 
         const responsavel = {
             nome, rg: somenteDigitos(rg), cpf: somenteDigitos(cpf),
             telefone: somenteDigitos(telefone), dataNascimento, sexo,
-            possuiPne: possuiPne === 'Sim',
-            profissao: profissaoSelecionada === 'outra' ? profissaoNova.trim() : profissaoSelecionada,
-            imagem: imagemFamilia
+            possuiPne: possuiPne === "Sim",
+            profissao: profissaoSelecionada === "outra" ? profissaoNova.trim() : profissaoSelecionada,
+            imagem: imagemFamilia,
         };
         const endereco = {
-            cep: somenteDigitos(cep), rua, numero, complemento, bairro, cidade, estadoId
+            cep: somenteDigitos(cep), rua, numero, complemento, bairro, cidade, estadoId,
         };
         const dependentesFormatados = dependentesValidados.map((dep) => ({
             ...dep,
             rg: somenteDigitos(dep.rg),
             cpf: somenteDigitos(dep.cpf),
             telefone: somenteDigitos(dep.telefone),
-            profissao: dep.profissaoSelecionada === 'outra' ? dep.profissaoNova.trim() : dep.profissaoSelecionada
+            profissao: dep.profissaoSelecionada === "outra" ? dep.profissaoNova.trim() : dep.profissaoSelecionada,
         }));
 
         onSalvar(responsavel, endereco, dependentesFormatados);
@@ -192,47 +193,47 @@ function FormularioFamilia({
     const opcoesGrauParentesco = grausParentesco.map((gp) => ({ value: gp.grau, label: gp.grau }));
 
     const camposResponsavel = [
-        { id: 'nome', tipo: 'texto', coluna: 1, label: 'Nome do Responsável', value: nome, onChange: (e) => setNome(e.target.value), placeholder: 'Digite o nome' },
-        { id: 'rg', tipo: 'texto', coluna: 1, label: 'RG do Responsável', value: rg, onChange: (e) => setRg(mascaraRg(e.target.value)), onBlur: handleBlurRg, placeholder: '22.222.222-2', erro: erroRg },
-        { id: 'cpf', tipo: 'texto', coluna: 1, label: 'CPF do Responsável', value: cpf, onChange: (e) => setCpf(mascaraCpf(e.target.value)), onBlur: handleBlurCpf, placeholder: '444.444.444-44', erro: erroCpf },
-        { id: 'telefone', tipo: 'texto', coluna: 1, label: 'Telefone do Responsável', value: telefone, onChange: (e) => setTelefone(mascaraTelefone(e.target.value)), placeholder: '(11) 99999-9999' },
-        { id: 'dataNascimento', tipo: 'texto', coluna: 2, label: 'Data de Nascimento do Responsável', value: dataNascimento, onChange: (e) => setDataNascimento(mascaraData(e.target.value)), placeholder: '__/__/____' },
+        { id: "nome", tipo: "texto", coluna: 1, label: "Nome do Responsável", value: nome, onChange: (e) => setNome(e.target.value), placeholder: "Digite o nome" },
+        { id: "rg", tipo: "texto", coluna: 1, label: "RG do Responsável", value: rg, onChange: (e) => setRg(mascaraRg(e.target.value)), onBlur: handleBlurRg, placeholder: "22.222.222-2", erro: erroRg },
+        { id: "cpf", tipo: "texto", coluna: 1, label: "CPF do Responsável", value: cpf, onChange: (e) => setCpf(mascaraCpf(e.target.value)), onBlur: handleBlurCpf, placeholder: "444.444.444-44", erro: erroCpf },
+        { id: "telefone", tipo: "texto", coluna: 1, label: "Telefone do Responsável", value: telefone, onChange: (e) => setTelefone(mascaraTelefone(e.target.value)), placeholder: "(11) 99999-9999" },
+        { id: "dataNascimento", tipo: "texto", coluna: 2, label: "Data de Nascimento do Responsável", value: dataNascimento, onChange: (e) => setDataNascimento(mascaraData(e.target.value)), placeholder: "__/__/____" },
         {
-            id: 'profissao', tipo: 'profissao', coluna: 2, label: 'Profissão', profissoes: profissoes,
+            id: "profissao", tipo: "profissao", coluna: 2, label: "Profissão", profissoes: profissoes,
             selecionada: profissaoSelecionada, onChangeSelecionada: (e) => setProfissaoSelecionada(e.target.value),
-            nova: profissaoNova, onChangeNova: (e) => setProfissaoNova(e.target.value)
+            nova: profissaoNova, onChangeNova: (e) => setProfissaoNova(e.target.value),
         },
-        { id: 'sexo', tipo: 'radio', coluna: 2, label: 'Sexo do Responsável', name: 'sexoResponsavel', opcoes: ['Masculino', 'Feminino', 'Outro'], value: sexo, onChange: setSexo },
-        { id: 'possuiPne', tipo: 'radio', coluna: 2, label: 'A Família possui PNE?', name: 'possuiPne', opcoes: ['Não', 'Sim'], value: possuiPne, onChange: setPossuiPne },
-        { id: 'imagemFamilia', tipo: 'imagem', coluna: 2, label: labelImagem, setImagem: setImagemFamilia, imagemInicial: dadosIniciais.fotoInicial },
+        { id: "sexo", tipo: "radio", coluna: 2, label: "Sexo do Responsável", name: "sexoResponsavel", opcoes: ["Masculino", "Feminino", "Outro"], value: sexo, onChange: setSexo },
+        { id: "possuiPne", tipo: "radio", coluna: 2, label: "A Família possui PNE?", name: "possuiPne", opcoes: ["Não", "Sim"], value: possuiPne, onChange: setPossuiPne },
+        { id: "imagemFamilia", tipo: "imagem", coluna: 2, label: labelImagem, setImagem: setImagemFamilia, imagemInicial: dadosIniciais.fotoInicial },
     ];
 
     const camposEndereco = [
-        { id: 'cep', tipo: 'texto', coluna: 1, label: 'CEP', value: cep, onChange: (e) => setCep(mascaraCep(e.target.value)), onBlur: handleBuscarCep, placeholder: '02141-140' },
-        { id: 'rua', tipo: 'texto', coluna: 1, label: 'Rua', value: rua, onChange: (e) => setRua(e.target.value), placeholder: 'Rua Macapá' },
-        { id: 'numero', tipo: 'texto', coluna: 1, label: 'Número', value: numero, onChange: (e) => setNumero(somenteDigitos(e.target.value)), placeholder: '1290' },
-        { id: 'complemento', tipo: 'texto', coluna: 1, label: 'Complemento (Opcional)', value: complemento, onChange: (e) => setComplemento(e.target.value), placeholder: 'Apartamento 20' },
-        { id: 'bairro', tipo: 'texto', coluna: 2, label: 'Bairro', value: bairro, onChange: (e) => setBairro(e.target.value), placeholder: 'Itaquera' },
-        { id: 'cidade', tipo: 'texto', coluna: 2, label: 'Cidade', value: cidade, onChange: (e) => setCidade(e.target.value), placeholder: 'São Paulo' },
-        { id: 'estado', tipo: 'select', coluna: 2, label: 'Estado', value: estadoId, onChange: (e) => setEstadoId(e.target.value), opcoes: opcoesEstado },
+        { id: "cep", tipo: "texto", coluna: 1, label: "CEP", value: cep, onChange: (e) => setCep(mascaraCep(e.target.value)), onBlur: handleBuscarCep, placeholder: "02141-140" },
+        { id: "rua", tipo: "texto", coluna: 1, label: "Rua", value: rua, onChange: (e) => setRua(e.target.value), placeholder: "Rua Macapá" },
+        { id: "numero", tipo: "texto", coluna: 1, label: "Número", value: numero, onChange: (e) => setNumero(somenteDigitos(e.target.value)), placeholder: "1290" },
+        { id: "complemento", tipo: "texto", coluna: 1, label: "Complemento (Opcional)", value: complemento, onChange: (e) => setComplemento(e.target.value), placeholder: "Apartamento 20" },
+        { id: "bairro", tipo: "texto", coluna: 2, label: "Bairro", value: bairro, onChange: (e) => setBairro(e.target.value), placeholder: "Itaquera" },
+        { id: "cidade", tipo: "texto", coluna: 2, label: "Cidade", value: cidade, onChange: (e) => setCidade(e.target.value), placeholder: "São Paulo" },
+        { id: "estado", tipo: "select", coluna: 2, label: "Estado", value: estadoId, onChange: (e) => setEstadoId(e.target.value), opcoes: opcoesEstado },
         {
-            id: 'buscandoCep', tipo: 'custom', coluna: 2,
-            render: () => buscandoCep ? <span className='text-sm text-cifa-apagado'>Buscando endereço...</span> : null
+            id: "buscandoCep", tipo: "custom", coluna: 2,
+            render: () => buscandoCep ? <span className="text-sm text-cifa-apagado">Buscando endereço...</span> : null,
         },
     ];
 
     const camposDependente = (dep) => ([
-        { id: 'nome', tipo: 'texto', coluna: 1, label: 'Nome do Dependente', value: dep.nome, onChange: (e) => atualizarDependente(dep.id, 'nome', e.target.value), placeholder: 'Maria Ferreira' },
-        { id: 'parentesco', tipo: 'select', coluna: 1, label: 'Parentesco', value: dep.parentesco, onChange: (e) => atualizarDependente(dep.id, 'parentesco', e.target.value), opcoes: opcoesGrauParentesco, placeholder: 'Selecionar' },
-        { id: 'rg', tipo: 'texto', coluna: 1, label: 'RG do Dependente (Opcional)', value: dep.rg, onChange: (e) => atualizarDependente(dep.id, 'rg', mascaraRg(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, 'rg'), placeholder: '22.222.222-2', erro: dep.erroRg },
-        { id: 'cpf', tipo: 'texto', coluna: 1, label: 'CPF do Dependente (Opcional)', value: dep.cpf, onChange: (e) => atualizarDependente(dep.id, 'cpf', mascaraCpf(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, 'cpf'), placeholder: '444.444.444-44', erro: dep.erroCpf },
-        { id: 'dataNascimento', tipo: 'texto', coluna: 2, label: 'Data de Nascimento do Dependente', value: dep.dataNascimento, onChange: (e) => atualizarDependente(dep.id, 'dataNascimento', mascaraData(e.target.value)), placeholder: '__/__/____' },
-        { id: 'sexo', tipo: 'radio', coluna: 2, label: 'Sexo do Dependente', name: `sexoDependente-${dep.id}`, opcoes: ['Masculino', 'Feminino', 'Outro'], value: dep.sexo, onChange: (valor) => atualizarDependente(dep.id, 'sexo', valor) },
-        { id: 'telefone', tipo: 'texto', coluna: 2, label: 'Telefone do Dependente (Opcional)', value: dep.telefone, onChange: (e) => atualizarDependente(dep.id, 'telefone', mascaraTelefone(e.target.value)), placeholder: '(11) 99999-9999' },
+        { id: "nome", tipo: "texto", coluna: 1, label: "Nome do Dependente", value: dep.nome, onChange: (e) => atualizarDependente(dep.id, "nome", e.target.value), placeholder: "Maria Ferreira" },
+        { id: "parentesco", tipo: "select", coluna: 1, label: "Parentesco", value: dep.parentesco, onChange: (e) => atualizarDependente(dep.id, "parentesco", e.target.value), opcoes: opcoesGrauParentesco, placeholder: "Selecionar" },
+        { id: "rg", tipo: "texto", coluna: 1, label: "RG do Dependente (Opcional)", value: dep.rg, onChange: (e) => atualizarDependente(dep.id, "rg", mascaraRg(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, "rg"), placeholder: "22.222.222-2", erro: dep.erroRg },
+        { id: "cpf", tipo: "texto", coluna: 1, label: "CPF do Dependente (Opcional)", value: dep.cpf, onChange: (e) => atualizarDependente(dep.id, "cpf", mascaraCpf(e.target.value)), onBlur: () => validarDependenteCampo(dep.id, "cpf"), placeholder: "444.444.444-44", erro: dep.erroCpf },
+        { id: "dataNascimento", tipo: "texto", coluna: 2, label: "Data de Nascimento do Dependente", value: dep.dataNascimento, onChange: (e) => atualizarDependente(dep.id, "dataNascimento", mascaraData(e.target.value)), placeholder: "__/__/____" },
+        { id: "sexo", tipo: "radio", coluna: 2, label: "Sexo do Dependente", name: `sexoDependente-${dep.id}`, opcoes: ["Masculino", "Feminino", "Outro"], value: dep.sexo, onChange: (valor) => atualizarDependente(dep.id, "sexo", valor) },
+        { id: "telefone", tipo: "texto", coluna: 2, label: "Telefone do Dependente (Opcional)", value: dep.telefone, onChange: (e) => atualizarDependente(dep.id, "telefone", mascaraTelefone(e.target.value)), placeholder: "(11) 99999-9999" },
         {
-            id: 'profissao', tipo: 'profissao', coluna: 2, label: 'Profissão do Dependente', profissoes: profissoes,
-            selecionada: dep.profissaoSelecionada, onChangeSelecionada: (e) => atualizarDependente(dep.id, 'profissaoSelecionada', e.target.value),
-            nova: dep.profissaoNova, onChangeNova: (e) => atualizarDependente(dep.id, 'profissaoNova', e.target.value)
+            id: "profissao", tipo: "profissao", coluna: 2, label: "Profissão do Dependente", profissoes: profissoes,
+            selecionada: dep.profissaoSelecionada, onChangeSelecionada: (e) => atualizarDependente(dep.id, "profissaoSelecionada", e.target.value),
+            nova: dep.profissaoNova, onChangeNova: (e) => atualizarDependente(dep.id, "profissaoNova", e.target.value),
         },
     ]);
 
@@ -243,12 +244,12 @@ function FormularioFamilia({
                 <Formulario
                     campos={camposResponsavel}
                     colunas={2}
-                    nomeBotao='Próximo'
-                    corBotao='#137D91'
+                    nomeBotao="Próximo"
+                    corBotao={COR_TURQUESA}
                     acaoBotao={handleProximo}
-                    alinhamentoBotao='end'
+                    alinhamentoBotao="end"
                 />
-            )
+            ),
         },
         {
             titulo: "Endereço",
@@ -256,13 +257,13 @@ function FormularioFamilia({
                 <Formulario
                     campos={camposEndereco}
                     colunas={2}
-                    nomeBotao='Próximo'
-                    corBotao='#137D91'
+                    nomeBotao="Próximo"
+                    corBotao={COR_TURQUESA}
                     acaoBotao={handleProximo}
-                    alinhamentoBotao='end'
+                    alinhamentoBotao="end"
                     botaoVoltar={{ onClick: handleVoltar }}
                 />
-            )
+            ),
         },
         {
             titulo: "Dependentes",
@@ -277,19 +278,19 @@ function FormularioFamilia({
                         />
                     ))}
 
-                    <Botao nome='Adicionar' icone={Plus} cor='#0A243E' acao={adicionarDependente} larguraBotao='w-fit' />
+                    <Botao nome="Adicionar" icone={Plus} cor={COR_NAVY} acao={adicionarDependente} larguraBotao="w-fit" />
 
                     <Formulario
                         campos={[]}
                         nomeBotao={nomeBotaoFinal}
-                        corBotao='#44BEB7'
+                        corBotao={COR_MENTA}
                         acaoBotao={handleSalvar}
-                        alinhamentoBotao='end'
+                        alinhamentoBotao="end"
                         botaoVoltar={{ onClick: handleVoltar }}
                     />
                 </ListaContainer>
-            )
-        }
+            ),
+        },
     ];
 
     return <Carrossel passos={passos} passoAtual={passoAtual} />;
