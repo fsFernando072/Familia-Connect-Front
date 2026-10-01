@@ -16,11 +16,12 @@ function validarDadosFuncionario({ nome, cpf, senha, senhaConfirmada, cargoId })
         return "Os campos são obrigatórios.";
     }
 
+
     if (!validarCpf(cpf)) {
         return "O CPF do funcionário é inválido.";
     }
 
-    if (senha.length < TAMANHO_MINIMO_SENHA || senhaConfirmada.length < TAMANHO_MINIMO_SENHA) {
+    if (senha.length < TAMANHO_MINIMO_SENHA  || senhaConfirmada.length < TAMANHO_MINIMO_SENHA) {
         return `A senha deve ter no mínimo ${TAMANHO_MINIMO_SENHA} caracteres.`;
     }
 
@@ -31,8 +32,33 @@ function validarDadosFuncionario({ nome, cpf, senha, senhaConfirmada, cargoId })
     return null;
 }
 
+function validarDadosEditarFuncionario({ nome, cpf, senha, senhaConfirmada, cargoId }) {
+    if (!nome || !cpf || !cargoId) {
+        return "Os campos são obrigatórios.";
+    }
+     if (!validarCpf(cpf)) {
+        return "O CPF do funcionário é inválido.";
+    }
+
+    if ((senha && senha.length < TAMANHO_MINIMO_SENHA) || (senhaConfirmada && senhaConfirmada.length < TAMANHO_MINIMO_SENHA)) {
+        return `A senha deve ter no mínimo ${TAMANHO_MINIMO_SENHA} caracteres.`;
+    }
+
+    
+    if (senha !== senhaConfirmada) {
+        return "As senhas têm que ser iguais.";
+    }
+
+    return null;
+}
+
+
 function montarFormDataFuncionario({ nome, cpf, senha, cargoId }, foto) {
-    return montarFormData("funcionarioRequestDto", { nome, cpf, senha, cargoId }, foto);
+    return montarFormData(
+        "funcionarioRequestDto",
+        { nome, cpf, senha: senha || null, cargoId },
+        foto
+    );
 }
 
 export function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, cargoId, foto, navigate, setFeedback) {
@@ -54,7 +80,7 @@ export function atualizarFuncionario(id, nome, cpf, senha, senhaConfirmada, carg
     const dados = { nome, cpf, senha, senhaConfirmada, cargoId };
 
     return enviarComFeedback({
-        erroValidacao: validarDadosFuncionario(dados),
+        erroValidacao: validarDadosEditarFuncionario(dados),
         requisicao: () => api.put(`/funcionarios/${id}`, montarFormDataFuncionario(dados, foto)),
         msgCarregando: "Atualizando funcionário...",
         sucesso: { status: 200, msg: "Funcionário atualizado com sucesso!", rota: "/funcionarios" },
