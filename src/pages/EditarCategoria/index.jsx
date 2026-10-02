@@ -34,7 +34,7 @@ function EditarCategoria() {
     }, [id]);
 
     const handleAtualizar = () => {
-        atualizarCategoria(id, nome, navigate, setFeedback);
+        atualizarCategoria(id, { nome }, navigate, setFeedback);
     };
 
     const campos = [

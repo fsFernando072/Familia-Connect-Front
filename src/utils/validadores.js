@@ -28,3 +28,18 @@ export function validarTelefone(telefone) {
     const tamanho = somenteDigitos(telefone).length;
     return tamanho === 10 || tamanho === 11; // fixo ou celular
 }
+
+// Data de nascimento (dd/MM/yyyy, formato da mascaraData) anterior a hoje.
+// O back usa @Past, então o dia de hoje também é recusado.
+// Data vazia ou incompleta passa: o preenchimento obrigatório é checado em outro lugar.
+export function nascimentoNoPassado(dataNascimento) {
+    const [dia, mes, ano] = String(dataNascimento ?? "").split("/");
+
+    if (!dia || !mes || !ano || ano.length !== 4) return true;
+
+    const nascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    return nascimento < hoje;
+}

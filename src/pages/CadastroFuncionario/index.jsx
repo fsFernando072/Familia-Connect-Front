@@ -31,7 +31,7 @@ function CadastroFuncionario() {
     }, []);
 
     const handleCadastrar = () => {
-        cadastrarFuncionario(nome, cpf.replace(/\D/g, ""), senha, senhaConfirmada, cargoId, foto, navigate, setFeedback);
+        cadastrarFuncionario({ nome, cpf: cpf.replace(/\D/g, ""), senha, senhaConfirmada, cargoId, foto }, navigate, setFeedback);
     };
 
     const campos = [

@@ -38,7 +38,7 @@ function Login() {
     ];
 
     const handleEntrar = () => {
-        entrar(cpf.replace(/\D/g, ""), senha, navigate, setFeedback);
+        entrar({ cpf: cpf.replace(/\D/g, ""), senha }, navigate, setFeedback);
     };
 
     return (

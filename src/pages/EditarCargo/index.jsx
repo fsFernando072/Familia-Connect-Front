@@ -42,7 +42,7 @@ function EditarCargo() {
     }, [id]);
 
     const handleAtualizar = () => {
-        atualizarCargo(id, nome, descricao, permissoesIds, associacoesAtuais, navigate, setFeedback);
+        atualizarCargo(id, { nome, descricao, permissoesIds, associacoesAtuais }, navigate, setFeedback);
     };
 
     const campos = [

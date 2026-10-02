@@ -15,7 +15,7 @@ function CadastroCargo() {
     const [permissoesIds, setPermissoesIds] = useState([]);
 
     const handleCadastrar = () => {
-        cadastrarCargo(nome, descricao, permissoesIds, navigate, setFeedback);
+        cadastrarCargo({ nome, descricao, permissoesIds }, navigate, setFeedback);
     };
 
     const campos = [

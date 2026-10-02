@@ -1,7 +1,8 @@
 import api from "./apiClient";
-import { algumaRequisicaoFalhou, buscarLista, criarServicoBase, enviarComFeedback } from "./servicoBase";
+import { algumaRequisicaoFalhou, buscarLista, criarServicoBase, enviarComFeedback, mensagensCrud, validarObrigatorios } from "./servicoBase";
 
 const base = criarServicoBase("/cargos", { singular: "cargo", plural: "cargos" });
+const textos = mensagensCrud("cargo", "m");
 
 export const listarCargos = base.listar;
 export const buscarCargoPorId = base.buscarPorId;
@@ -57,21 +58,21 @@ const ACESSOS = [
 // Formato esperado pelo CampoCheckbox (id) e pelo vínculo cargo-acesso (acessoId).
 export const PERMISSOES_CARGO = ACESSOS.map(([id, nome]) => ({ id, acessoId: id, nome }));
 
-function validarDadosCargo(nome) {
-    return nome?.trim() ? null : "O nome do cargo é obrigatório.";
+function validarDadosCargo({ nome }) {
+    return validarObrigatorios({ nome: nome?.trim() });
 }
 
-function montarPayloadCargo(nome, descricao) {
+function montarPayloadCargo({ nome, descricao }) {
     return { nome: nome.trim(), descricao: (descricao || "").trim() };
 }
 
-export function cadastrarCargo(nome, descricao, permissoesIds, navigate, setFeedback) {
+export function cadastrarCargo(cargo, navigate, setFeedback) {
+    const { permissoesIds } = cargo;
+
     return enviarComFeedback({
-        erroValidacao: validarDadosCargo(nome),
-        requisicao: () => api.post("/cargos", montarPayloadCargo(nome, descricao)),
-        msgCarregando: "Cadastrando cargo...",
-        sucesso: { status: 201, msg: "Cargo cadastrado com sucesso!", rota: "/cargos" },
-        msgErro: "Não foi possível cadastrar o cargo. Nenhum dado foi salvo.",
+        ...textos.cadastro("/cargos"),
+        erroValidacao: validarDadosCargo(cargo),
+        requisicao: () => api.post("/cargos", montarPayloadCargo(cargo)),
         navigate,
         setFeedback,
         aposSucesso: async (response) => {
@@ -103,14 +104,14 @@ function sincronizarAcessosDoCargo(cargoId, idsSelecionados, associacoesAtuais) 
     return Promise.allSettled([...inclusoes, ...exclusoes]);
 }
 
-export function atualizarCargo(id, nome, descricao, permissoesIds, associacoesAtuais, navigate, setFeedback) {
+export function atualizarCargo(id, cargo, navigate, setFeedback) {
+    const { permissoesIds, associacoesAtuais } = cargo;
+
     return enviarComFeedback({
-        erroValidacao: validarDadosCargo(nome),
-        requisicao: () => api.put(`/cargos/${id}`, montarPayloadCargo(nome, descricao)),
-        msgCarregando: "Atualizando cargo...",
-        sucesso: { status: 200, msg: "Cargo atualizado com sucesso!", rota: "/cargos" },
+        ...textos.atualizacao("/cargos"),
+        erroValidacao: validarDadosCargo(cargo),
+        requisicao: () => api.put(`/cargos/${id}`, montarPayloadCargo(cargo)),
         erros: { 404: "Cargo não encontrado." },
-        msgErro: "Não foi possível atualizar o cargo.",
         navigate,
         setFeedback,
         aposSucesso: async () => {

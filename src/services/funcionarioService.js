@@ -1,8 +1,9 @@
 import { validarCpf } from "../utils/validadores";
 import api from "./apiClient";
-import { criarServicoBase, enviarComFeedback, montarFormData } from "./servicoBase";
+import { criarServicoBase, enviarComFeedback, mensagensCrud, montarFormData, validarObrigatorios } from "./servicoBase";
 
 const base = criarServicoBase("/funcionarios", { singular: "funcionário", plural: "funcionários" });
+const textos = mensagensCrud("funcionário", "m");
 
 export const listarFuncionarios = base.listar;
 export const buscarFuncionarioPorId = base.buscarPorId;
@@ -12,9 +13,14 @@ const TAMANHO_MINIMO_SENHA = 8;
 
 // Mesmas regras para cadastrar e atualizar.
 function validarDadosFuncionario({ nome, cpf, senha, senhaConfirmada, cargoId }) {
-    if (!nome || !cpf || !senha || !senhaConfirmada || !cargoId) {
-        return "Os campos são obrigatórios.";
-    }
+    const erroObrigatorios = validarObrigatorios({
+        nome,
+        CPF: cpf,
+        senha,
+        "confirmação da senha": senhaConfirmada,
+        cargo: cargoId,
+    });
+    if (erroObrigatorios) return erroObrigatorios;
 
     if (!validarCpf(cpf)) {
         return "O CPF do funcionário é inválido.";
@@ -31,35 +37,31 @@ function validarDadosFuncionario({ nome, cpf, senha, senhaConfirmada, cargoId })
     return null;
 }
 
-function montarFormDataFuncionario({ nome, cpf, senha, cargoId }, foto) {
+function montarFormDataFuncionario({ nome, cpf, senha, cargoId, foto }) {
     return montarFormData("funcionarioRequestDto", { nome, cpf, senha, cargoId }, foto);
 }
 
-export function cadastrarFuncionario(nome, cpf, senha, senhaConfirmada, cargoId, foto, navigate, setFeedback) {
-    const dados = { nome, cpf, senha, senhaConfirmada, cargoId };
-
+export function cadastrarFuncionario(funcionario, navigate, setFeedback) {
     return enviarComFeedback({
-        erroValidacao: validarDadosFuncionario(dados),
-        requisicao: () => api.post("/funcionarios", montarFormDataFuncionario(dados, foto)),
-        msgCarregando: "Cadastrando funcionário...",
-        sucesso: { status: 201, msg: "Funcionário cadastrado com sucesso!", rota: "/funcionarios" },
-        erros: { 404: "Cargo informado não foi encontrado. Nenhum dado foi salvo." },
-        msgErro: "Não foi possível cadastrar o funcionário. Nenhum dado foi salvo.",
+        ...textos.cadastro("/funcionarios"),
+        erroValidacao: validarDadosFuncionario(funcionario),
+        requisicao: () => api.post("/funcionarios", montarFormDataFuncionario(funcionario)),
+        erros: {
+            404: "Cargo informado não foi encontrado.",
+        },
         navigate,
         setFeedback,
     });
 }
 
-export function atualizarFuncionario(id, nome, cpf, senha, senhaConfirmada, cargoId, foto, navigate, setFeedback) {
-    const dados = { nome, cpf, senha, senhaConfirmada, cargoId };
-
+export function atualizarFuncionario(id, funcionario, navigate, setFeedback) {
     return enviarComFeedback({
-        erroValidacao: validarDadosFuncionario(dados),
-        requisicao: () => api.put(`/funcionarios/${id}`, montarFormDataFuncionario(dados, foto)),
-        msgCarregando: "Atualizando funcionário...",
-        sucesso: { status: 200, msg: "Funcionário atualizado com sucesso!", rota: "/funcionarios" },
-        erros: { 404: "Funcionário ou cargo não encontrado." },
-        msgErro: "Não foi possível atualizar o funcionário.",
+        ...textos.atualizacao("/funcionarios"),
+        erroValidacao: validarDadosFuncionario(funcionario),
+        requisicao: () => api.put(`/funcionarios/${id}`, montarFormDataFuncionario(funcionario)),
+        erros: {
+            404: "Funcionário ou cargo não encontrado.",
+        },
         navigate,
         setFeedback,
     });

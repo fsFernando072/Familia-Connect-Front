@@ -13,7 +13,7 @@ function CadastroCategoria() {
     const [nome, setNome] = useState("");
 
     const handleCadastrar = () => {
-        cadastrarCategoria(nome, navigate, setFeedback);
+        cadastrarCategoria({ nome }, navigate, setFeedback);
     };
 
     const campos = [

@@ -52,7 +52,7 @@ function EditarFuncionario() {
     }, [id]);
 
     const handleAtualizar = () => {
-        atualizarFuncionario(id, nome, cpf.replace(/\D/g, ""), senha, senhaConfirmada, cargoId, foto, navigate, setFeedback);
+        atualizarFuncionario(id, { nome, cpf: cpf.replace(/\D/g, ""), senha, senhaConfirmada, cargoId, foto }, navigate, setFeedback);
     };
 
     const campos = [
