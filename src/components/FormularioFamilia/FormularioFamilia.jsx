@@ -6,6 +6,7 @@ import Botao from "../Botao/Botao";
 import ListaContainer from "../ListaContainer/ListaContainer";
 import CartaoDependente from "../CartaoDependente/CartaoDependente";
 import { buscarEnderecoPorCep } from "../../services/cepService";
+import { LIMITES } from "../../services/limitesCampos";
 import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, mascaraData, somenteDigitos } from "../../utils/mascaras";
 import { validarCpf, validarRg, nascimentoNoPassado } from "../../utils/validadores";
 import { feedbackErro } from "../../utils/feedback";
@@ -211,7 +212,16 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
     const opcoesGrauParentesco = grausParentesco.map((gp) => ({ value: gp.grau, label: gp.grau }));
 
     const camposResponsavel = [
-        { id: "nome", tipo: "texto", coluna: 1, label: "Nome do Responsável", value: nome, onChange: (e) => setNome(e.target.value), placeholder: "Digite o nome" },
+        {
+            id: "nome",
+            tipo: "texto",
+            coluna: 1,
+            label: "Nome do Responsável",
+            value: nome,
+            onChange: (e) => setNome(e.target.value),
+            maxLength: LIMITES.pessoa.nome.max,
+            placeholder: "Digite o nome",
+        },
         {
             id: "rg",
             tipo: "texto",
@@ -256,6 +266,7 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
             onChangeSelecionada: (e) => setProfissaoSelecionada(e.target.value),
             nova: profissaoNova,
             onChangeNova: (e) => setProfissaoNova(e.target.value),
+            maxLengthNova: LIMITES.pessoa.profissao.max,
         },
         { id: "sexo", tipo: "radio", coluna: 2, label: "Sexo do Responsável", name: "sexoResponsavel", opcoes: ["Masculino", "Feminino", "Outro"], value: sexo, onChange: setSexo },
         { id: "possuiPne", tipo: "radio", coluna: 2, label: "A Família possui PNE?", name: "possuiPne", opcoes: ["Não", "Sim"], value: possuiPne, onChange: setPossuiPne },
@@ -264,11 +275,56 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
 
     const camposEndereco = [
         { id: "cep", tipo: "texto", coluna: 1, label: "CEP", value: cep, onChange: (e) => setCep(mascaraCep(e.target.value)), onBlur: handleBuscarCep, placeholder: "02141-140" },
-        { id: "rua", tipo: "texto", coluna: 1, label: "Rua", value: rua, onChange: (e) => setRua(e.target.value), placeholder: "Rua Macapá" },
-        { id: "numero", tipo: "texto", coluna: 1, label: "Número", value: numero, onChange: (e) => setNumero(somenteDigitos(e.target.value)), placeholder: "1290" },
-        { id: "complemento", tipo: "texto", coluna: 1, label: "Complemento (Opcional)", value: complemento, onChange: (e) => setComplemento(e.target.value), placeholder: "Apartamento 20" },
-        { id: "bairro", tipo: "texto", coluna: 2, label: "Bairro", value: bairro, onChange: (e) => setBairro(e.target.value), placeholder: "Itaquera" },
-        { id: "cidade", tipo: "texto", coluna: 2, label: "Cidade", value: cidade, onChange: (e) => setCidade(e.target.value), placeholder: "São Paulo" },
+        {
+            id: "rua",
+            tipo: "texto",
+            coluna: 1,
+            label: "Rua",
+            value: rua,
+            onChange: (e) => setRua(e.target.value),
+            maxLength: LIMITES.endereco.logradouro.max,
+            placeholder: "Rua Macapá",
+        },
+        {
+            id: "numero",
+            tipo: "texto",
+            coluna: 1,
+            label: "Número",
+            value: numero,
+            onChange: (e) => setNumero(somenteDigitos(e.target.value)),
+            maxLength: LIMITES.endereco.numero.max,
+            placeholder: "1290",
+        },
+        {
+            id: "complemento",
+            tipo: "texto",
+            coluna: 1,
+            label: "Complemento (Opcional)",
+            value: complemento,
+            onChange: (e) => setComplemento(e.target.value),
+            maxLength: LIMITES.endereco.complemento.max,
+            placeholder: "Apartamento 20",
+        },
+        {
+            id: "bairro",
+            tipo: "texto",
+            coluna: 2,
+            label: "Bairro",
+            value: bairro,
+            onChange: (e) => setBairro(e.target.value),
+            maxLength: LIMITES.endereco.bairro.max,
+            placeholder: "Itaquera",
+        },
+        {
+            id: "cidade",
+            tipo: "texto",
+            coluna: 2,
+            label: "Cidade",
+            value: cidade,
+            onChange: (e) => setCidade(e.target.value),
+            maxLength: LIMITES.endereco.cidade.max,
+            placeholder: "São Paulo",
+        },
         { id: "estado", tipo: "select", coluna: 2, label: "Estado", value: estadoId, onChange: (e) => setEstadoId(e.target.value), opcoes: opcoesEstado },
         {
             id: "buscandoCep",
@@ -279,7 +335,16 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
     ];
 
     const camposDependente = (dep) => [
-        { id: "nome", tipo: "texto", coluna: 1, label: "Nome do Dependente", value: dep.nome, onChange: (e) => atualizarDependente(dep.id, "nome", e.target.value), placeholder: "Maria Ferreira" },
+        {
+            id: "nome",
+            tipo: "texto",
+            coluna: 1,
+            label: "Nome do Dependente",
+            value: dep.nome,
+            onChange: (e) => atualizarDependente(dep.id, "nome", e.target.value),
+            maxLength: LIMITES.pessoa.nome.max,
+            placeholder: "Maria Ferreira",
+        },
         {
             id: "parentesco",
             tipo: "select",
@@ -352,6 +417,7 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
             onChangeSelecionada: (e) => atualizarDependente(dep.id, "profissaoSelecionada", e.target.value),
             nova: dep.profissaoNova,
             onChangeNova: (e) => atualizarDependente(dep.id, "profissaoNova", e.target.value),
+            maxLengthNova: LIMITES.pessoa.profissao.max,
         },
     ];
 

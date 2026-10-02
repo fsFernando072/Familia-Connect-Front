@@ -1,7 +1,7 @@
 import CampoTexto from "../CampoTexto/CampoTexto";
 import { CLASSE_LABEL, CLASSE_INPUT } from "../estilosCampo";
 
-function CampoProfissao({ label, profissoes, selecionada, onChangeSelecionada, nova, onChangeNova }) {
+function CampoProfissao({ label, profissoes, selecionada, onChangeSelecionada, nova, onChangeNova, maxLengthNova }) {
     return (
         <div className="flex flex-col gap-4">
             <div>
@@ -17,7 +17,7 @@ function CampoProfissao({ label, profissoes, selecionada, onChangeSelecionada, n
                 </select>
             </div>
 
-            {selecionada === "outra" && <CampoTexto label="Nome da Nova Profissão" value={nova} onChange={onChangeNova} placeholder="Digite a profissão" />}
+            {selecionada === "outra" && <CampoTexto label="Nome da Nova Profissão" value={nova} onChange={onChangeNova} placeholder="Digite a profissão" maxLength={maxLengthNova} />}
         </div>
     );
 }

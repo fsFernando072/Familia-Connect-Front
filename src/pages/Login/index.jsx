@@ -5,6 +5,7 @@ import Formulario from "../../components/Formulario/Formulario";
 import FeedbackToast from "../../components/FeedbackToast/FeedbackToast";
 import { useFeedback } from "../../hooks/useFeedback";
 import { entrar } from "../../services/authService";
+import { LIMITES } from "../../services/limitesCampos";
 import { mascaraCpf } from "../../utils/mascaras";
 import { COR_TURQUESA } from "../../utils/cores";
 
@@ -31,6 +32,7 @@ function Login() {
             type: mostrarSenha ? "text" : "password",
             value: senha,
             onChange: (e) => setSenha(e.target.value),
+            maxLength: LIMITES.funcionario.senha.max,
             placeholder: "********",
             toggle: () => setMostrarSenha((v) => !v),
             mostrar: mostrarSenha,

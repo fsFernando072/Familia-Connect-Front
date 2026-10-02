@@ -4,6 +4,7 @@ import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario
 import Formulario from "../../components/Formulario/Formulario";
 import { useFeedback } from "../../hooks/useFeedback";
 import { buscarCargoPorId, atualizarCargo, listarCargosAcessos, PERMISSOES_CARGO } from "../../services/cargoService";
+import { LIMITES } from "../../services/limitesCampos";
 import { COR_MENTA } from "../../utils/cores";
 
 function EditarCargo() {
@@ -53,6 +54,7 @@ function EditarCargo() {
             label: "Nome do Cargo",
             value: nome,
             onChange: (e) => setNome(e.target.value),
+            maxLength: LIMITES.cargo.nome.max,
             placeholder: "Recepcionista",
         },
         {
@@ -71,6 +73,7 @@ function EditarCargo() {
             label: "Descrição do Cargo",
             value: descricao,
             onChange: (e) => setDescricao(e.target.value),
+            maxLength: LIMITES.cargo.descricao.max,
             placeholder: "Descreva as responsabilidades do cargo",
         },
     ];
