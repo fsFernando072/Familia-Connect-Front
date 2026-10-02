@@ -1,7 +1,9 @@
-import { nascimentoNoPassado, validarCpf, validarRg, validarTelefone } from "../utils/validadores";
+import { somenteDigitos } from "../utils/mascaras";
+import { nascimentoNoPassado, validarCpf } from "../utils/validadores";
 import { converterDataParaIso } from "../utils/formatadores";
 import api from "./apiClient";
-import { criarServicoBase, enviarComFeedback, mensagensCrud, montarFormData, validarObrigatorios } from "./servicoBase";
+import { LIMITES } from "./limitesCampos";
+import { criarServicoBase, enviarComFeedback, mensagensCrud, montarFormData, validarObrigatorios, validarTamanhos } from "./servicoBase";
 
 const base = criarServicoBase("/familias", {
     singular: "família",
@@ -23,12 +25,27 @@ function hojeIso() {
     return `${agora.getFullYear()}-${mes}-${dia}`;
 }
 
-// Documentos opcionais do dependente: só valida se foi preenchido.
+// Regras de tamanho de uma pessoa (responsável ou dependente), iguais ao PessoaRequestDto do back.
+// RG e telefone contam dígitos, sem máscara. Campos vazios são ignorados (a obrigatoriedade é checada antes).
+function validarTamanhosPessoa(pessoa, contexto) {
+    const { nome, rg, telefone, profissao } = LIMITES.pessoa;
+
+    return validarTamanhos(
+        [
+            { rotulo: "nome", valor: pessoa.nome, ...nome },
+            { rotulo: "RG", valor: somenteDigitos(pessoa.rg), ...rg, unidade: "dígitos" },
+            { rotulo: "telefone", valor: somenteDigitos(pessoa.telefone), ...telefone, unidade: "dígitos (DDD + número)" },
+            { rotulo: "profissão", valor: pessoa.profissao, ...profissao },
+        ],
+        contexto
+    );
+}
+
+// CPF e tamanhos dos campos opcionais do dependente: só valida se foi preenchido.
 function validarDocumentosDependente(dep, referencia) {
     if (dep.cpf && !validarCpf(dep.cpf)) return `O CPF do dependente ${referencia} é inválido.`;
-    if (dep.rg && !validarRg(dep.rg)) return `O RG do dependente ${referencia} é inválido.`;
-    if (dep.telefone && !validarTelefone(dep.telefone)) return `O telefone do dependente ${referencia} é inválido.`;
-    return null;
+
+    return validarTamanhosPessoa(dep, `Dependente ${referencia}`);
 }
 
 function validarResponsavel(responsavel) {
@@ -47,14 +64,30 @@ function validarResponsavel(responsavel) {
 
     if (!nascimentoNoPassado(responsavel.dataNascimento)) return "A data de nascimento do responsável não pode ser futura.";
     if (!validarCpf(responsavel.cpf)) return "O CPF do responsável é inválido.";
-    if (!validarRg(responsavel.rg)) return "O RG do responsável é inválido.";
-    if (!validarTelefone(responsavel.telefone)) return "O telefone do responsável é inválido.";
 
-    return null;
+    return validarTamanhosPessoa(responsavel, "Responsável");
 }
 
 function validarEndereco(endereco) {
-    return validarObrigatorios({ rua: endereco.rua, número: endereco.numero, cidade: endereco.cidade, estado: endereco.estadoId }, "Endereço");
+    const erroObrigatorios = validarObrigatorios(
+        { CEP: somenteDigitos(endereco.cep), rua: endereco.rua, número: endereco.numero, bairro: endereco.bairro, cidade: endereco.cidade, estado: endereco.estadoId },
+        "Endereço"
+    );
+    if (erroObrigatorios) return erroObrigatorios;
+
+    const { cep, logradouro, numero, bairro, complemento, cidade } = LIMITES.endereco;
+
+    return validarTamanhos(
+        [
+            { rotulo: "CEP", valor: somenteDigitos(endereco.cep), ...cep, unidade: "dígitos" },
+            { rotulo: "rua", valor: endereco.rua, ...logradouro },
+            { rotulo: "número", valor: endereco.numero, ...numero },
+            { rotulo: "complemento", valor: endereco.complemento, ...complemento },
+            { rotulo: "bairro", valor: endereco.bairro, ...bairro },
+            { rotulo: "cidade", valor: endereco.cidade, ...cidade },
+        ],
+        "Endereço"
+    );
 }
 
 function validarDependentes(dependentes) {
@@ -62,7 +95,7 @@ function validarDependentes(dependentes) {
         const referencia = dep.nome?.trim() ? `"${dep.nome}"` : `nº ${indice + 1}`;
 
         const erro =
-            validarObrigatorios({ nome: dep.nome, "data de nascimento": dep.dataNascimento, sexo: dep.sexo }, `Dependente ${referencia}`) ||
+            validarObrigatorios({ nome: dep.nome, "data de nascimento": dep.dataNascimento, sexo: dep.sexo, parentesco: dep.parentesco }, `Dependente ${referencia}`) ||
             (!nascimentoNoPassado(dep.dataNascimento) && `A data de nascimento do dependente ${referencia} não pode ser futura.`) ||
             validarDocumentosDependente(dep, referencia);
 

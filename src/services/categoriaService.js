@@ -1,5 +1,6 @@
 import api from "./apiClient";
-import { criarServicoBase, enviarComFeedback, mensagensCrud, validarObrigatorios } from "./servicoBase";
+import { LIMITES } from "./limitesCampos";
+import { criarServicoBase, enviarComFeedback, mensagensCrud, validarObrigatorios, validarTamanhos } from "./servicoBase";
 
 const base = criarServicoBase("/categorias", { singular: "categoria", plural: "categorias" });
 const textos = mensagensCrud("categoria", "f");
@@ -9,7 +10,7 @@ export const buscarCategoriaPorId = base.buscarPorId;
 export const deletarCategoria = base.deletar;
 
 function validarDadosCategoria({ nome }) {
-    return validarObrigatorios({ nome });
+    return validarObrigatorios({ nome }) || validarTamanhos([{ rotulo: "nome da categoria", valor: nome, ...LIMITES.categoria.nome }]);
 }
 
 export function cadastrarCategoria(categoria, navigate, setFeedback) {

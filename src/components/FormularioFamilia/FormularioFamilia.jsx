@@ -146,7 +146,7 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
                 return;
             }
         }
-        if (passoAtual === 1 && (!rua || !numero || !cidade || !estadoId)) {
+        if (passoAtual === 1 && (!cep || !rua || !numero || !bairro || !cidade || !estadoId)) {
             setFeedback(feedbackErro("Preencha os dados obrigatórios do endereço."));
             return;
         }

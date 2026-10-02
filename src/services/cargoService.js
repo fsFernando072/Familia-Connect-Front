@@ -1,5 +1,6 @@
 import api from "./apiClient";
-import { algumaRequisicaoFalhou, buscarLista, criarServicoBase, enviarComFeedback, mensagensCrud, validarObrigatorios } from "./servicoBase";
+import { LIMITES } from "./limitesCampos";
+import { algumaRequisicaoFalhou, buscarLista, criarServicoBase, enviarComFeedback, mensagensCrud, validarObrigatorios, validarTamanhos } from "./servicoBase";
 
 const base = criarServicoBase("/cargos", { singular: "cargo", plural: "cargos" });
 const textos = mensagensCrud("cargo", "m");
@@ -58,12 +59,18 @@ const ACESSOS = [
 // Formato esperado pelo CampoCheckbox (id) e pelo vínculo cargo-acesso (acessoId).
 export const PERMISSOES_CARGO = ACESSOS.map(([id, nome]) => ({ id, acessoId: id, nome }));
 
-function validarDadosCargo({ nome }) {
-    return validarObrigatorios({ nome: nome?.trim() });
+function validarDadosCargo({ nome, descricao }) {
+    return (
+        validarObrigatorios({ nome: nome?.trim(), descricao: descricao?.trim() }) ||
+        validarTamanhos([
+            { rotulo: "nome do cargo", valor: nome?.trim(), ...LIMITES.cargo.nome },
+            { rotulo: "descrição do cargo", valor: descricao?.trim(), ...LIMITES.cargo.descricao },
+        ])
+    );
 }
 
 function montarPayloadCargo({ nome, descricao }) {
-    return { nome: nome.trim(), descricao: (descricao || "").trim() };
+    return { nome: nome.trim(), descricao: descricao.trim() };
 }
 
 export function cadastrarCargo(cargo, navigate, setFeedback) {

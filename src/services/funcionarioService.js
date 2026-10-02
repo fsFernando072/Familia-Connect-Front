@@ -1,6 +1,7 @@
 import { validarCpf } from "../utils/validadores";
 import api from "./apiClient";
-import { criarServicoBase, enviarComFeedback, mensagensCrud, montarFormData, validarObrigatorios } from "./servicoBase";
+import { LIMITES } from "./limitesCampos";
+import { criarServicoBase, enviarComFeedback, mensagensCrud, montarFormData, validarObrigatorios, validarTamanhos } from "./servicoBase";
 
 const base = criarServicoBase("/funcionarios", { singular: "funcionário", plural: "funcionários" });
 const textos = mensagensCrud("funcionário", "m");
@@ -8,8 +9,6 @@ const textos = mensagensCrud("funcionário", "m");
 export const listarFuncionarios = base.listar;
 export const buscarFuncionarioPorId = base.buscarPorId;
 export const deletarFuncionario = base.deletar;
-
-const TAMANHO_MINIMO_SENHA = 8;
 
 // Mesmas regras para cadastrar e atualizar.
 function validarDadosFuncionario({ nome, cpf, senha, senhaConfirmada, cargoId }) {
@@ -26,9 +25,11 @@ function validarDadosFuncionario({ nome, cpf, senha, senhaConfirmada, cargoId })
         return "O CPF do funcionário é inválido.";
     }
 
-    if (senha.length < TAMANHO_MINIMO_SENHA || senhaConfirmada.length < TAMANHO_MINIMO_SENHA) {
-        return `A senha deve ter no mínimo ${TAMANHO_MINIMO_SENHA} caracteres.`;
-    }
+    const erroTamanho = validarTamanhos([
+        { rotulo: "nome do funcionário", valor: nome, ...LIMITES.funcionario.nome },
+        { rotulo: "senha", valor: senha, ...LIMITES.funcionario.senha },
+    ]);
+    if (erroTamanho) return erroTamanho;
 
     if (senha !== senhaConfirmada) {
         return "As senhas têm que ser iguais.";

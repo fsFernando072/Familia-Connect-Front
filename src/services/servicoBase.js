@@ -124,6 +124,38 @@ export function validarObrigatorios(campos, contexto = "") {
     return contexto ? `${contexto}: ${frase}` : frase.charAt(0).toUpperCase() + frase.slice(1);
 }
 
+/**
+ * Valida o tamanho dos campos, igual aos @Size do back-end (ver limitesCampos.js).
+ * Campo vazio é ignorado aqui: se for obrigatório, quem avisa é o validarObrigatorios.
+ * Cita TODOS os campos fora do tamanho, na mesma frase.
+ *
+ *   validarTamanhos([{ rotulo: "nome do produto", valor: nome, ...LIMITES.produto.nome }])
+ *   -> "Nome do produto deve ter entre 3 e 45 caracteres."
+ *   validarTamanhos([{ rotulo: "CEP", valor: somenteDigitos(cep), ...LIMITES.endereco.cep, unidade: "dígitos" }], "Endereço")
+ *   -> "Endereço: CEP deve ter exatamente 8 dígitos."
+ */
+export function validarTamanhos(regras, contexto = "") {
+    const erros = regras
+        .filter(({ valor }) => !estaVazio(valor))
+        .map(({ rotulo, valor, min = 0, max = Infinity, unidade = "caracteres" }) => {
+            const tamanho = String(valor).length; // cru, como o @Size do back (o que o service envia é o que conta)
+
+            if (tamanho >= min && tamanho <= max) return null;
+            if (min === max) return `${rotulo} deve ter exatamente ${min} ${unidade}`;
+            if (min > 0 && max !== Infinity) return `${rotulo} deve ter entre ${min} e ${max} ${unidade}`;
+            if (max !== Infinity) return `${rotulo} deve ter no máximo ${max} ${unidade}`;
+
+            return `${rotulo} deve ter no mínimo ${min} ${unidade}`;
+        })
+        .filter(Boolean);
+
+    if (!erros.length) return null;
+
+    const texto = erros.join("; ");
+
+    return contexto ? `${contexto}: ${texto}.` : `${texto.charAt(0).toUpperCase()}${texto.slice(1)}.`;
+}
+
 /* ------------------------------------------------------------------ */
 /* Mensagem de erro que vem do back-end                                */
 /* ------------------------------------------------------------------ */
@@ -135,16 +167,38 @@ function rotuloDoCampo(campo) {
     return ROTULOS_CAMPOS[ultimo] || ultimo;
 }
 
+// "Campo: mensagem", mas sem repetir o campo quando a própria mensagem já fala dele
+// ("Data de nascimento da pessoa é obrigatório" não vira "Data de nascimento: Data de nascimento...").
+function comRotulo(campo, mensagem) {
+    const rotulo = rotuloDoCampo(campo);
+
+    return mensagem.toLowerCase().includes(rotulo.toLowerCase()) ? mensagem : `${rotulo}: ${mensagem}`;
+}
+
+// Quando o Spring expõe a exceção crua ("Validation failed for argument [0]... default message [X]"),
+// pesca só os "X" (ignorando o nome do campo, que também aparece como "default message [campo]").
+function limparTextoDoSpring(texto) {
+    const achadas = [...texto.matchAll(/default message \[([^\]]*)\]/g)].map((m) => m[1].trim()).filter((m) => m && !/^[\w.]+$/.test(m));
+
+    if (achadas.length) return [...new Set(achadas)].join(" ");
+    if (/^Validation failed/i.test(texto) || /^(No message available|Bad Request)$/i.test(texto)) return null;
+
+    return texto;
+}
+
 function textoDeUmErro(item) {
-    if (typeof item === "string") return item.trim() || null;
+    if (typeof item === "string") return item.trim() ? limparTextoDoSpring(item.trim()) : null;
     if (!item || typeof item !== "object") return null;
 
     const mensagem = item.mensagem ?? item.message ?? item.defaultMessage ?? item.detail;
     if (typeof mensagem !== "string" || !mensagem.trim()) return null;
 
+    const texto = limparTextoDoSpring(mensagem.trim());
+    if (!texto) return null;
+
     const campo = item.campo ?? item.field ?? item.propriedade;
 
-    return campo ? `${rotuloDoCampo(campo)}: ${mensagem.trim()}` : mensagem.trim();
+    return campo ? comRotulo(campo, texto) : texto;
 }
 
 function juntarMensagens(textos) {
@@ -159,7 +213,7 @@ function textosDeDetalhes(detalhes) {
     if (detalhes && typeof detalhes === "object") {
         // { cpf: "CPF inválido", nome: ["obrigatório"] }
         return Object.entries(detalhes).flatMap(([campo, mensagens]) =>
-            [].concat(mensagens).map((mensagem) => (typeof mensagem === "string" && mensagem.trim() ? `${rotuloDoCampo(campo)}: ${mensagem.trim()}` : null))
+            [].concat(mensagens).map((mensagem) => (typeof mensagem === "string" && mensagem.trim() ? comRotulo(campo, mensagem.trim()) : null))
         );
     }
 
@@ -181,13 +235,18 @@ export function extrairMensagemDoBack(data) {
     if (typeof data === "string") {
         const texto = data.trim();
 
-        return texto && !texto.startsWith("<") ? finalizarFrase(texto) : null; // ignora página HTML de erro
+        if (!texto || texto.startsWith("<")) return null; // ignora página HTML de erro
+
+        const limpo = limparTextoDoSpring(texto);
+
+        return limpo ? finalizarFrase(limpo) : null;
     }
 
     if (Array.isArray(data)) return juntarMensagens(data.map(textoDeUmErro));
     if (typeof data !== "object") return null;
 
-    const detalhes = data.errors ?? data.erros ?? data.violations ?? data.fieldErrors ?? data.campos;
+    const detalhes =
+        data.errors ?? data.erros ?? data.violations ?? data.violacoes ?? data.fieldErrors ?? data.validationErrors ?? data.campos ?? data.fields ?? data.detalhes ?? data.details ?? data.mensagens ?? data.messages;
     const dosDetalhes = juntarMensagens(textosDeDetalhes(detalhes));
     if (dosDetalhes) return dosDetalhes;
 

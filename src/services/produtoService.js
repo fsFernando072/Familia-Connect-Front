@@ -1,5 +1,6 @@
 import api from "./apiClient";
-import { criarServicoBase, enviarComFeedback, mensagensCrud, validarObrigatorios } from "./servicoBase";
+import { LIMITES } from "./limitesCampos";
+import { criarServicoBase, enviarComFeedback, mensagensCrud, validarObrigatorios, validarTamanhos } from "./servicoBase";
 
 const base = criarServicoBase("/produtos", { singular: "produto", plural: "produtos" });
 const textos = mensagensCrud("produto", "m");
@@ -9,13 +10,19 @@ export const buscarProdutoPorId = base.buscarPorId;
 export const deletarProduto = base.deletar;
 
 function validarDadosProduto(produto) {
-    return validarObrigatorios({ nome: produto.nome, categoria: produto.categoriaId });
+    return (
+        validarObrigatorios({ nome: produto.nome, descricao: produto.descricao, categoria: produto.categoriaId }) ||
+        validarTamanhos([
+            { rotulo: "nome do produto", valor: produto.nome, ...LIMITES.produto.nome },
+            { rotulo: "descrição do produto", valor: produto.descricao, ...LIMITES.produto.descricao },
+        ])
+    );
 }
 
 function montarPayloadProduto(produto) {
     return {
         nome: produto.nome,
-        descricao: produto.descricao || null,
+        descricao: produto.descricao,
         idCategoria: Number(produto.categoriaId),
     };
 }
