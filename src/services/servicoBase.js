@@ -11,6 +11,7 @@ const SUFIXO_ATUALIZACAO = "Nenhuma alteração foi salva.";
 const MSG_CONEXAO_PADRAO = "Erro de conexão.";
 
 const MSG_DADOS_INVALIDOS = "Dados inválidos. Verifique os campos e tente novamente.";
+let emEnvio = false;
 
 // Mensagens usadas quando o service não define uma específica para o status.
 const MENSAGENS_STATUS_PADRAO = {
@@ -389,6 +390,10 @@ export async function enviarComFeedback({ requisicao, navigate, setFeedback, msg
         return;
     }
 
+    if (emEnvio) return;
+    emEnvio = true;
+    let aguardandoRedirect = false;
+
     setFeedback(feedbackCarregando(msgCarregando));
 
     try {
@@ -407,9 +412,15 @@ export async function enviarComFeedback({ requisicao, navigate, setFeedback, msg
         }
 
         setFeedback(feedbackSucesso(sucesso.msg));
-        setTimeout(() => navigate(sucesso.rota), ATRASO_REDIRECIONAMENTO_MS);
+        aguardandoRedirect = true;
+        setTimeout(() => {
+            emEnvio = false;
+            navigate(sucesso.rota);
+        }, ATRASO_REDIRECIONAMENTO_MS);
     } catch (error) {
         console.error(error);
         setFeedback(feedbackErro(comSufixo(msgConexao)));
+    } finally {
+        if (!aguardandoRedirect) emEnvio = false;
     }
 }

@@ -1,5 +1,5 @@
 import { somenteDigitos } from "../utils/mascaras";
-import { nascimentoNoPassado, validarCpf } from "../utils/validadores";
+import { dataValida, nascimentoNoPassado, validarCpf } from "../utils/validadores";
 import { converterDataParaIso } from "../utils/formatadores";
 import api from "./apiClient";
 import { LIMITES } from "./limitesCampos";
@@ -15,15 +15,6 @@ const textos = mensagensCrud("família", "f");
 export const listarFamilias = base.listar;
 export const buscarFamiliaPorId = base.buscarPorId;
 export const deletarFamilia = base.deletar;
-
-// Data de hoje no fuso do navegador, em yyyy-MM-dd para o dataCadastro (toISOString usa UTC e à noite no Brasil já cai no dia seguinte).
-function hojeIso() {
-    const agora = new Date();
-    const mes = String(agora.getMonth() + 1).padStart(2, "0");
-    const dia = String(agora.getDate()).padStart(2, "0");
-
-    return `${agora.getFullYear()}-${mes}-${dia}`;
-}
 
 // Regras de tamanho de uma pessoa (responsável ou dependente), iguais ao PessoaRequestDto do back.
 // RG e telefone contam dígitos, sem máscara. Campos vazios são ignorados (a obrigatoriedade é checada antes).
@@ -62,6 +53,7 @@ function validarResponsavel(responsavel) {
     );
     if (erroObrigatorios) return erroObrigatorios;
 
+    if (!dataValida(responsavel.dataNascimento)) return "A data de nascimento do responsável deve ser válida.";
     if (!nascimentoNoPassado(responsavel.dataNascimento)) return "A data de nascimento do responsável não pode ser futura.";
     if (!validarCpf(responsavel.cpf)) return "O CPF do responsável é inválido.";
 
@@ -96,6 +88,7 @@ function validarDependentes(dependentes) {
 
         const erro =
             validarObrigatorios({ nome: dep.nome, "data de nascimento": dep.dataNascimento, sexo: dep.sexo, parentesco: dep.parentesco }, `Dependente ${referencia}`) ||
+            (!dataValida(dep.dataNascimento) && `A data de nascimento do dependente ${referencia} deve ser válida.`) ||
             (!nascimentoNoPassado(dep.dataNascimento) && `A data de nascimento do dependente ${referencia} não pode ser futura.`) ||
             validarDocumentosDependente(dep, referencia);
 
@@ -112,7 +105,6 @@ function validarDadosFamilia({ responsavel, endereco, dependentes }) {
 
 function montarPayloadFamilia({ responsavel, endereco, dependentes }) {
     return {
-        dataCadastro: hojeIso(),
         possuiPrioridade: responsavel.possuiPne,
         endereco: {
             cep: endereco.cep,
@@ -135,6 +127,7 @@ function montarPayloadFamilia({ responsavel, endereco, dependentes }) {
             isResponsavel: true,
         },
         dependentes: dependentes.map((dep) => ({
+            id: dep.idPessoa,
             nome: dep.nome,
             rg: dep.rg?.trim() || null,
             cpf: dep.cpf?.trim() || null,
@@ -160,7 +153,6 @@ export function cadastrarFamilia(familia, navigate, setFeedback) {
         requisicao: () => api.post("/familias", montarFormDataFamilia(familia)),
         erros: {
             409: "Endereço ou pessoa (CPF) já cadastrados.",
-            404: "Estado informado não foi encontrado.",
         },
         navigate,
         setFeedback,

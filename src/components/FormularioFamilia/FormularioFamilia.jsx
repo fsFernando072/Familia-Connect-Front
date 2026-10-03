@@ -8,13 +8,14 @@ import CartaoDependente from "../CartaoDependente/CartaoDependente";
 import { buscarEnderecoPorCep } from "../../services/cepService";
 import { LIMITES } from "../../services/limitesCampos";
 import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, mascaraData, somenteDigitos } from "../../utils/mascaras";
-import { validarCpf, validarRg, nascimentoNoPassado } from "../../utils/validadores";
+import { validarCpf, validarRg, nascimentoNoPassado, dataValida } from "../../utils/validadores";
 import { feedbackErro } from "../../utils/feedback";
 import { COR_MENTA, COR_NAVY, COR_TURQUESA } from "../../utils/cores";
 import { dependenteVazio } from "./mapeamentos";
 
 const MSG_RG_INVALIDO = "RG inválido (deve ter entre 7 e 9 dígitos)";
 const MSG_DATA_FUTURA = "A data de nascimento não pode ser futura";
+const MSG_DATA_INVALIDA = "A data de nascimento deve ser válida";
 
 /**
  * Formulário em 3 passos (responsável, endereço, dependentes) compartilhado por
@@ -60,6 +61,13 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
     // Dados dos dependentes
     const [dependentes, setDependentes] = useState(dadosIniciais.dependentes);
 
+    const obterErroDataNascimento = (data) => {
+        if (!data) return "";
+        if (!dataValida(data)) return MSG_DATA_INVALIDA;
+        if (!nascimentoNoPassado(data)) return MSG_DATA_FUTURA;
+        return "";
+    };
+
     useEffect(() => {
         if (!preSelecionarSP) return;
 
@@ -92,7 +100,7 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
     };
 
     const handleBlurDataNascimento = () => {
-        setErroDataNascimento(dataNascimento && !nascimentoNoPassado(dataNascimento) ? MSG_DATA_FUTURA : "");
+        setErroDataNascimento(obterErroDataNascimento(dataNascimento));
     };
 
     const adicionarDependente = () => {
@@ -118,7 +126,7 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
                     return { ...dep, erroCpf: dep.cpf && !validarCpf(dep.cpf) ? "CPF inválido" : "" };
                 }
                 if (campo === "dataNascimento") {
-                    return { ...dep, erroDataNascimento: dep.dataNascimento && !nascimentoNoPassado(dep.dataNascimento) ? MSG_DATA_FUTURA : "" };
+                    return { ...dep, erroDataNascimento: obterErroDataNascimento(dep.dataNascimento) };
                 }
                 return dep;
             })
@@ -131,9 +139,9 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
                 setFeedback(feedbackErro("Preencha todos os campos obrigatórios do responsável."));
                 return;
             }
-            if (!nascimentoNoPassado(dataNascimento)) {
-                setErroDataNascimento(MSG_DATA_FUTURA);
-                setFeedback(feedbackErro("A data de nascimento do responsável não pode ser futura."));
+            if (obterErroDataNascimento(dataNascimento)) {
+                setErroDataNascimento(erroData);
+                setFeedback(feedbackErro(`${erroData} (responsável).`));
                 return;
             }
             if (!validarRg(rg)) {
@@ -166,7 +174,7 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
         const dependentesValidados = dependentes.map((dep) => {
             const erroRgDep = dep.rg && !validarRg(dep.rg) ? "RG inválido" : "";
             const erroCpfDep = dep.cpf && !validarCpf(dep.cpf) ? "CPF inválido" : "";
-            const erroDataDep = dep.dataNascimento && !nascimentoNoPassado(dep.dataNascimento) ? MSG_DATA_FUTURA : "";
+            const erroDataDep = obterErroDataNascimento(dep.dataNascimento);
             if (erroRgDep || erroCpfDep || erroDataDep) dependentesValidos = false;
             return { ...dep, erroRg: erroRgDep, erroCpf: erroCpfDep, erroDataNascimento: erroDataDep };
         });

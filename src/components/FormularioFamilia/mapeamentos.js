@@ -57,6 +57,7 @@ export function dadosIniciaisDeOcr(dadosOcr) {
             cpf: responsavelOcr?.cpf ? mascaraCpf(responsavelOcr.cpf) : "",
             telefone: responsavelOcr?.telefone ? mascaraTelefone(responsavelOcr.telefone) : "",
             dataNascimento: responsavelOcr?.dataNascimento ? converterDataParaBr(responsavelOcr.dataNascimento) : "",
+            profissaoSelecionada: responsavelOcr?.profissao ? "outra" : "",
             profissaoNova: responsavelOcr?.profissao || "",
         },
         endereco: {
@@ -93,6 +94,7 @@ function separarProfissao(profissao, profissoes) {
 function dependenteDaApi(dep, profissoes) {
     return {
         id: dep.id ?? Date.now() + Math.random(),
+        idPessoa: dep.id,
         nome: dep.nome || "",
         parentesco: dep.grauParentesco || "",
         dataNascimento: converterDataParaBr(dep.dataNascimento),

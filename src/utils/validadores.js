@@ -43,3 +43,10 @@ export function nascimentoNoPassado(dataNascimento) {
 
     return nascimento < hoje;
 }
+
+export function dataValida(br) {
+    const [d, m, a] = String(br ?? "").split("/").map(Number);
+    if (!d || !m || !a || a < 1900) return false;
+    const dt = new Date(a, m - 1, d);
+    return dt.getFullYear() === a && dt.getMonth() === m - 1 && dt.getDate() === d;
+}
