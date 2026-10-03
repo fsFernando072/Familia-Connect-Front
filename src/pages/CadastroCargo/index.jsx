@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import { useFeedback } from "../../hooks/useFeedback";
-import { cadastrarCargo, PERMISSOES_CARGO } from "../../services/cargoService";
+import { cadastrarCargo, PAGINAS, NIVEIS_ACESSO, NIVEL_PADRAO } from "../../services/cargoService";
 import { COR_MENTA } from "../../utils/cores";
 
 function CadastroCargo() {
@@ -12,10 +12,10 @@ function CadastroCargo() {
 
     const [nome, setNome] = useState("");
     const [descricao, setDescricao] = useState("");
-    const [permissoesIds, setPermissoesIds] = useState([]);
+    const [permissoes, setPermissoes] = useState({});
 
     const handleCadastrar = () => {
-        cadastrarCargo(nome, descricao, permissoesIds, navigate, setFeedback);
+        cadastrarCargo(nome, descricao, permissoes, navigate, setFeedback);
     };
 
     const campos = [
@@ -30,12 +30,14 @@ function CadastroCargo() {
         },
         {
             id: "permissoes",
-            tipo: "checkbox",
+            tipo: "permissoes",
             coluna: 1,
-            label: "Permissões no Sistema para o Cargo",
-            opcoes: PERMISSOES_CARGO,
-            value: permissoesIds,
-            onChange: setPermissoesIds,
+            label: "Páginas que o Cargo pode acessar",
+            paginas: PAGINAS,
+            niveis: NIVEIS_ACESSO,
+            nivelPadrao: NIVEL_PADRAO,
+            value: permissoes,
+            onChange: setPermissoes,
         },
         {
             id: "descricao",

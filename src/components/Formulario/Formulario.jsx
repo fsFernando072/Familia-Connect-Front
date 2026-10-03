@@ -2,6 +2,7 @@ import Botao from "../Botao/Botao";
 import CampoTexto from "../CampoTexto/CampoTexto";
 import CampoCheckbox from "../CampoCheckbox/CampoCheckbox";
 import CampoRadio from "../CampoRadio/CampoRadio";
+import CampoPermissoes from "../CampoPermissoes/CampoPermissoes";
 import CampoSelect from "../CampoSelect/CampoSelect";
 import CampoProfissao from "../CampoProfissao/CampoProfissao";
 import UploadImagem from "../UploadImagem/UploadImagem";
@@ -11,6 +12,8 @@ function renderCampo(campo) {
     switch (campo.tipo) {
         case "checkbox":
             return <CampoCheckbox label={campo.label} opcoes={campo.opcoes} valoresSelecionados={campo.value} onChange={campo.onChange} />;
+        case "permissoes":
+            return <CampoPermissoes label={campo.label} paginas={campo.paginas} niveis={campo.niveis} value={campo.value} onChange={campo.onChange} nivelPadrao={campo.nivelPadrao} />;
         case "radio":
             return <CampoRadio label={campo.label} name={campo.name} opcoes={campo.opcoes} value={campo.value} onChange={campo.onChange} />;
         case "select":
