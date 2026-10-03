@@ -14,3 +14,12 @@ export async function entrar(cpf, senha, navigate, setFeedback) {
         setFeedback,
     });
 }
+
+// Apaga o cookie de sessão no back-end. Se falhar, o usuário sai da tela mesmo assim.
+export async function sair() {
+    try {
+        await api.post("/funcionarios/logout");
+    } catch (error) {
+        console.error("Erro ao sair:", error);
+    }
+}

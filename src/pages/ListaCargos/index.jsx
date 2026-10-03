@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
 import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
 import ListaStatus from "../../components/ListaStatus/ListaStatus";
@@ -11,9 +11,14 @@ import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao
 import { useListaPaginada } from "../../hooks/useListaPaginada";
 import { listarCargos, deletarCargo } from "../../services/cargoService";
 import { COR_PERIGO, COR_TURQUESA } from "../../utils/cores";
+import { pode } from "../../services/permissoes";
 
 function ListaCargos() {
     const navigate = useNavigate();
+    const { permissoes } = useOutletContext();
+    const podeCadastrar = pode(permissoes, "CARGOS", "cadastrar");
+    const podeEditar = pode(permissoes, "CARGOS", "editar");
+    const podeExcluir = pode(permissoes, "CARGOS", "excluir");
 
     const {
         itens,
@@ -48,7 +53,7 @@ function ListaCargos() {
                 onBuscaChange={(e) => setBusca(e.target.value)}
                 placeholderBusca="Buscar Cargo"
                 onOrdenar={alternarOrdem}
-                onCadastrar={() => navigate("/cargos/cadastro-cargo")}
+                onCadastrar={podeCadastrar ? () => navigate("/cargos/cadastro-cargo") : undefined}
             />
 
             <ListaStatus carregando={carregando} vazio={itens.length === 0} mensagemCarregando="Carregando cargos..." mensagemVazia="Nenhum cargo encontrado." />
@@ -59,8 +64,8 @@ function ListaCargos() {
                         key={cargo.id}
                         acoes={
                             <>
-                                <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/cargos/${cargo.id}/editar-cargo`)} />
-                                <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(cargo)} />
+                                {podeEditar && <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/cargos/${cargo.id}/editar-cargo`)} />}
+                                {podeExcluir && <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(cargo)} />}
                             </>
                         }
                     >
