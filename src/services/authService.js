@@ -14,3 +14,11 @@ export async function entrar({ cpf, senha }, navigate, setFeedback) {
         setFeedback,
     });
 }
+
+export async function sair() {
+    try {
+        await api.post("/funcionarios/logout"); // o back apaga o cookie do token
+    } catch {
+        // sem rede: segue para o login mesmo assim
+    }
+}

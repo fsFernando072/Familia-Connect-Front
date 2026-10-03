@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import Formulario from "../../components/Formulario/Formulario";
@@ -8,10 +8,22 @@ import { entrar } from "../../services/authService";
 import { LIMITES } from "../../services/limitesCampos";
 import { mascaraCpf } from "../../utils/mascaras";
 import { COR_TURQUESA } from "../../utils/cores";
+import { FEEDBACK_VAZIO, feedbackErro } from "../../utils/feedback";
 
 function Login() {
     const navigate = useNavigate();
-    const { feedback, setFeedback, fecharFeedback } = useFeedback();
+
+    // Se o interceptor deixou o recado, a tela já abre com o aviso.
+    const { feedback, setFeedback, fecharFeedback } = useFeedback(() =>
+        sessionStorage.getItem("sessaoExpirada")
+            ? feedbackErro("Sua sessão expirou. Entre novamente.")
+            : FEEDBACK_VAZIO
+    );
+
+    // Apaga o recado depois de usar, para ele não aparecer de novo num próximo login.
+    useEffect(() => {
+        sessionStorage.removeItem("sessaoExpirada");
+    }, []);
 
     const [cpf, setCpf] = useState("");
     const [senha, setSenha] = useState("");

@@ -1,15 +1,17 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { itensMenu } from "../../routes/navegacaoPrincipal";
+import { sair } from "../../services/authService";
 
 const CLASSE_ITEM = "flex items-center gap-3 w-full h-12 [@media(max-height:700px)]:h-10 px-4 rounded-xl text-[15px] font-medium transition-colors duration-200";
 
 function MenuLateral({ aberto, onFechar }) {
     const navigate = useNavigate();
 
-    const handleSair = () => {
+    const handleSair = async () => {
         onFechar();
-        navigate("/");
+        await sair();
+        navigate("/", { replace: true });
     };
 
     return (

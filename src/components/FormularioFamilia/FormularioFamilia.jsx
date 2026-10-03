@@ -291,7 +291,7 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
             coluna: 1,
             label: "Número",
             value: numero,
-            onChange: (e) => setNumero(somenteDigitos(e.target.value)),
+            onChange: (e) => setNumero(e.target.value),
             maxLength: LIMITES.endereco.numero.max,
             placeholder: "1290",
         },
