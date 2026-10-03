@@ -10,7 +10,7 @@ export const LIMITES = {
     pessoa: {
         nome: { min: 3, max: 100 },
         rg: { min: 7, max: 9 },
-        telefone: { min: 11, max: 11 },
+        telefone: { min: 10, max: 11 },
         profissao: { min: 3, max: 80 },
         grauParentesco: { min: 3, max: 80 },
     },
@@ -18,7 +18,7 @@ export const LIMITES = {
         cep: { min: 8, max: 8 },
         bairro: { min: 3, max: 50 },
         logradouro: { min: 3, max: 80 },
-        numero: { min: 2, max: 20 },
+        numero: { min: 1, max: 20 },
         complemento: { min: 3, max: 45 },
         cidade: { min: 3, max: 50 },
     },

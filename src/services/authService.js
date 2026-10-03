@@ -7,7 +7,7 @@ export async function entrar({ cpf, senha }, navigate, setFeedback) {
         requisicao: () => api.post("/funcionarios/login", { cpf, senha }),
         msgCarregando: "Verificando...",
         sucesso: { status: 200, msg: "Login realizado! Entrando...", rota: "/pagina-inicial" },
-        erros: { 401: "Erro na autenticação.", 404: "Usuário não encontrado." },
+        erros: { 401: "CPF ou senha inválidos." },
         msgErro: "Erro na autenticação.",
         msgConexao: "Erro de conexão. Tente novamente.",
         navigate,

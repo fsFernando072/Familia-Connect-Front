@@ -63,7 +63,7 @@ export function dadosIniciaisDeOcr(dadosOcr) {
             ...vazios.endereco,
             cep: enderecoOcr?.cep ? mascaraCep(enderecoOcr.cep) : "",
             rua: enderecoOcr?.logradouro || "",
-            numero: enderecoOcr?.numero ? somenteDigitos(String(enderecoOcr.numero)) : "",
+            numero: enderecoOcr?.numero || "",
             complemento: enderecoOcr?.complemento || "",
             bairro: enderecoOcr?.bairro || "",
             cidade: enderecoOcr?.cidade || "",
