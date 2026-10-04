@@ -55,7 +55,7 @@ function montarPayloadCargo(nome, descricao, permissoes) {
 
 export function cadastrarCargo(nome, descricao, permissoes, navigate, setFeedback) {
     return enviarComFeedback({
-        erroValidacao: validarDadosCargo(nome),
+        erroValidacao: validarDadosCargo({ nome, descricao }),
         requisicao: () => api.post("/cargos", montarPayloadCargo(nome, descricao, permissoes)),
         msgCarregando: "Cadastrando cargo...",
         sucesso: { status: 201, msg: "Cargo cadastrado com sucesso!", rota: "/cargos" },
@@ -67,7 +67,7 @@ export function cadastrarCargo(nome, descricao, permissoes, navigate, setFeedbac
 
 export function atualizarCargo(id, nome, descricao, permissoes, navigate, setFeedback) {
     return enviarComFeedback({
-        erroValidacao: validarDadosCargo(nome),
+        erroValidacao: validarDadosCargo({ nome, descricao }),
         requisicao: () => api.put(`/cargos/${id}`, montarPayloadCargo(nome, descricao, permissoes)),
         msgCarregando: "Atualizando cargo...",
         sucesso: { status: 200, msg: "Cargo atualizado com sucesso!", rota: "/cargos" },
