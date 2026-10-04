@@ -5,7 +5,8 @@ import { CLASSE_LABEL } from "../estilosCampo";
 function CampoPermissoes({ label, paginas, niveis, value, onChange, nivelPadrao }) {
     const alternarPagina = (pagina) => {
         if (pagina in value) {
-            const { [pagina]: _removida, ...restante } = value;
+            const restante = { ...value };
+            delete restante[pagina];
             onChange(restante);
         } else {
             onChange({ ...value, [pagina]: nivelPadrao });

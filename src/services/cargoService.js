@@ -1,9 +1,8 @@
 import api from "./apiClient";
 import { LIMITES } from "./limitesCampos";
-import { algumaRequisicaoFalhou, buscarLista, criarServicoBase, enviarComFeedback, mensagensCrud, validarObrigatorios, validarTamanhos } from "./servicoBase";
+import { criarServicoBase, enviarComFeedback, validarObrigatorios, validarTamanhos } from "./servicoBase";
 
 const base = criarServicoBase("/cargos", { singular: "cargo", plural: "cargos" });
-const textos = mensagensCrud("cargo", "m");
 
 export const listarCargos = base.listar;
 export const buscarCargoPorId = base.buscarPorId;
@@ -64,18 +63,6 @@ export function cadastrarCargo(nome, descricao, permissoes, navigate, setFeedbac
         navigate,
         setFeedback,
     });
-}
-
-// Compara os acessos marcados com os que o cargo já tinha e só inclui/remove a diferença.
-function sincronizarAcessosDoCargo(cargoId, idsSelecionados, associacoesAtuais) {
-    const selecionados = idsSelecionados.map(Number);
-    const idsAtuais = associacoesAtuais.map((associacao) => Number(associacao.acesso?.id));
-
-    const inclusoes = selecionados.filter((acessoId) => !idsAtuais.includes(acessoId)).map((acessoId) => api.post("/cargos-acessos", { cargoId: Number(cargoId), acessoId }));
-
-    const exclusoes = associacoesAtuais.filter((associacao) => !selecionados.includes(Number(associacao.acesso?.id))).map((associacao) => api.delete(`/cargos-acessos/${associacao.id}`));
-
-    return Promise.allSettled([...inclusoes, ...exclusoes]);
 }
 
 export function atualizarCargo(id, nome, descricao, permissoes, navigate, setFeedback) {
