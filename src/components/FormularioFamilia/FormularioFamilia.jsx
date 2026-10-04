@@ -6,13 +6,16 @@ import Botao from "../Botao/Botao";
 import ListaContainer from "../ListaContainer/ListaContainer";
 import CartaoDependente from "../CartaoDependente/CartaoDependente";
 import { buscarEnderecoPorCep } from "../../services/cepService";
+import { LIMITES } from "../../services/limitesCampos";
 import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, mascaraData, somenteDigitos } from "../../utils/mascaras";
-import { validarCpf, validarRg } from "../../utils/validadores";
+import { validarCpf, validarRg, nascimentoNoPassado, dataValida } from "../../utils/validadores";
 import { feedbackErro } from "../../utils/feedback";
 import { COR_MENTA, COR_NAVY, COR_TURQUESA } from "../../utils/cores";
 import { dependenteVazio } from "./mapeamentos";
 
 const MSG_RG_INVALIDO = "RG inválido (deve ter entre 7 e 9 dígitos)";
+const MSG_DATA_FUTURA = "A data de nascimento não pode ser futura";
+const MSG_DATA_INVALIDA = "A data de nascimento deve ser válida";
 
 /**
  * Formulário em 3 passos (responsável, endereço, dependentes) compartilhado por
@@ -43,6 +46,7 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
     const [imagemFamilia, setImagemFamilia] = useState("");
     const [erroRg, setErroRg] = useState("");
     const [erroCpf, setErroCpf] = useState("");
+    const [erroDataNascimento, setErroDataNascimento] = useState("");
 
     // Dados do endereço
     const [cep, setCep] = useState(endInicial.cep);
@@ -56,6 +60,13 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
 
     // Dados dos dependentes
     const [dependentes, setDependentes] = useState(dadosIniciais.dependentes);
+
+    const obterErroDataNascimento = (data) => {
+        if (!data) return "";
+        if (!dataValida(data)) return MSG_DATA_INVALIDA;
+        if (!nascimentoNoPassado(data)) return MSG_DATA_FUTURA;
+        return "";
+    };
 
     useEffect(() => {
         if (!preSelecionarSP) return;
@@ -88,6 +99,10 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
         setErroCpf(cpf && !validarCpf(cpf) ? "CPF inválido" : "");
     };
 
+    const handleBlurDataNascimento = () => {
+        setErroDataNascimento(obterErroDataNascimento(dataNascimento));
+    };
+
     const adicionarDependente = () => {
         setDependentes([...dependentes, dependenteVazio()]);
     };
@@ -110,6 +125,9 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
                 if (campo === "cpf") {
                     return { ...dep, erroCpf: dep.cpf && !validarCpf(dep.cpf) ? "CPF inválido" : "" };
                 }
+                if (campo === "dataNascimento") {
+                    return { ...dep, erroDataNascimento: obterErroDataNascimento(dep.dataNascimento) };
+                }
                 return dep;
             })
         );
@@ -119,6 +137,11 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
         if (passoAtual === 0) {
             if (!nome || !rg || !cpf || !telefone || !dataNascimento) {
                 setFeedback(feedbackErro("Preencha todos os campos obrigatórios do responsável."));
+                return;
+            }
+            if (obterErroDataNascimento(dataNascimento)) {
+                setErroDataNascimento(erroDataNascimento);
+                setFeedback(feedbackErro(`${erroDataNascimento} (responsável).`));
                 return;
             }
             if (!validarRg(rg)) {
@@ -132,7 +155,7 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
                 return;
             }
         }
-        if (passoAtual === 1 && (!rua || !numero || !cidade || !estadoId)) {
+        if (passoAtual === 1 && (!cep || !rua || !numero || !bairro || !cidade || !estadoId)) {
             setFeedback(feedbackErro("Preencha os dados obrigatórios do endereço."));
             return;
         }
@@ -146,18 +169,19 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
     };
 
     const handleSalvar = () => {
-        // Valida CPF/RG de todos os dependentes de uma vez, marcando os campos com erro.
+        // Valida RG, CPF e data de nascimento de todos os dependentes de uma vez, marcando os campos com erro.
         let dependentesValidos = true;
         const dependentesValidados = dependentes.map((dep) => {
             const erroRgDep = dep.rg && !validarRg(dep.rg) ? "RG inválido" : "";
             const erroCpfDep = dep.cpf && !validarCpf(dep.cpf) ? "CPF inválido" : "";
-            if (erroRgDep || erroCpfDep) dependentesValidos = false;
-            return { ...dep, erroRg: erroRgDep, erroCpf: erroCpfDep };
+            const erroDataDep = obterErroDataNascimento(dep.dataNascimento);
+            if (erroRgDep || erroCpfDep || erroDataDep) dependentesValidos = false;
+            return { ...dep, erroRg: erroRgDep, erroCpf: erroCpfDep, erroDataNascimento: erroDataDep };
         });
         setDependentes(dependentesValidados);
 
         if (!dependentesValidos) {
-            setFeedback(feedbackErro("Corrija o RG/CPF destacado nos dependentes."));
+            setFeedback(feedbackErro("Corrija os campos destacados nos dependentes."));
             return;
         }
 
@@ -196,7 +220,16 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
     const opcoesGrauParentesco = grausParentesco.map((gp) => ({ value: gp.grau, label: gp.grau }));
 
     const camposResponsavel = [
-        { id: "nome", tipo: "texto", coluna: 1, label: "Nome do Responsável", value: nome, onChange: (e) => setNome(e.target.value), placeholder: "Digite o nome" },
+        {
+            id: "nome",
+            tipo: "texto",
+            coluna: 1,
+            label: "Nome do Responsável",
+            value: nome,
+            onChange: (e) => setNome(e.target.value),
+            maxLength: LIMITES.pessoa.nome.max,
+            placeholder: "Digite o nome",
+        },
         {
             id: "rg",
             tipo: "texto",
@@ -227,7 +260,9 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
             label: "Data de Nascimento do Responsável",
             value: dataNascimento,
             onChange: (e) => setDataNascimento(mascaraData(e.target.value)),
+            onBlur: handleBlurDataNascimento,
             placeholder: "__/__/____",
+            erro: erroDataNascimento,
         },
         {
             id: "profissao",
@@ -239,6 +274,7 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
             onChangeSelecionada: (e) => setProfissaoSelecionada(e.target.value),
             nova: profissaoNova,
             onChangeNova: (e) => setProfissaoNova(e.target.value),
+            maxLengthNova: LIMITES.pessoa.profissao.max,
         },
         { id: "sexo", tipo: "radio", coluna: 2, label: "Sexo do Responsável", name: "sexoResponsavel", opcoes: ["Masculino", "Feminino", "Outro"], value: sexo, onChange: setSexo },
         { id: "possuiPne", tipo: "radio", coluna: 2, label: "A Família possui PNE?", name: "possuiPne", opcoes: ["Não", "Sim"], value: possuiPne, onChange: setPossuiPne },
@@ -247,11 +283,56 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
 
     const camposEndereco = [
         { id: "cep", tipo: "texto", coluna: 1, label: "CEP", value: cep, onChange: (e) => setCep(mascaraCep(e.target.value)), onBlur: handleBuscarCep, placeholder: "02141-140" },
-        { id: "rua", tipo: "texto", coluna: 1, label: "Rua", value: rua, onChange: (e) => setRua(e.target.value), placeholder: "Rua Macapá" },
-        { id: "numero", tipo: "texto", coluna: 1, label: "Número", value: numero, onChange: (e) => setNumero(somenteDigitos(e.target.value)), placeholder: "1290" },
-        { id: "complemento", tipo: "texto", coluna: 1, label: "Complemento (Opcional)", value: complemento, onChange: (e) => setComplemento(e.target.value), placeholder: "Apartamento 20" },
-        { id: "bairro", tipo: "texto", coluna: 2, label: "Bairro", value: bairro, onChange: (e) => setBairro(e.target.value), placeholder: "Itaquera" },
-        { id: "cidade", tipo: "texto", coluna: 2, label: "Cidade", value: cidade, onChange: (e) => setCidade(e.target.value), placeholder: "São Paulo" },
+        {
+            id: "rua",
+            tipo: "texto",
+            coluna: 1,
+            label: "Rua",
+            value: rua,
+            onChange: (e) => setRua(e.target.value),
+            maxLength: LIMITES.endereco.logradouro.max,
+            placeholder: "Rua Macapá",
+        },
+        {
+            id: "numero",
+            tipo: "texto",
+            coluna: 1,
+            label: "Número",
+            value: numero,
+            onChange: (e) => setNumero(e.target.value),
+            maxLength: LIMITES.endereco.numero.max,
+            placeholder: "1290",
+        },
+        {
+            id: "complemento",
+            tipo: "texto",
+            coluna: 1,
+            label: "Complemento (Opcional)",
+            value: complemento,
+            onChange: (e) => setComplemento(e.target.value),
+            maxLength: LIMITES.endereco.complemento.max,
+            placeholder: "Apartamento 20",
+        },
+        {
+            id: "bairro",
+            tipo: "texto",
+            coluna: 2,
+            label: "Bairro",
+            value: bairro,
+            onChange: (e) => setBairro(e.target.value),
+            maxLength: LIMITES.endereco.bairro.max,
+            placeholder: "Itaquera",
+        },
+        {
+            id: "cidade",
+            tipo: "texto",
+            coluna: 2,
+            label: "Cidade",
+            value: cidade,
+            onChange: (e) => setCidade(e.target.value),
+            maxLength: LIMITES.endereco.cidade.max,
+            placeholder: "São Paulo",
+        },
         { id: "estado", tipo: "select", coluna: 2, label: "Estado", value: estadoId, onChange: (e) => setEstadoId(e.target.value), opcoes: opcoesEstado },
         {
             id: "buscandoCep",
@@ -262,7 +343,16 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
     ];
 
     const camposDependente = (dep) => [
-        { id: "nome", tipo: "texto", coluna: 1, label: "Nome do Dependente", value: dep.nome, onChange: (e) => atualizarDependente(dep.id, "nome", e.target.value), placeholder: "Maria Ferreira" },
+        {
+            id: "nome",
+            tipo: "texto",
+            coluna: 1,
+            label: "Nome do Dependente",
+            value: dep.nome,
+            onChange: (e) => atualizarDependente(dep.id, "nome", e.target.value),
+            maxLength: LIMITES.pessoa.nome.max,
+            placeholder: "Maria Ferreira",
+        },
         {
             id: "parentesco",
             tipo: "select",
@@ -302,7 +392,9 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
             label: "Data de Nascimento do Dependente",
             value: dep.dataNascimento,
             onChange: (e) => atualizarDependente(dep.id, "dataNascimento", mascaraData(e.target.value)),
+            onBlur: () => validarDependenteCampo(dep.id, "dataNascimento"),
             placeholder: "__/__/____",
+            erro: dep.erroDataNascimento,
         },
         {
             id: "sexo",
@@ -333,6 +425,7 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
             onChangeSelecionada: (e) => atualizarDependente(dep.id, "profissaoSelecionada", e.target.value),
             nova: dep.profissaoNova,
             onChangeNova: (e) => atualizarDependente(dep.id, "profissaoNova", e.target.value),
+            maxLengthNova: LIMITES.pessoa.profissao.max,
         },
     ];
 

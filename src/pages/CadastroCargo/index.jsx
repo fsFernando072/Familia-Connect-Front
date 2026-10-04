@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import { useFeedback } from "../../hooks/useFeedback";
+import { LIMITES } from "../../services/limitesCampos";
 import { cadastrarCargo, PAGINAS, NIVEIS_ACESSO, NIVEL_PADRAO } from "../../services/cargoService";
 import { COR_MENTA } from "../../utils/cores";
 
@@ -26,6 +27,7 @@ function CadastroCargo() {
             label: "Nome do Cargo",
             value: nome,
             onChange: (e) => setNome(e.target.value),
+            maxLength: LIMITES.cargo.nome.max,
             placeholder: "Recepcionista",
         },
         {
@@ -46,6 +48,7 @@ function CadastroCargo() {
             label: "Descrição do Cargo",
             value: descricao,
             onChange: (e) => setDescricao(e.target.value),
+            maxLength: LIMITES.cargo.descricao.max,
             placeholder: "Descreva as responsabilidades do cargo",
         },
     ];

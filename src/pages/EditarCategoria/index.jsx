@@ -4,6 +4,7 @@ import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario
 import Formulario from "../../components/Formulario/Formulario";
 import { useFeedback } from "../../hooks/useFeedback";
 import { buscarCategoriaPorId, atualizarCategoria } from "../../services/categoriaService";
+import { LIMITES } from "../../services/limitesCampos";
 import { COR_MENTA } from "../../utils/cores";
 
 function EditarCategoria() {
@@ -34,7 +35,7 @@ function EditarCategoria() {
     }, [id]);
 
     const handleAtualizar = () => {
-        atualizarCategoria(id, nome, navigate, setFeedback);
+        atualizarCategoria(id, { nome }, navigate, setFeedback);
     };
 
     const campos = [
@@ -45,6 +46,7 @@ function EditarCategoria() {
             label: "Nome da Categoria",
             value: nome,
             onChange: (e) => setNome(e.target.value),
+            maxLength: LIMITES.categoria.nome.max,
             placeholder: "Vestimenta",
         },
     ];

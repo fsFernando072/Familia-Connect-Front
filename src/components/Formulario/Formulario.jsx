@@ -27,6 +27,7 @@ function renderCampo(campo) {
                     onChangeSelecionada={campo.onChangeSelecionada}
                     nova={campo.nova}
                     onChangeNova={campo.onChangeNova}
+                    maxLengthNova={campo.maxLengthNova}
                 />
             );
         case "imagem":
@@ -35,7 +36,7 @@ function renderCampo(campo) {
             return (
                 <div>
                     <label className={CLASSE_LABEL}>{campo.label}</label>
-                    <textarea value={campo.value} onChange={campo.onChange} rows={campo.rows || 9} placeholder={campo.placeholder} className={`${CLASSE_INPUT} resize-none`} />
+                    <textarea value={campo.value} onChange={campo.onChange} rows={campo.rows || 9} placeholder={campo.placeholder} maxLength={campo.maxLength} className={`${CLASSE_INPUT} resize-none`} />
                     {campo.ajuda && <span className="text-xs text-cifa-apagado mt-1 block">{campo.ajuda}</span>}
                 </div>
             );
@@ -71,6 +72,7 @@ function renderCampo(campo) {
                     toggle={campo.toggle}
                     mostrar={campo.mostrar}
                     erro={campo.erro}
+                    maxLength={campo.maxLength}
                 />
             );
     }

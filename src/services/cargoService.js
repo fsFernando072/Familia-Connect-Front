@@ -1,7 +1,9 @@
 import api from "./apiClient";
-import { criarServicoBase, enviarComFeedback } from "./servicoBase";
+import { LIMITES } from "./limitesCampos";
+import { algumaRequisicaoFalhou, buscarLista, criarServicoBase, enviarComFeedback, mensagensCrud, validarObrigatorios, validarTamanhos } from "./servicoBase";
 
 const base = criarServicoBase("/cargos", { singular: "cargo", plural: "cargos" });
+const textos = mensagensCrud("cargo", "m");
 
 export const listarCargos = base.listar;
 export const buscarCargoPorId = base.buscarPorId;
@@ -34,8 +36,14 @@ export function estadoParaPermissoes(estado = {}) {
     return Object.entries(estado).map(([pagina, nivel]) => ({ pagina, nivel }));
 }
 
-function validarDadosCargo(nome) {
-    return nome?.trim() ? null : "O nome do cargo é obrigatório.";
+function validarDadosCargo({ nome, descricao }) {
+    return (
+        validarObrigatorios({ nome: nome?.trim(), descricao: descricao?.trim() }) ||
+        validarTamanhos([
+            { rotulo: "nome do cargo", valor: nome?.trim(), ...LIMITES.cargo.nome },
+            { rotulo: "descrição do cargo", valor: descricao?.trim(), ...LIMITES.cargo.descricao },
+        ])
+    );
 }
 
 function montarPayloadCargo(nome, descricao, permissoes) {
@@ -58,6 +66,18 @@ export function cadastrarCargo(nome, descricao, permissoes, navigate, setFeedbac
     });
 }
 
+// Compara os acessos marcados com os que o cargo já tinha e só inclui/remove a diferença.
+function sincronizarAcessosDoCargo(cargoId, idsSelecionados, associacoesAtuais) {
+    const selecionados = idsSelecionados.map(Number);
+    const idsAtuais = associacoesAtuais.map((associacao) => Number(associacao.acesso?.id));
+
+    const inclusoes = selecionados.filter((acessoId) => !idsAtuais.includes(acessoId)).map((acessoId) => api.post("/cargos-acessos", { cargoId: Number(cargoId), acessoId }));
+
+    const exclusoes = associacoesAtuais.filter((associacao) => !selecionados.includes(Number(associacao.acesso?.id))).map((associacao) => api.delete(`/cargos-acessos/${associacao.id}`));
+
+    return Promise.allSettled([...inclusoes, ...exclusoes]);
+}
+
 export function atualizarCargo(id, nome, descricao, permissoes, navigate, setFeedback) {
     return enviarComFeedback({
         erroValidacao: validarDadosCargo(nome),
@@ -65,7 +85,6 @@ export function atualizarCargo(id, nome, descricao, permissoes, navigate, setFee
         msgCarregando: "Atualizando cargo...",
         sucesso: { status: 200, msg: "Cargo atualizado com sucesso!", rota: "/cargos" },
         erros: { 404: "Cargo não encontrado." },
-        msgErro: "Não foi possível atualizar o cargo.",
         navigate,
         setFeedback,
     });

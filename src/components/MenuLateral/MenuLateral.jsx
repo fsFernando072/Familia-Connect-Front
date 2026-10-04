@@ -12,7 +12,7 @@ function MenuLateral({ aberto, onFechar, permissoes }) {
     const handleSair = async () => {
         onFechar();
         await sair();
-        navigate("/");
+        navigate("/", { replace: true });
     };
 
     return (
