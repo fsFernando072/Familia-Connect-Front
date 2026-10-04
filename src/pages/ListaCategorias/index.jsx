@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
 import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
 import ListaStatus from "../../components/ListaStatus/ListaStatus";
@@ -11,9 +11,14 @@ import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao
 import { useListaPaginada } from "../../hooks/useListaPaginada";
 import { listarCategorias, deletarCategoria } from "../../services/categoriaService";
 import { COR_PERIGO, COR_TURQUESA } from "../../utils/cores";
+import { pode } from "../../services/permissoes";
 
 function ListaCategorias() {
     const navigate = useNavigate();
+    const { permissoes } = useOutletContext();
+    const podeCadastrar = pode(permissoes, "CATEGORIAS", "cadastrar");
+    const podeEditar = pode(permissoes, "CATEGORIAS", "editar");
+    const podeExcluir = pode(permissoes, "CATEGORIAS", "excluir");
 
     const {
         itens,
@@ -48,7 +53,7 @@ function ListaCategorias() {
                 onBuscaChange={(e) => setBusca(e.target.value)}
                 placeholderBusca="Buscar Categoria"
                 onOrdenar={alternarOrdem}
-                onCadastrar={() => navigate("/categorias/cadastro-categoria")}
+                onCadastrar={podeCadastrar ? () => navigate("/categorias/cadastro-categoria") : undefined}
             />
 
             <ListaStatus carregando={carregando} vazio={itens.length === 0} mensagemCarregando="Carregando categorias..." mensagemVazia="Nenhuma categoria encontrada." />
@@ -59,8 +64,8 @@ function ListaCategorias() {
                         key={categoria.id}
                         acoes={
                             <>
-                                <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/categorias/${categoria.id}/editar-categoria`)} />
-                                <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(categoria)} />
+                                {podeEditar && <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/categorias/${categoria.id}/editar-categoria`)} />}
+                                {podeExcluir && <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(categoria)} />}
                             </>
                         }
                     >

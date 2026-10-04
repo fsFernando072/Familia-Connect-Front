@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
 import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
 import ListaStatus from "../../components/ListaStatus/ListaStatus";
@@ -12,9 +12,14 @@ import { useListaPaginada } from "../../hooks/useListaPaginada";
 import { listarHistoricoEstoque, deletarHistoricoEstoque } from "../../services/historicoEstoqueService";
 import { converterDataParaBr } from "../../utils/formatadores";
 import { COR_PERIGO, COR_TURQUESA } from "../../utils/cores";
+import { pode } from "../../services/permissoes";
 
 function ListaHistoricoEstoque() {
     const navigate = useNavigate();
+    const { permissoes } = useOutletContext();
+    const podeCadastrar = pode(permissoes, "HISTORICO_ESTOQUE", "cadastrar");
+    const podeEditar = pode(permissoes, "HISTORICO_ESTOQUE", "editar");
+    const podeExcluir = pode(permissoes, "HISTORICO_ESTOQUE", "excluir");
 
     const {
         itens,
@@ -49,7 +54,7 @@ function ListaHistoricoEstoque() {
                 onBuscaChange={(e) => setBusca(e.target.value)}
                 placeholderBusca="Buscar por Produto"
                 onOrdenar={alternarOrdem}
-                onCadastrar={() => navigate("/historico-estoque/cadastro-estoque")}
+                onCadastrar={podeCadastrar ? () => navigate("/historico-estoque/cadastro-estoque") : undefined}
             />
 
             <ListaStatus carregando={carregando} vazio={itens.length === 0} mensagemCarregando="Carregando histórico de estoque..." mensagemVazia="Nenhum registro de estoque encontrado." />
@@ -60,8 +65,8 @@ function ListaHistoricoEstoque() {
                         key={historico.id}
                         acoes={
                             <>
-                                <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/historico-estoque/${historico.id}/editar-estoque`)} />
-                                <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(historico)} />
+                                {podeEditar && <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/historico-estoque/${historico.id}/editar-estoque`)} />}
+                                {podeExcluir && <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(historico)} />}
                             </>
                         }
                     >

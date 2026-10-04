@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useOutletContext } from "react-router-dom";
 import { User, MapPin, Users, Pencil } from "lucide-react";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Botao from "../../components/Botao/Botao";
@@ -15,10 +15,12 @@ import { buscarFamiliaPorId } from "../../services/familiaService";
 import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep } from "../../utils/mascaras";
 import { converterDataParaBr } from "../../utils/formatadores";
 import { COR_TURQUESA } from "../../utils/cores";
+import { pode } from "../../services/permissoes";
 
 function DetalhesFamilia() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { permissoes } = useOutletContext();
     const { feedback, fecharFeedback } = useFeedback();
 
     const [familia, setFamilia] = useState(null);
@@ -43,7 +45,7 @@ function DetalhesFamilia() {
     return (
         <PaginaFormulario
             nomeTela="Detalhes da Família"
-            acao={<Botao nome="Editar Cadastro" icone={Pencil} cor={COR_TURQUESA} acao={() => navigate(`/familias/${id}/editar-familia`)} />}
+            acao={pode(permissoes, "FAMILIAS", "editar") ? <Botao nome="Editar Cadastro" icone={Pencil} cor={COR_TURQUESA} acao={() => navigate(`/familias/${id}/editar-familia`)} /> : undefined}
             comCartao={false}
             carregando={carregando}
             carregandoTexto="Carregando família..."

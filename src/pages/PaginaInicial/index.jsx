@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { ChevronRight, FolderHeart, ClipboardClock, Boxes } from "lucide-react";
 import { atalhosPaginaInicial } from "../../routes/navegacaoPrincipal";
+import { itemVisivel } from "../../routes/permissoesRotas";
 
 // Cartões de resumo (linha logo abaixo do destaque).
 const resumos = [
@@ -21,6 +22,10 @@ const FUNDO_DESTAQUE = {
 };
 
 function PaginaInicial() {
+    const { permissoes } = useOutletContext();
+    const atalhos = atalhosPaginaInicial.filter(({ rota }) => itemVisivel(permissoes, rota));
+    const cartoesResumo = resumos.filter(({ rota }) => itemVisivel(permissoes, rota));
+
     return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-10 flex flex-col gap-8 sm:gap-10">
             {/* Destaque de boas-vindas */}
@@ -33,20 +38,24 @@ function PaginaInicial() {
                     <p className="mt-4 max-w-xl text-lg text-[#92b3c0]">Acesse cadastros, entregas e estoque em um só lugar.</p>
 
                     <div className="mt-8 flex flex-wrap gap-3">
+                        {itemVisivel(permissoes, "/familias") && (
                         <Link to="/familias" className="flex items-center gap-2 rounded-xl bg-cifa-menta px-5 py-3 font-bold text-cifa-navy transition hover:brightness-110 active:scale-[0.98]">
                             Ver famílias
                             <ChevronRight size={18} />
                         </Link>
+                        )}
+                        {itemVisivel(permissoes, "/historico-entrega") && (
                         <Link to="/historico-entrega" className="rounded-xl border border-[#2f455c] bg-[#223a52] px-5 py-3 font-bold text-white transition hover:bg-[#2a4560] active:scale-[0.98]">
                             Histórico de Entregas
                         </Link>
+                        )}
                     </div>
                 </div>
             </section>
 
             {/* Resumo */}
             <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
-                {resumos.map(({ rotulo, descricao, rota, Icone }) => (
+                {cartoesResumo.map(({ rotulo, descricao, rota, Icone }) => (
                     <Link key={rota} to={rota} className="group rounded-2xl border border-cifa-linha bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-cifa-menta hover:shadow-md">
                         <div className="flex items-center justify-between gap-3">
                             <p className="text-sm font-medium uppercase tracking-wide text-cifa-apagado">{rotulo}</p>
@@ -66,7 +75,7 @@ function PaginaInicial() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {atalhosPaginaInicial.map(({ titulo, descricao, rota, Icone, destaque }) => (
+                    {atalhos.map(({ titulo, descricao, rota, Icone, destaque }) => (
                         <Link
                             key={rota}
                             to={rota}

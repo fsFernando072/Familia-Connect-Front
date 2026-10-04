@@ -15,10 +15,11 @@ export async function entrar({ cpf, senha }, navigate, setFeedback) {
     });
 }
 
+// Apaga o cookie de sessão no back-end. Se falhar, o usuário sai da tela mesmo assim.
 export async function sair() {
     try {
-        await api.post("/funcionarios/logout"); // o back apaga o cookie do token
-    } catch {
-        // sem rede: segue para o login mesmo assim
+        await api.post("/funcionarios/logout");
+    } catch (error) {
+        console.error("Erro ao sair:", error);
     }
 }

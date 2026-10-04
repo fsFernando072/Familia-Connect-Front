@@ -1,11 +1,12 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { itensMenu } from "../../routes/navegacaoPrincipal";
+import { itemVisivel } from "../../routes/permissoesRotas";
 import { sair } from "../../services/authService";
 
 const CLASSE_ITEM = "flex items-center gap-3 w-full h-12 [@media(max-height:700px)]:h-10 px-4 rounded-xl text-[15px] font-medium transition-colors duration-200";
 
-function MenuLateral({ aberto, onFechar }) {
+function MenuLateral({ aberto, onFechar, permissoes }) {
     const navigate = useNavigate();
 
     const handleSair = async () => {
@@ -35,7 +36,7 @@ function MenuLateral({ aberto, onFechar }) {
 
                 <nav className="flex-1 overflow-y-auto px-3 pb-4 [scrollbar-thin] [scrollbar-color:rgba(255,255,255,0.18)_transparent]">
                     <ul className="flex flex-col gap-1">
-                        {itensMenu.map(({ titulo, rota, Icone }) => (
+                        {itensMenu.filter(({ rota }) => itemVisivel(permissoes, rota)).map(({ titulo, rota, Icone }) => (
                             <li key={rota}>
                                 <NavLink
                                     to={rota}
