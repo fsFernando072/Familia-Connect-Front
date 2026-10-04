@@ -1,4 +1,4 @@
-import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, somenteDigitos } from "../../utils/mascaras";
+import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep } from "../../utils/mascaras";
 import { converterDataParaBr, converterSexoParaLabel } from "../../utils/formatadores";
 
 // Formato dos dados iniciais que o FormularioFamilia espera:

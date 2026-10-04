@@ -140,8 +140,8 @@ function FormularioFamilia({ dadosIniciais, opcoes, labelImagem = "Imagem da Fam
                 return;
             }
             if (obterErroDataNascimento(dataNascimento)) {
-                setErroDataNascimento(erroData);
-                setFeedback(feedbackErro(`${erroData} (responsável).`));
+                setErroDataNascimento(erroDataNascimento);
+                setFeedback(feedbackErro(`${erroDataNascimento} (responsável).`));
                 return;
             }
             if (!validarRg(rg)) {
