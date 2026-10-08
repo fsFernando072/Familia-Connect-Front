@@ -290,12 +290,12 @@ export function mensagemDeErro(response, erros = {}, msgErro) {
  */
 export function criarServicoBase(endpoint, { singular, plural, argBusca = "nome", paramBusca = argBusca }) {
     async function listar(opcoes = {}) {
-        const { page = 0, size = 10, direcao = "asc" } = opcoes;
+        const { page = 0, size = 10, direcao = "asc", filtros = {} } = opcoes;
         const busca = opcoes[argBusca];
 
         try {
             const response = await api.get(endpoint, {
-                params: { [paramBusca]: busca?.trim() || undefined, page, size, direcao },
+                params: { [paramBusca]: busca?.trim() || undefined, ...filtros, page, size, direcao },
             });
 
             if (response.status === 200) return response.data;

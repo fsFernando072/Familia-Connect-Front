@@ -13,7 +13,7 @@ import { useFeedback } from "./useFeedback";
  * - obterId:    como pegar o id do item (padrão item.id)
  * - mensagens:  { apagando, sucesso, erro } exibidas no feedback ao apagar
  */
-export function useListaPaginada({ listar, apagar, chaveBusca = "nome", obterId = (item) => item.id, mensagens }) {
+export function useListaPaginada({ listar, apagar, chaveBusca = "nome", filtros = {}, obterId = (item) => item.id, mensagens }) {
     const { feedback, setFeedback, fecharFeedback } = useFeedback();
 
     const [itens, setItens] = useState([]);
@@ -24,6 +24,8 @@ export function useListaPaginada({ listar, apagar, chaveBusca = "nome", obterId 
     const [totalPaginas, setTotalPaginas] = useState(0);
     const [itemParaApagar, setItemParaApagar] = useState(null);
     const [apagando, setApagando] = useState(false);
+
+    const filtrosChave = JSON.stringify(filtros);
 
     const buscaComAtraso = useDebounce(busca);
 
@@ -37,6 +39,7 @@ export function useListaPaginada({ listar, apagar, chaveBusca = "nome", obterId 
 
         const dados = await listar({
             [chaveBusca]: buscaComAtraso,
+            filtros,
             page: pagina,
             direcao: ordemCrescente ? "asc" : "desc",
         });
@@ -49,11 +52,13 @@ export function useListaPaginada({ listar, apagar, chaveBusca = "nome", obterId 
     }
 
     // Ao mudar a busca ou a ordem, volta para a primeira página.
+    const [filtrosAnterior, setFiltrosAnterior] = useState(filtrosChave);
     const [buscaAnterior, setBuscaAnterior] = useState(buscaComAtraso);
     const [ordemAnterior, setOrdemAnterior] = useState(ordemCrescente);
-    if (buscaComAtraso !== buscaAnterior || ordemCrescente !== ordemAnterior) {
+    if (buscaComAtraso !== buscaAnterior || ordemCrescente !== ordemAnterior || filtrosChave !== filtrosAnterior) {
         setBuscaAnterior(buscaComAtraso);
         setOrdemAnterior(ordemCrescente);
+        setFiltrosAnterior(filtrosChave);
         if (paginaAtual !== 0) {
             setPaginaAtual(0);
         }
@@ -63,7 +68,7 @@ export function useListaPaginada({ listar, apagar, chaveBusca = "nome", obterId 
         // eslint-disable-next-line react-hooks/set-state-in-effect
         carregar(paginaAtual);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [buscaComAtraso, ordemCrescente, paginaAtual]);
+    }, [buscaComAtraso, ordemCrescente, paginaAtual, filtrosChave]);
 
     // Ao trocar de página, volta o scroll para o topo (senão a lista nova
     // troca com a tela ainda rolada no meio da lista anterior).

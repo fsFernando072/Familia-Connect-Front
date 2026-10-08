@@ -12,6 +12,16 @@ import { useListaPaginada } from "../../hooks/useListaPaginada";
 import { listarHistoricoEstoque, deletarHistoricoEstoque } from "../../services/historicoEstoqueService";
 import { converterDataParaBr } from "../../utils/formatadores";
 import { COR_PERIGO, COR_TURQUESA } from "../../utils/cores";
+import { useState } from "react";
+
+const MESES = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+];
+const CLASSE_SELECT_MES =
+    "px-5 py-2.5 rounded-xl border border-cifa-linha font-bold text-base text-cifa-navy bg-white " +
+    "hover:bg-cifa-suave/60 cursor-pointer transition duration-300 " +
+    "focus:outline-none focus:border-cifa-menta focus:ring-4 focus:ring-cifa-menta/20";
 import { pode } from "../../services/permissoes";
 
 function ListaHistoricoEstoque() {
@@ -20,6 +30,11 @@ function ListaHistoricoEstoque() {
     const podeCadastrar = pode(permissoes, "HISTORICO_ESTOQUE", "cadastrar");
     const podeEditar = pode(permissoes, "HISTORICO_ESTOQUE", "editar");
     const podeExcluir = pode(permissoes, "HISTORICO_ESTOQUE", "excluir");
+
+    const [mesSelecionado, setMesSelecionado] = useState("");
+
+    
+    const mes = mesSelecionado ? `${new Date().getFullYear()}-${mesSelecionado}` : undefined;
 
     const {
         itens,
@@ -40,6 +55,7 @@ function ListaHistoricoEstoque() {
     } = useListaPaginada({
         listar: listarHistoricoEstoque,
         apagar: deletarHistoricoEstoque,
+        filtros: { mes },
         mensagens: {
             apagando: "Apagando registro de estoque...",
             sucesso: "Registro de estoque apagado com sucesso!",
@@ -54,8 +70,22 @@ function ListaHistoricoEstoque() {
                 onBuscaChange={(e) => setBusca(e.target.value)}
                 placeholderBusca="Buscar por Produto"
                 onOrdenar={alternarOrdem}
-                onCadastrar={podeCadastrar ? () => navigate("/historico-estoque/cadastro-estoque") : undefined}
-            />
+                onCadastrar={() => navigate("/historico-estoque/cadastro-estoque")}
+            >
+                <select
+                    value={mesSelecionado}
+                    onChange={(e) => setMesSelecionado(e.target.value)}
+                    aria-label="Filtrar por mês"
+                    className={CLASSE_SELECT_MES}
+                    >
+                    <option value="">Mês</option>
+                    {MESES.map((nome, i) => (
+                        <option key={nome} value={String(i + 1).padStart(2, "0")}>
+                            {nome}
+                        </option>
+                    ))}
+                </select>
+            </ListaAcoes>
 
             <ListaStatus carregando={carregando} vazio={itens.length === 0} mensagemCarregando="Carregando histórico de estoque..." mensagemVazia="Nenhum registro de estoque encontrado." />
 
@@ -96,3 +126,4 @@ function ListaHistoricoEstoque() {
 }
 
 export default ListaHistoricoEstoque;
+
