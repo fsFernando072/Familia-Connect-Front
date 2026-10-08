@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { UserRound } from "lucide-react";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
 import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
@@ -15,9 +15,14 @@ import { useListaPaginada } from "../../hooks/useListaPaginada";
 import { listarFuncionarios, deletarFuncionario } from "../../services/funcionarioService";
 import { mascaraCpf } from "../../utils/mascaras";
 import { COR_PERIGO, COR_TURQUESA } from "../../utils/cores";
+import { pode } from "../../services/permissoes";
 
 function ListaFuncionarios() {
     const navigate = useNavigate();
+    const { permissoes } = useOutletContext();
+    const podeCadastrar = pode(permissoes, "FUNCIONARIOS", "cadastrar");
+    const podeEditar = pode(permissoes, "FUNCIONARIOS", "editar");
+    const podeExcluir = pode(permissoes, "FUNCIONARIOS", "excluir");
 
     const {
         itens,
@@ -52,7 +57,7 @@ function ListaFuncionarios() {
                 onBuscaChange={(e) => setBusca(e.target.value)}
                 placeholderBusca="Buscar Funcionário"
                 onOrdenar={alternarOrdem}
-                onCadastrar={() => navigate("/funcionarios/cadastro-funcionario")}
+                onCadastrar={podeCadastrar ? () => navigate("/funcionarios/cadastro-funcionario") : undefined}
             />
 
             <ListaStatus carregando={carregando} vazio={itens.length === 0} mensagemCarregando="Carregando funcionários..." mensagemVazia="Nenhum funcionário encontrado." />
@@ -68,8 +73,8 @@ function ListaFuncionarios() {
                         }
                         acoes={
                             <>
-                                <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/funcionarios/${funcionario.id}/editar-funcionario`)} />
-                                <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(funcionario)} />
+                                {podeEditar && <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/funcionarios/${funcionario.id}/editar-funcionario`)} />}
+                                {podeExcluir && <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(funcionario)} />}
                             </>
                         }
                     >

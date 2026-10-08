@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { Users, Upload } from "lucide-react";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
 import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
@@ -18,9 +18,14 @@ import { useListaPaginada } from "../../hooks/useListaPaginada";
 import { listarFamilias, deletarFamilia } from "../../services/familiaService";
 import { extrairDadosFamiliaPorFoto } from "../../services/ocrService";
 import { COR_PERIGO, COR_PETROLEO, COR_TURQUESA } from "../../utils/cores";
+import { pode } from "../../services/permissoes";
 
 function ListaFamilias() {
     const navigate = useNavigate();
+    const { permissoes } = useOutletContext();
+    const podeCadastrar = pode(permissoes, "FAMILIAS", "cadastrar");
+    const podeEditar = pode(permissoes, "FAMILIAS", "editar");
+    const podeExcluir = pode(permissoes, "FAMILIAS", "excluir");
 
     const [modalImportarAberto, setModalImportarAberto] = useState(false);
     const [importando, setImportando] = useState(false);
@@ -88,9 +93,9 @@ function ListaFamilias() {
                 onBuscaChange={(e) => setBusca(e.target.value)}
                 placeholderBusca="Buscar Família"
                 onOrdenar={alternarOrdem}
-                onCadastrar={() => navigate("/familias/cadastro-familia")}
+                onCadastrar={podeCadastrar ? () => navigate("/familias/cadastro-familia") : undefined}
             >
-                <BotaoSecundario nome="Importar Arquivo" icone={Upload} acao={handleAbrirImportar} />
+                {podeCadastrar && <BotaoSecundario nome="Importar Arquivo" icone={Upload} acao={handleAbrirImportar} />}
             </ListaAcoes>
 
             <ListaStatus carregando={carregando} vazio={itens.length === 0} mensagemCarregando="Carregando famílias..." mensagemVazia="Nenhuma família encontrada." />
@@ -107,8 +112,8 @@ function ListaFamilias() {
                         acoes={
                             <>
                                 <Botao nome="Ver Detalhes" cor={COR_PETROLEO} acao={() => navigate(`/familias/${familia.idFamilia}`)} />
-                                <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/familias/${familia.idFamilia}/editar-familia`)} />
-                                <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(familia)} />
+                                {podeEditar && <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/familias/${familia.idFamilia}/editar-familia`)} />}
+                                {podeExcluir && <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(familia)} />}
                             </>
                         }
                     >

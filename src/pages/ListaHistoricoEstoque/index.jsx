@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
 import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
 import ListaStatus from "../../components/ListaStatus/ListaStatus";
@@ -22,9 +22,14 @@ const CLASSE_SELECT_MES =
     "px-5 py-2.5 rounded-xl border border-cifa-linha font-bold text-base text-cifa-navy bg-white " +
     "hover:bg-cifa-suave/60 cursor-pointer transition duration-300 " +
     "focus:outline-none focus:border-cifa-menta focus:ring-4 focus:ring-cifa-menta/20";
+import { pode } from "../../services/permissoes";
 
 function ListaHistoricoEstoque() {
     const navigate = useNavigate();
+    const { permissoes } = useOutletContext();
+    const podeCadastrar = pode(permissoes, "HISTORICO_ESTOQUE", "cadastrar");
+    const podeEditar = pode(permissoes, "HISTORICO_ESTOQUE", "editar");
+    const podeExcluir = pode(permissoes, "HISTORICO_ESTOQUE", "excluir");
 
     const [mesSelecionado, setMesSelecionado] = useState("");
 
@@ -90,8 +95,8 @@ function ListaHistoricoEstoque() {
                         key={historico.id}
                         acoes={
                             <>
-                                <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/historico-estoque/${historico.id}/editar-estoque`)} />
-                                <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(historico)} />
+                                {podeEditar && <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/historico-estoque/${historico.id}/editar-estoque`)} />}
+                                {podeExcluir && <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(historico)} />}
                             </>
                         }
                     >

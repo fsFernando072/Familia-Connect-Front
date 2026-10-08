@@ -6,8 +6,280 @@ export const ATRASO_REDIRECIONAMENTO_MS = 2000;
 // Formato de página vazia, usado quando não há resultados ou a requisição falha.
 export const PAGINA_VAZIA = { content: [], totalPages: 0, totalElements: 0, number: 0 };
 
-const MENSAGENS_STATUS_PADRAO = { 401: "Ação não autorizada." };
-const MSG_CONEXAO_PADRAO = "Erro de conexão. Nenhum dado foi salvo.";
+const SUFIXO_CADASTRO = "Nenhum dado foi salvo.";
+const SUFIXO_ATUALIZACAO = "Nenhuma alteração foi salva.";
+const MSG_CONEXAO_PADRAO = "Erro de conexão.";
+
+const MSG_DADOS_INVALIDOS = "Dados inválidos. Verifique os campos e tente novamente.";
+let emEnvio = false;
+
+// Mensagens usadas quando o service não define uma específica para o status.
+const MENSAGENS_STATUS_PADRAO = {
+    400: MSG_DADOS_INVALIDOS,
+    401: "Ação não autorizada.",
+    403: "Você não tem permissão para realizar esta ação.",
+    422: MSG_DADOS_INVALIDOS,
+    500: "Erro no servidor. Tente novamente mais tarde.",
+};
+
+// Nestes status a mensagem que vem do back-end ("CPF inválido", "campo X é obrigatório"...)
+// é mais útil que qualquer texto genérico do front, então ela tem prioridade.
+const STATUS_COM_PRIORIDADE_DO_BACK = [400, 422];
+
+// Nome do campo no back-end -> como aparece para o usuário.
+const ROTULOS_CAMPOS = {
+    nome: "Nome",
+    cpf: "CPF",
+    rg: "RG",
+    senha: "Senha",
+    telefone: "Telefone",
+    dataNascimento: "Data de nascimento",
+    sexo: "Sexo",
+    profissao: "Profissão",
+    grauParentesco: "Grau de parentesco",
+    cep: "CEP",
+    logradouro: "Rua",
+    numero: "Número",
+    bairro: "Bairro",
+    complemento: "Complemento",
+    cidade: "Cidade",
+    estadoId: "Estado",
+    cargoId: "Cargo",
+    descricao: "Descrição",
+    idCategoria: "Categoria",
+    idProduto: "Produto",
+    quantidade: "Quantidade",
+};
+
+/* ------------------------------------------------------------------ */
+/* Textos                                                              */
+/* ------------------------------------------------------------------ */
+
+function finalizarFrase(texto) {
+    const limpo = String(texto).trim();
+    return /[.!?]$/.test(limpo) ? limpo : `${limpo}.`;
+}
+
+function listaComE(itens) {
+    if (itens.length <= 1) return itens.join("");
+    return `${itens.slice(0, -1).join(", ")} e ${itens[itens.length - 1]}`;
+}
+
+/**
+ * Textos padrão de cadastrar/atualizar de uma entidade, para todos os services falarem igual.
+ *
+ *   mensagensCrud("produto", "m").cadastro("/produtos")  -> { msgCarregando, sucesso, msgErro, sufixoErro }
+ *   mensagensCrud("família", "f").atualizacao("/familias") -> idem
+ *
+ * O resultado é feito para ser espalhado dentro do enviarComFeedback ({ ...textos }).
+ */
+export function mensagensCrud(entidade, genero = "m") {
+    const feminino = genero === "f";
+    const artigo = feminino ? "a" : "o";
+    const Entidade = entidade.charAt(0).toUpperCase() + entidade.slice(1);
+
+    return {
+        cadastro: (rota) => ({
+            msgCarregando: `Cadastrando ${entidade}...`,
+            sucesso: { status: 201, msg: `${Entidade} ${feminino ? "cadastrada" : "cadastrado"} com sucesso!`, rota },
+            msgErro: `Não foi possível cadastrar ${artigo} ${entidade}.`,
+            sufixoErro: SUFIXO_CADASTRO,
+        }),
+        atualizacao: (rota) => ({
+            msgCarregando: `Atualizando ${entidade}...`,
+            sucesso: { status: 200, msg: `${Entidade} ${feminino ? "atualizada" : "atualizado"} com sucesso!`, rota },
+            msgErro: `Não foi possível atualizar ${artigo} ${entidade}.`,
+            sufixoErro: SUFIXO_ATUALIZACAO,
+        }),
+    };
+}
+
+/* ------------------------------------------------------------------ */
+/* Validação no front                                                  */
+/* ------------------------------------------------------------------ */
+
+function estaVazio(valor) {
+    return valor === null || valor === undefined || (typeof valor === "string" && !valor.trim());
+}
+
+/**
+ * Valida campos obrigatórios e cita TODOS os que faltam, na mesma frase.
+ *
+ *   validarObrigatorios({ nome, "data de nascimento": dataNascimento })
+ *   -> "Preencha os campos obrigatórios: nome e data de nascimento."
+ *   validarObrigatorios({ RG: rg }, "Responsável")
+ *   -> "Responsável: preencha o campo obrigatório: RG."
+ *
+ * A chave é o nome que o usuário vê. O número 0 conta como preenchido.
+ * Devolve null se está tudo certo.
+ */
+export function validarObrigatorios(campos, contexto = "") {
+    const faltando = Object.entries(campos)
+        .filter(([, valor]) => estaVazio(valor))
+        .map(([rotulo]) => rotulo);
+
+    if (!faltando.length) return null;
+
+    const frase = `preencha ${faltando.length === 1 ? "o campo obrigatório" : "os campos obrigatórios"}: ${listaComE(faltando)}.`;
+
+    return contexto ? `${contexto}: ${frase}` : frase.charAt(0).toUpperCase() + frase.slice(1);
+}
+
+/**
+ * Valida o tamanho dos campos, igual aos @Size do back-end (ver limitesCampos.js).
+ * Campo vazio é ignorado aqui: se for obrigatório, quem avisa é o validarObrigatorios.
+ * Cita TODOS os campos fora do tamanho, na mesma frase.
+ *
+ *   validarTamanhos([{ rotulo: "nome do produto", valor: nome, ...LIMITES.produto.nome }])
+ *   -> "Nome do produto deve ter entre 3 e 45 caracteres."
+ *   validarTamanhos([{ rotulo: "CEP", valor: somenteDigitos(cep), ...LIMITES.endereco.cep, unidade: "dígitos" }], "Endereço")
+ *   -> "Endereço: CEP deve ter exatamente 8 dígitos."
+ */
+export function validarTamanhos(regras, contexto = "") {
+    const erros = regras
+        .filter(({ valor }) => !estaVazio(valor))
+        .map(({ rotulo, valor, min = 0, max = Infinity, unidade = "caracteres" }) => {
+            const tamanho = String(valor).length; // cru, como o @Size do back (o que o service envia é o que conta)
+
+            if (tamanho >= min && tamanho <= max) return null;
+            if (min === max) return `${rotulo} deve ter exatamente ${min} ${unidade}`;
+            if (min > 0 && max !== Infinity) return `${rotulo} deve ter entre ${min} e ${max} ${unidade}`;
+            if (max !== Infinity) return `${rotulo} deve ter no máximo ${max} ${unidade}`;
+
+            return `${rotulo} deve ter no mínimo ${min} ${unidade}`;
+        })
+        .filter(Boolean);
+
+    if (!erros.length) return null;
+
+    const texto = erros.join("; ");
+
+    return contexto ? `${contexto}: ${texto}.` : `${texto.charAt(0).toUpperCase()}${texto.slice(1)}.`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Mensagem de erro que vem do back-end                                */
+/* ------------------------------------------------------------------ */
+
+function rotuloDoCampo(campo) {
+    // "dependentes[0].cpf" -> "cpf"
+    const ultimo = String(campo).split(".").pop();
+
+    return ROTULOS_CAMPOS[ultimo] || ultimo;
+}
+
+// "Campo: mensagem", mas sem repetir o campo quando a própria mensagem já fala dele
+// ("Data de nascimento da pessoa é obrigatório" não vira "Data de nascimento: Data de nascimento...").
+function comRotulo(campo, mensagem) {
+    const rotulo = rotuloDoCampo(campo);
+
+    return mensagem.toLowerCase().includes(rotulo.toLowerCase()) ? mensagem : `${rotulo}: ${mensagem}`;
+}
+
+// Quando o Spring expõe a exceção crua ("Validation failed for argument [0]... default message [X]"),
+// pesca só os "X" (ignorando o nome do campo, que também aparece como "default message [campo]").
+function limparTextoDoSpring(texto) {
+    const achadas = [...texto.matchAll(/default message \[([^\]]*)\]/g)].map((m) => m[1].trim()).filter((m) => m && !/^[\w.]+$/.test(m));
+
+    if (achadas.length) return [...new Set(achadas)].join(" ");
+    if (/^Validation failed/i.test(texto) || /^(No message available|Bad Request)$/i.test(texto)) return null;
+
+    return texto;
+}
+
+function textoDeUmErro(item) {
+    if (typeof item === "string") return item.trim() ? limparTextoDoSpring(item.trim()) : null;
+    if (!item || typeof item !== "object") return null;
+
+    const mensagem = item.mensagem ?? item.message ?? item.defaultMessage ?? item.detail;
+    if (typeof mensagem !== "string" || !mensagem.trim()) return null;
+
+    const texto = limparTextoDoSpring(mensagem.trim());
+    if (!texto) return null;
+
+    const campo = item.campo ?? item.field ?? item.propriedade;
+
+    return campo ? comRotulo(campo, texto) : texto;
+}
+
+function juntarMensagens(textos) {
+    const unicos = [...new Set(textos.filter(Boolean))];
+
+    return unicos.length ? unicos.map(finalizarFrase).join(" ") : null;
+}
+
+function textosDeDetalhes(detalhes) {
+    if (Array.isArray(detalhes)) return detalhes.map(textoDeUmErro);
+
+    if (detalhes && typeof detalhes === "object") {
+        // { cpf: "CPF inválido", nome: ["obrigatório"] }
+        return Object.entries(detalhes).flatMap(([campo, mensagens]) =>
+            [].concat(mensagens).map((mensagem) => (typeof mensagem === "string" && mensagem.trim() ? comRotulo(campo, mensagem.trim()) : null))
+        );
+    }
+
+    return [];
+}
+
+/**
+ * Tenta tirar um texto legível do corpo de um erro do back-end. Entende, entre outros:
+ *   "texto puro"
+ *   { message | mensagem | detail: "..." }
+ *   { errors | erros | violations | fieldErrors: [ "..." | { field, message } ] }
+ *   { errors: { campo: "mensagem" } }
+ *   { campo: "mensagem", outro: "mensagem" }
+ * Devolve null se não achar nada aproveitável (aí o front usa a mensagem dele).
+ */
+export function extrairMensagemDoBack(data) {
+    if (!data) return null;
+
+    if (typeof data === "string") {
+        const texto = data.trim();
+
+        if (!texto || texto.startsWith("<")) return null; // ignora página HTML de erro
+
+        const limpo = limparTextoDoSpring(texto);
+
+        return limpo ? finalizarFrase(limpo) : null;
+    }
+
+    if (Array.isArray(data)) return juntarMensagens(data.map(textoDeUmErro));
+    if (typeof data !== "object") return null;
+
+    const detalhes =
+        data.errors ?? data.erros ?? data.violations ?? data.violacoes ?? data.fieldErrors ?? data.validationErrors ?? data.campos ?? data.fields ?? data.detalhes ?? data.details ?? data.mensagens ?? data.messages;
+    const dosDetalhes = juntarMensagens(textosDeDetalhes(detalhes));
+    if (dosDetalhes) return dosDetalhes;
+
+    const principal = textoDeUmErro(data);
+    if (principal) return finalizarFrase(principal);
+
+    // Mapa simples campo -> mensagem. Ignora o corpo padrão do Spring (timestamp/status/path).
+    const ehCorpoPadraoDoSpring = "timestamp" in data || "status" in data || "path" in data;
+    if (!ehCorpoPadraoDoSpring) return juntarMensagens(textosDeDetalhes(data));
+
+    return null;
+}
+
+/**
+ * Escolhe a mensagem de erro de uma resposta:
+ *   400/422 -> o que o back-end mandou > mensagem do service > mensagem padrão do status > msgErro
+ *   outros  -> mensagem do service > padrão do status > o que o back-end mandou (4xx) > msgErro
+ */
+export function mensagemDeErro(response, erros = {}, msgErro) {
+    const { status, data } = response;
+    const mensagens = { ...MENSAGENS_STATUS_PADRAO, ...erros };
+    const doBack = status >= 400 && status < 500 ? extrairMensagemDoBack(data) : null;
+    const doStatus = mensagens[status >= 500 ? 500 : status];
+
+    if (STATUS_COM_PRIORIDADE_DO_BACK.includes(status)) return doBack || doStatus || msgErro;
+
+    return doStatus || doBack || msgErro;
+}
+
+/* ------------------------------------------------------------------ */
+/* Operações de leitura                                                */
+/* ------------------------------------------------------------------ */
 
 /**
  * Gera as 3 operações que eram idênticas em todos os services (listar paginado,
@@ -87,15 +359,15 @@ export function montarFormData(nomeParteJson, payload, arquivo) {
     return formData;
 }
 
-export function mensagemDeErro(status, erros = {}, msgErro) {
-    return { ...MENSAGENS_STATUS_PADRAO, ...erros }[status] || msgErro;
-}
-
 // O apiClient usa validateStatus: () => true, então um 4xx/5xx NÃO rejeita a Promise.
 // Por isso o "rejected" sozinho não basta para saber se um Promise.allSettled deu certo.
 export function algumaRequisicaoFalhou(resultados) {
     return resultados.some((resultado) => resultado.status === "rejected" || resultado.value.status >= 400);
 }
+
+/* ------------------------------------------------------------------ */
+/* Fluxo de cadastrar/atualizar                                        */
+/* ------------------------------------------------------------------ */
 
 /**
  * Fluxo padrão de cadastrar/atualizar: valida -> "carregando" -> requisição ->
@@ -103,16 +375,24 @@ export function algumaRequisicaoFalhou(resultados) {
  *
  * - erroValidacao: string com o erro (ou null/"" se está tudo certo)
  * - sucesso:       { status, msg, rota }
- * - erros:         { [status]: mensagem } (401 já tem mensagem padrão)
+ * - erros:         { [status]: mensagem } (ver MENSAGENS_STATUS_PADRAO para os que já existem)
  * - msgErro:       mensagem para qualquer outro status
+ * - sufixoErro:    frase colada no fim de toda mensagem de erro da requisição/conexão
+ *                  (ex.: "Nenhum dado foi salvo."). Vem pronta em mensagensCrud().
  * - aposSucesso:   async (response) => string | null. Roda depois do status de sucesso
  *                  (ex.: associar permissões ao cargo). Se devolver string, ela vira erro e não redireciona.
  */
-export async function enviarComFeedback({ requisicao, navigate, setFeedback, msgCarregando, sucesso, erros = {}, msgErro, msgConexao = MSG_CONEXAO_PADRAO, erroValidacao = null, aposSucesso }) {
+export async function enviarComFeedback({ requisicao, navigate, setFeedback, msgCarregando, sucesso, erros = {}, msgErro, msgConexao = MSG_CONEXAO_PADRAO, sufixoErro = "", erroValidacao = null, aposSucesso }) {
+    const comSufixo = (mensagem) => (sufixoErro ? `${finalizarFrase(mensagem)} ${sufixoErro}` : mensagem);
+
     if (erroValidacao) {
         setFeedback(feedbackErro(erroValidacao));
         return;
     }
+
+    if (emEnvio) return;
+    emEnvio = true;
+    let aguardandoRedirect = false;
 
     setFeedback(feedbackCarregando(msgCarregando));
 
@@ -120,7 +400,7 @@ export async function enviarComFeedback({ requisicao, navigate, setFeedback, msg
         const response = await requisicao();
 
         if (response.status !== sucesso.status) {
-            setFeedback(feedbackErro(mensagemDeErro(response.status, erros, msgErro)));
+            setFeedback(feedbackErro(comSufixo(mensagemDeErro(response, erros, msgErro))));
             return;
         }
 
@@ -132,9 +412,15 @@ export async function enviarComFeedback({ requisicao, navigate, setFeedback, msg
         }
 
         setFeedback(feedbackSucesso(sucesso.msg));
-        setTimeout(() => navigate(sucesso.rota), ATRASO_REDIRECIONAMENTO_MS);
+        aguardandoRedirect = true;
+        setTimeout(() => {
+            emEnvio = false;
+            navigate(sucesso.rota);
+        }, ATRASO_REDIRECIONAMENTO_MS);
     } catch (error) {
         console.error(error);
-        setFeedback(feedbackErro(msgConexao));
+        setFeedback(feedbackErro(comSufixo(msgConexao)));
+    } finally {
+        if (!aguardandoRedirect) emEnvio = false;
     }
 }
