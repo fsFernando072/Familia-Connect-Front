@@ -18,6 +18,21 @@ export const converterDataParaBr = (data) => {
     return `${dia}/${mes}/${ano}`;
 };
 
+// Mês atual no formato "aaaa-mm" (o mesmo que o backend usa nos filtros de mês), no fuso do navegador.
+export const obterMesAtual = () => {
+    const hoje = new Date();
+
+    return `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`;
+};
+
+// Converte "aaaa-mm" para "mm/aaaa".
+export const converterMesParaBr = (mes) => {
+    if (!mes) return "";
+    const [ano, numeroMes] = mes.split("-");
+    if (!ano || !numeroMes) return "";
+    return `${numeroMes}/${ano}`;
+};
+
 // Converte o SexoEnum vindo do back-end ("MASCULINO", "FEMININO", "OUTRO") para o rótulo
 // usado no CampoRadio do formulário ("Masculino", "Feminino", "Outro").
 const SEXO_DO_BACK_PARA_LABEL = {

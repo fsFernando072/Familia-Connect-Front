@@ -15,15 +15,17 @@ const MSG_CONEXAO_PADRAO = "Erro de conexão. Nenhum dado foi salvo.";
  *
  * - argBusca:   nome da chave que a tela passa em listar({ ... })      (padrão "nome")
  * - paramBusca: nome do query param que a API espera                   (padrão = argBusca)
+ * - filtros:    nomes de filtros extras repassados como query params (ex.: ["mes"])
  */
-export function criarServicoBase(endpoint, { singular, plural, argBusca = "nome", paramBusca = argBusca }) {
+export function criarServicoBase(endpoint, { singular, plural, argBusca = "nome", paramBusca = argBusca, filtros = [] }) {
     async function listar(opcoes = {}) {
         const { page = 0, size = 10, direcao = "asc" } = opcoes;
         const busca = opcoes[argBusca];
+        const filtrosExtras = Object.fromEntries(filtros.map((nome) => [nome, opcoes[nome] || undefined]));
 
         try {
             const response = await api.get(endpoint, {
-                params: { [paramBusca]: busca?.trim() || undefined, page, size, direcao },
+                params: { [paramBusca]: busca?.trim() || undefined, page, size, direcao, ...filtrosExtras },
             });
 
             if (response.status === 200) return response.data;

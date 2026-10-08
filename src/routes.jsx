@@ -21,6 +21,8 @@ import EditarCargo from "./pages/EditarCargo";
 import ListaHistoricoEstoque from "./pages/ListaHistoricoEstoque";
 import CadastroHistoricoEstoque from "./pages/CadastroHistoricoEstoque";
 import EditarHistoricoEstoque from "./pages/EditarHistoricoEstoque";
+import HistoricoEntregas from './pages/HistoricoEntregas';
+import Entrega from './pages/Entrega'
 
 function AppRoutes() {
     return (
@@ -54,6 +56,9 @@ function AppRoutes() {
                     <Route path="/historico-estoque" element={<ListaHistoricoEstoque />} />
                     <Route path="/historico-estoque/cadastro-estoque" element={<CadastroHistoricoEstoque />} />
                     <Route path="/historico-estoque/:id/editar-estoque" element={<EditarHistoricoEstoque />} />
+                    
+                    <Route path="/entrega" element={<Entrega />} />
+                    <Route path="/historico-entregas" element={<HistoricoEntregas />} />
                 </Route>
             </Routes>
         </BrowserRouter>

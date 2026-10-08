@@ -5,6 +5,7 @@ export const nomesRotas = {
     "cadastro-categoria": "Cadastro de Categoria",
     "cadastro-cargo": "Cadastro de Cargo",
     "cadastro-estoque": "Cadastro de Estoque",
+    entrega: "Entrega",
     "historico-entrega": "Histórico de Entregas",
     "historico-estoque": "Histórico de Estoque",
     dashboard: "Dashboard",

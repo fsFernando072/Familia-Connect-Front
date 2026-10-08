@@ -1,5 +1,6 @@
 import api from "./apiClient";
 import { enviarComFeedback } from "./servicoBase";
+import { salvarFuncionarioLogado } from "../utils/sessao";
 
 export async function entrar(cpf, senha, navigate, setFeedback) {
     return enviarComFeedback({
@@ -12,5 +13,9 @@ export async function entrar(cpf, senha, navigate, setFeedback) {
         msgConexao: "Erro de conexão. Tente novamente.",
         navigate,
         setFeedback,
+        aposSucesso: async (response) => {
+            salvarFuncionarioLogado(response.data);
+            return null;
+        },
     });
 }
