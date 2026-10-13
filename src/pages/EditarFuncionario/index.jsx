@@ -5,6 +5,7 @@ import Formulario from "../../components/Formulario/Formulario";
 import { useFeedback } from "../../hooks/useFeedback";
 import { atualizarFuncionario, buscarFuncionarioPorId } from "../../services/funcionarioService";
 import { listarCargos } from "../../services/cargoService";
+import { LIMITES } from "../../services/limitesCampos";
 import { mascaraCpf } from "../../utils/mascaras";
 import { COR_MENTA, COR_NAVY } from "../../utils/cores";
 
@@ -52,7 +53,7 @@ function EditarFuncionario() {
     }, [id]);
 
     const handleAtualizar = () => {
-        atualizarFuncionario(id, nome, cpf.replace(/\D/g, ""), senha, senhaConfirmada, cargoId, foto, navigate, setFeedback);
+        atualizarFuncionario(id, { nome, cpf: cpf.replace(/\D/g, ""), senha, senhaConfirmada, cargoId, foto }, navigate, setFeedback);
     };
 
     const campos = [
@@ -63,6 +64,7 @@ function EditarFuncionario() {
             label: "Nome do Funcionário",
             value: nome,
             onChange: (e) => setNome(e.target.value),
+            maxLength: LIMITES.funcionario.nome.max,
             placeholder: "Digite o nome",
         },
         {
@@ -82,6 +84,7 @@ function EditarFuncionario() {
             type: mostrarSenha ? "text" : "password",
             value: senha,
             onChange: (e) => setSenha(e.target.value),
+            maxLength: LIMITES.funcionario.senha.max,
             placeholder: "********",
             toggle: () => setMostrarSenha((v) => !v),
             mostrar: mostrarSenha,
@@ -94,6 +97,7 @@ function EditarFuncionario() {
             type: mostrarConfirmacaoSenha ? "text" : "password",
             value: senhaConfirmada,
             onChange: (e) => setSenhaConfirmada(e.target.value),
+            maxLength: LIMITES.funcionario.senha.max,
             placeholder: "********",
             toggle: () => setMostrarConfirmacaoSenha((v) => !v),
             mostrar: mostrarConfirmacaoSenha,

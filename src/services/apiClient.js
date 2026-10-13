@@ -12,4 +12,25 @@ const api = axios.create({
     validateStatus: () => true,
 });
 
+const ROTAS_SEM_REDIRECT = ["/funcionarios/login", "/funcionarios/logout"];
+
+// Evita redirecionar várias vezes quando a mesma tela dispara várias chamadas ao mesmo tempo.
+let redirecionando = false;
+
+// Roda em TODA resposta que chega do back, antes de ela voltar para o seu service.
+api.interceptors.response.use((resposta) => {
+    const url = resposta.config?.url ?? "";
+    const ehRotaPublica = ROTAS_SEM_REDIRECT.some((rota) => url.includes(rota));
+    const jaEstaNoLogin = window.location.pathname === "/";
+
+    if (resposta.status === 401 && !ehRotaPublica && !jaEstaNoLogin && !redirecionando) {
+        redirecionando = true;
+        // Guarda um recado para a tela de login mostrar.
+        sessionStorage.setItem("sessaoExpirada", "1");
+        window.location.assign("/");
+    }
+
+    return resposta;
+});
+
 export default api;

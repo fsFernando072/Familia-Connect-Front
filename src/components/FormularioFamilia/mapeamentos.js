@@ -1,4 +1,4 @@
-import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep, somenteDigitos } from "../../utils/mascaras";
+import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep } from "../../utils/mascaras";
 import { converterDataParaBr, converterSexoParaLabel } from "../../utils/formatadores";
 
 // Formato dos dados iniciais que o FormularioFamilia espera:
@@ -57,13 +57,14 @@ export function dadosIniciaisDeOcr(dadosOcr) {
             cpf: responsavelOcr?.cpf ? mascaraCpf(responsavelOcr.cpf) : "",
             telefone: responsavelOcr?.telefone ? mascaraTelefone(responsavelOcr.telefone) : "",
             dataNascimento: responsavelOcr?.dataNascimento ? converterDataParaBr(responsavelOcr.dataNascimento) : "",
+            profissaoSelecionada: responsavelOcr?.profissao ? "outra" : "",
             profissaoNova: responsavelOcr?.profissao || "",
         },
         endereco: {
             ...vazios.endereco,
             cep: enderecoOcr?.cep ? mascaraCep(enderecoOcr.cep) : "",
             rua: enderecoOcr?.logradouro || "",
-            numero: enderecoOcr?.numero ? somenteDigitos(String(enderecoOcr.numero)) : "",
+            numero: enderecoOcr?.numero || "",
             complemento: enderecoOcr?.complemento || "",
             bairro: enderecoOcr?.bairro || "",
             cidade: enderecoOcr?.cidade || "",
@@ -93,6 +94,7 @@ function separarProfissao(profissao, profissoes) {
 function dependenteDaApi(dep, profissoes) {
     return {
         id: dep.id ?? Date.now() + Math.random(),
+        idPessoa: dep.id,
         nome: dep.nome || "",
         parentesco: dep.grauParentesco || "",
         dataNascimento: converterDataParaBr(dep.dataNascimento),

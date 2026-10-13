@@ -2,6 +2,7 @@ import Botao from "../Botao/Botao";
 import CampoTexto from "../CampoTexto/CampoTexto";
 import CampoCheckbox from "../CampoCheckbox/CampoCheckbox";
 import CampoRadio from "../CampoRadio/CampoRadio";
+import CampoPermissoes from "../CampoPermissoes/CampoPermissoes";
 import CampoSelect from "../CampoSelect/CampoSelect";
 import CampoProfissao from "../CampoProfissao/CampoProfissao";
 import UploadImagem from "../UploadImagem/UploadImagem";
@@ -11,6 +12,8 @@ function renderCampo(campo) {
     switch (campo.tipo) {
         case "checkbox":
             return <CampoCheckbox label={campo.label} opcoes={campo.opcoes} valoresSelecionados={campo.value} onChange={campo.onChange} />;
+        case "permissoes":
+            return <CampoPermissoes label={campo.label} paginas={campo.paginas} niveis={campo.niveis} value={campo.value} onChange={campo.onChange} nivelPadrao={campo.nivelPadrao} />;
         case "radio":
             return <CampoRadio label={campo.label} name={campo.name} opcoes={campo.opcoes} value={campo.value} onChange={campo.onChange} />;
         case "select":
@@ -24,6 +27,7 @@ function renderCampo(campo) {
                     onChangeSelecionada={campo.onChangeSelecionada}
                     nova={campo.nova}
                     onChangeNova={campo.onChangeNova}
+                    maxLengthNova={campo.maxLengthNova}
                 />
             );
         case "imagem":
@@ -32,7 +36,7 @@ function renderCampo(campo) {
             return (
                 <div>
                     <label className={CLASSE_LABEL}>{campo.label}</label>
-                    <textarea value={campo.value} onChange={campo.onChange} rows={campo.rows || 9} placeholder={campo.placeholder} className={`${CLASSE_INPUT} resize-none`} />
+                    <textarea value={campo.value} onChange={campo.onChange} rows={campo.rows || 9} placeholder={campo.placeholder} maxLength={campo.maxLength} className={`${CLASSE_INPUT} resize-none`} />
                     {campo.ajuda && <span className="text-xs text-cifa-apagado mt-1 block">{campo.ajuda}</span>}
                 </div>
             );
@@ -68,6 +72,7 @@ function renderCampo(campo) {
                     toggle={campo.toggle}
                     mostrar={campo.mostrar}
                     erro={campo.erro}
+                    maxLength={campo.maxLength}
                 />
             );
     }

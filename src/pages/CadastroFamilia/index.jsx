@@ -30,7 +30,7 @@ function CadastroFamilia() {
                 opcoes={opcoes}
                 nomeBotaoFinal="Cadastrar"
                 preSelecionarSP
-                onSalvar={(responsavel, endereco, dependentes) => cadastrarFamilia(responsavel, endereco, dependentes, navigate, setFeedback)}
+                onSalvar={(responsavel, endereco, dependentes) => cadastrarFamilia({ responsavel, endereco, dependentes }, navigate, setFeedback)}
                 setFeedback={setFeedback}
                 fecharFeedback={fecharFeedback}
             />

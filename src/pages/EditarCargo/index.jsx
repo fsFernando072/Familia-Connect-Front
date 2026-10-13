@@ -3,7 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Formulario from "../../components/Formulario/Formulario";
 import { useFeedback } from "../../hooks/useFeedback";
-import { buscarCargoPorId, atualizarCargo, listarCargosAcessos, PERMISSOES_CARGO } from "../../services/cargoService";
+import { LIMITES } from "../../services/limitesCampos";
+import { buscarCargoPorId, atualizarCargo, permissoesParaEstado, PAGINAS, NIVEIS_ACESSO, NIVEL_PADRAO } from "../../services/cargoService";
 import { COR_MENTA } from "../../utils/cores";
 
 function EditarCargo() {
@@ -15,14 +16,13 @@ function EditarCargo() {
     const [cargoEncontrado, setCargoEncontrado] = useState(true);
     const [nome, setNome] = useState("");
     const [descricao, setDescricao] = useState("");
-    const [permissoesIds, setPermissoesIds] = useState([]);
-    const [associacoesAtuais, setAssociacoesAtuais] = useState([]);
+    const [permissoes, setPermissoes] = useState({});
 
     useEffect(() => {
         async function carregarCargo() {
             setCarregando(true);
 
-            const [cargo, todasAssociacoes] = await Promise.all([buscarCargoPorId(id), listarCargosAcessos()]);
+            const cargo = await buscarCargoPorId(id);
 
             if (!cargo) {
                 setCargoEncontrado(false);
@@ -30,19 +30,16 @@ function EditarCargo() {
                 return;
             }
 
-            const associacoesDoCargo = todasAssociacoes.filter((a) => a.cargo?.id === Number(id));
-
             setNome(cargo.nome || "");
             setDescricao(cargo.descricao || "");
-            setAssociacoesAtuais(associacoesDoCargo);
-            setPermissoesIds(associacoesDoCargo.map((a) => Number(a.acesso?.id)));
+            setPermissoes(permissoesParaEstado(cargo.permissoes));
             setCarregando(false);
         }
         carregarCargo();
     }, [id]);
 
     const handleAtualizar = () => {
-        atualizarCargo(id, nome, descricao, permissoesIds, associacoesAtuais, navigate, setFeedback);
+        atualizarCargo(id, nome, descricao, permissoes, navigate, setFeedback);
     };
 
     const campos = [
@@ -53,16 +50,19 @@ function EditarCargo() {
             label: "Nome do Cargo",
             value: nome,
             onChange: (e) => setNome(e.target.value),
+            maxLength: LIMITES.cargo.nome.max,
             placeholder: "Recepcionista",
         },
         {
             id: "permissoes",
-            tipo: "checkbox",
+            tipo: "permissoes",
             coluna: 1,
-            label: "Permissões no Sistema para o Cargo",
-            opcoes: PERMISSOES_CARGO,
-            value: permissoesIds,
-            onChange: setPermissoesIds,
+            label: "Páginas que o Cargo pode acessar",
+            paginas: PAGINAS,
+            niveis: NIVEIS_ACESSO,
+            nivelPadrao: NIVEL_PADRAO,
+            value: permissoes,
+            onChange: setPermissoes,
         },
         {
             id: "descricao",
@@ -71,6 +71,7 @@ function EditarCargo() {
             label: "Descrição do Cargo",
             value: descricao,
             onChange: (e) => setDescricao(e.target.value),
+            maxLength: LIMITES.cargo.descricao.max,
             placeholder: "Descreva as responsabilidades do cargo",
         },
     ];

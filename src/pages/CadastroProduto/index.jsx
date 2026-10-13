@@ -5,6 +5,7 @@ import Formulario from "../../components/Formulario/Formulario";
 import { useFeedback } from "../../hooks/useFeedback";
 import { listarCategorias } from "../../services/categoriaService";
 import { cadastrarProduto } from "../../services/produtoService";
+import { LIMITES } from "../../services/limitesCampos";
 import { COR_MENTA, COR_NAVY } from "../../utils/cores";
 
 function CadastroProduto() {
@@ -38,6 +39,7 @@ function CadastroProduto() {
             label: "Nome do Produto",
             value: nome,
             onChange: (e) => setNome(e.target.value),
+            maxLength: LIMITES.produto.nome.max,
             placeholder: "Cesta Básica",
         },
         {
@@ -57,6 +59,7 @@ function CadastroProduto() {
             label: "Descrição do Produto",
             value: descricao,
             onChange: (e) => setDescricao(e.target.value),
+            maxLength: LIMITES.produto.descricao.max,
             rows: 7,
             placeholder: "Descreva o produto",
         },

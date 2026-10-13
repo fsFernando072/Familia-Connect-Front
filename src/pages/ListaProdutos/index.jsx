@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
 import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
 import ListaStatus from "../../components/ListaStatus/ListaStatus";
@@ -11,9 +11,14 @@ import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao
 import { useListaPaginada } from "../../hooks/useListaPaginada";
 import { listarProdutos, deletarProduto } from "../../services/produtoService";
 import { COR_PERIGO, COR_TURQUESA } from "../../utils/cores";
+import { pode } from "../../services/permissoes";
 
 function ListaProdutos() {
     const navigate = useNavigate();
+    const { permissoes } = useOutletContext();
+    const podeCadastrar = pode(permissoes, "PRODUTOS", "cadastrar");
+    const podeEditar = pode(permissoes, "PRODUTOS", "editar");
+    const podeExcluir = pode(permissoes, "PRODUTOS", "excluir");
 
     const {
         itens,
@@ -48,7 +53,7 @@ function ListaProdutos() {
                 onBuscaChange={(e) => setBusca(e.target.value)}
                 placeholderBusca="Buscar Produto"
                 onOrdenar={alternarOrdem}
-                onCadastrar={() => navigate("/produtos/cadastro-produto")}
+                onCadastrar={podeCadastrar ? () => navigate("/produtos/cadastro-produto") : undefined}
             />
 
             <ListaStatus carregando={carregando} vazio={itens.length === 0} mensagemCarregando="Carregando produtos..." mensagemVazia="Nenhum produto encontrado." />
@@ -59,8 +64,8 @@ function ListaProdutos() {
                         key={produto.id}
                         acoes={
                             <>
-                                <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/produtos/${produto.id}/editar-produto`)} />
-                                <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(produto)} />
+                                {podeEditar && <Botao nome="Editar" cor={COR_TURQUESA} acao={() => navigate(`/produtos/${produto.id}/editar-produto`)} />}
+                                {podeExcluir && <Botao nome="Apagar" cor={COR_PERIGO} acao={() => pedirConfirmacao(produto)} />}
                             </>
                         }
                     >

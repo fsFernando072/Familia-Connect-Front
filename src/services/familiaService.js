@@ -1,61 +1,117 @@
-import { validarCpf, validarRg, validarTelefone } from "../utils/validadores";
+import { somenteDigitos } from "../utils/mascaras";
+import { dataValida, nascimentoNoPassado, validarCpf } from "../utils/validadores";
 import { converterDataParaIso } from "../utils/formatadores";
 import api from "./apiClient";
-import { criarServicoBase, enviarComFeedback, montarFormData } from "./servicoBase";
+import { LIMITES } from "./limitesCampos";
+import { criarServicoBase, enviarComFeedback, mensagensCrud, montarFormData, validarObrigatorios, validarTamanhos } from "./servicoBase";
 
 const base = criarServicoBase("/familias", {
     singular: "família",
     plural: "famílias",
     argBusca: "nomeResponsavel",
 });
+const textos = mensagensCrud("família", "f");
 
 export const listarFamilias = base.listar;
 export const buscarFamiliaPorId = base.buscarPorId;
 export const deletarFamilia = base.deletar;
 
-// Documentos opcionais do dependente: só valida se foi preenchido.
-function validarDocumentosDependente(dep) {
-    if (dep.cpf && !validarCpf(dep.cpf)) return `O CPF do dependente "${dep.nome}" é inválido.`;
-    if (dep.rg && !validarRg(dep.rg)) return `O RG do dependente "${dep.nome}" é inválido.`;
-    if (dep.telefone && !validarTelefone(dep.telefone)) return `O telefone do dependente "${dep.nome}" é inválido.`;
+// Regras de tamanho de uma pessoa (responsável ou dependente), iguais ao PessoaRequestDto do back.
+// RG e telefone contam dígitos, sem máscara. Campos vazios são ignorados (a obrigatoriedade é checada antes).
+function validarTamanhosPessoa(pessoa, contexto) {
+    const { nome, rg, telefone, profissao } = LIMITES.pessoa;
+
+    return validarTamanhos(
+        [
+            { rotulo: "nome", valor: pessoa.nome, ...nome },
+            { rotulo: "RG", valor: somenteDigitos(pessoa.rg), ...rg, unidade: "dígitos" },
+            { rotulo: "telefone", valor: somenteDigitos(pessoa.telefone), ...telefone, unidade: "dígitos (DDD + número)" },
+            { rotulo: "profissão", valor: pessoa.profissao, ...profissao },
+        ],
+        contexto
+    );
+}
+
+// CPF e tamanhos dos campos opcionais do dependente: só valida se foi preenchido.
+function validarDocumentosDependente(dep, referencia) {
+    if (dep.cpf && !validarCpf(dep.cpf)) return `O CPF do dependente ${referencia} é inválido.`;
+
+    return validarTamanhosPessoa(dep, `Dependente ${referencia}`);
+}
+
+function validarResponsavel(responsavel) {
+    const erroObrigatorios = validarObrigatorios(
+        {
+            nome: responsavel.nome,
+            RG: responsavel.rg,
+            CPF: responsavel.cpf,
+            telefone: responsavel.telefone,
+            "data de nascimento": responsavel.dataNascimento,
+            sexo: responsavel.sexo,
+        },
+        "Responsável"
+    );
+    if (erroObrigatorios) return erroObrigatorios;
+
+    if (!dataValida(responsavel.dataNascimento)) return "A data de nascimento do responsável deve ser válida.";
+    if (!nascimentoNoPassado(responsavel.dataNascimento)) return "A data de nascimento do responsável não pode ser futura.";
+    if (!validarCpf(responsavel.cpf)) return "O CPF do responsável é inválido.";
+
+    return validarTamanhosPessoa(responsavel, "Responsável");
+}
+
+function validarEndereco(endereco) {
+    const erroObrigatorios = validarObrigatorios(
+        { CEP: somenteDigitos(endereco.cep), rua: endereco.rua, número: endereco.numero, bairro: endereco.bairro, cidade: endereco.cidade, estado: endereco.estadoId },
+        "Endereço"
+    );
+    if (erroObrigatorios) return erroObrigatorios;
+
+    const { cep, logradouro, numero, bairro, complemento, cidade } = LIMITES.endereco;
+
+    return validarTamanhos(
+        [
+            { rotulo: "CEP", valor: somenteDigitos(endereco.cep), ...cep, unidade: "dígitos" },
+            { rotulo: "rua", valor: endereco.rua, ...logradouro },
+            { rotulo: "número", valor: endereco.numero, ...numero },
+            { rotulo: "complemento", valor: endereco.complemento, ...complemento },
+            { rotulo: "bairro", valor: endereco.bairro, ...bairro },
+            { rotulo: "cidade", valor: endereco.cidade, ...cidade },
+        ],
+        "Endereço"
+    );
+}
+
+function validarDependentes(dependentes) {
+    for (const [indice, dep] of dependentes.entries()) {
+        const referencia = dep.nome?.trim() ? `"${dep.nome}"` : `nº ${indice + 1}`;
+
+        const erro =
+            validarObrigatorios({ nome: dep.nome, "data de nascimento": dep.dataNascimento, sexo: dep.sexo, parentesco: dep.parentesco }, `Dependente ${referencia}`) ||
+            (!dataValida(dep.dataNascimento) && `A data de nascimento do dependente ${referencia} deve ser válida.`) ||
+            (!nascimentoNoPassado(dep.dataNascimento) && `A data de nascimento do dependente ${referencia} não pode ser futura.`) ||
+            validarDocumentosDependente(dep, referencia);
+
+        if (erro) return erro;
+    }
+
     return null;
 }
 
 // Devolve a mensagem do primeiro erro encontrado (ou null se está tudo certo).
-function validarDadosFamilia(responsavel, endereco, dependentes) {
-    if (!responsavel.nome || !responsavel.rg || !responsavel.cpf || !responsavel.telefone || !responsavel.dataNascimento) {
-        return "Preencha todos os campos obrigatórios do responsável.";
-    }
-    if (!validarCpf(responsavel.cpf)) return "O CPF do responsável é inválido.";
-    if (!validarRg(responsavel.rg)) return "O RG do responsável é inválido.";
-    if (!validarTelefone(responsavel.telefone)) return "O telefone do responsável é inválido.";
-
-    if (!endereco.rua || !endereco.numero || !endereco.cidade || !endereco.estadoId) {
-        return "Preencha todos os campos obrigatórios do endereço.";
-    }
-
-    for (const dep of dependentes) {
-        if (!dep.nome || !dep.dataNascimento) {
-            return "Preencha o nome e a data de nascimento de todos os dependentes.";
-        }
-
-        const erroDocumentos = validarDocumentosDependente(dep);
-        if (erroDocumentos) return erroDocumentos;
-    }
-
-    return null;
+function validarDadosFamilia({ responsavel, endereco, dependentes }) {
+    return validarResponsavel(responsavel) || validarEndereco(endereco) || validarDependentes(dependentes);
 }
 
-function montarPayloadFamilia(responsavel, endereco, dependentes) {
+function montarPayloadFamilia({ responsavel, endereco, dependentes }) {
     return {
-        dataCadastro: new Date().toISOString().slice(0, 10),
         possuiPrioridade: responsavel.possuiPne,
         endereco: {
             cep: endereco.cep,
             bairro: endereco.bairro,
             logradouro: endereco.rua,
             numero: endereco.numero,
-            complemento: endereco.complemento,
+            complemento: endereco.complemento || null,
             cidade: endereco.cidade,
             estadoId: Number(endereco.estadoId),
         },
@@ -71,6 +127,7 @@ function montarPayloadFamilia(responsavel, endereco, dependentes) {
             isResponsavel: true,
         },
         dependentes: dependentes.map((dep) => ({
+            id: dep.idPessoa,
             nome: dep.nome,
             rg: dep.rg?.trim() || null,
             cpf: dep.cpf?.trim() || null,
@@ -84,38 +141,33 @@ function montarPayloadFamilia(responsavel, endereco, dependentes) {
     };
 }
 
-function montarFormDataFamilia(responsavel, endereco, dependentes) {
-    const payload = montarPayloadFamilia(responsavel, endereco, dependentes);
-    return montarFormData("familiaRequestDto", payload, responsavel.imagem);
+function montarFormDataFamilia(familia) {
+    return montarFormData("familiaRequestDto", montarPayloadFamilia(familia), familia.responsavel.imagem);
 }
 
-export function cadastrarFamilia(responsavel, endereco, dependentes, navigate, setFeedback) {
+// familia = { responsavel, endereco, dependentes }
+export function cadastrarFamilia(familia, navigate, setFeedback) {
     return enviarComFeedback({
-        erroValidacao: validarDadosFamilia(responsavel, endereco, dependentes),
-        requisicao: () => api.post("/familias", montarFormDataFamilia(responsavel, endereco, dependentes)),
-        msgCarregando: "Cadastrando família...",
-        sucesso: { status: 201, msg: "Família cadastrada com sucesso!", rota: "/familias" },
+        ...textos.cadastro("/familias"),
+        erroValidacao: validarDadosFamilia(familia),
+        requisicao: () => api.post("/familias", montarFormDataFamilia(familia)),
         erros: {
-            409: "Endereço ou pessoa (CPF) já cadastrados. Nenhum dado foi salvo.",
-            404: "Estado informado não foi encontrado. Nenhum dado foi salvo.",
+            409: "Endereço ou pessoa (CPF) já cadastrados.",
         },
-        msgErro: "Não foi possível cadastrar a família. Nenhum dado foi salvo.",
         navigate,
         setFeedback,
     });
 }
 
-export function atualizarFamilia(id, responsavel, endereco, dependentes, navigate, setFeedback) {
+export function atualizarFamilia(id, familia, navigate, setFeedback) {
     return enviarComFeedback({
-        erroValidacao: validarDadosFamilia(responsavel, endereco, dependentes),
-        requisicao: () => api.put(`/familias/${id}`, montarFormDataFamilia(responsavel, endereco, dependentes)),
-        msgCarregando: "Atualizando família...",
-        sucesso: { status: 200, msg: "Família atualizada com sucesso!", rota: `/familias/${id}` },
+        ...textos.atualizacao(`/familias/${id}`),
+        erroValidacao: validarDadosFamilia(familia),
+        requisicao: () => api.put(`/familias/${id}`, montarFormDataFamilia(familia)),
         erros: {
-            409: "CPF já cadastrado para outra pessoa. Nenhum dado foi salvo.",
+            409: "CPF já cadastrado para outra pessoa.",
             404: "Família, endereço ou estado não encontrados.",
         },
-        msgErro: "Não foi possível atualizar a família.",
         navigate,
         setFeedback,
     });
