@@ -21,7 +21,7 @@ import EditarCargo from "../pages/EditarCargo";
 import ListaHistoricoEstoque from "../pages/ListaHistoricoEstoque";
 import CadastroHistoricoEstoque from "../pages/CadastroHistoricoEstoque";
 import EditarHistoricoEstoque from "../pages/EditarHistoricoEstoque";
-import HistoricoEntregas from './pages/HistoricoEntregas';
+import HistoricoEntregas from '../pages/HistoricoEntregas';
 import Entrega from "../pages/Entrega";
 
 function AppRoutes() {
