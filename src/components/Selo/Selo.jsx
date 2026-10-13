@@ -1,6 +1,7 @@
 const TONS = {
     ativo: "bg-cifa-suave text-cifa-turquesa",
     neutro: "bg-cifa-fundo text-cifa-apagado",
+    pendente: "bg-amber-100 text-amber-800",
 };
 
 // Selo em formato de pílula, usado para indicar status (ex: "Cadastro Ativo").

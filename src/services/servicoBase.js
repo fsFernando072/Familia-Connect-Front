@@ -287,15 +287,17 @@ export function mensagemDeErro(response, erros = {}, msgErro) {
  *
  * - argBusca:   nome da chave que a tela passa em listar({ ... })      (padrão "nome")
  * - paramBusca: nome do query param que a API espera                   (padrão = argBusca)
+ * - filtros:    nomes de filtros extras repassados como query params (ex.: ["mes"])
  */
-export function criarServicoBase(endpoint, { singular, plural, argBusca = "nome", paramBusca = argBusca }) {
+export function criarServicoBase(endpoint, { singular, plural, argBusca = "nome", paramBusca = argBusca}) {
     async function listar(opcoes = {}) {
         const { page = 0, size = 10, direcao = "asc", filtros = {} } = opcoes;
         const busca = opcoes[argBusca];
+        const filtrosExtras = Object.fromEntries(filtros.map((nome) => [nome, opcoes[nome] || undefined]));
 
         try {
             const response = await api.get(endpoint, {
-                params: { [paramBusca]: busca?.trim() || undefined, ...filtros, page, size, direcao },
+                params: { [paramBusca]: busca?.trim() || undefined, page, size, direcao, ...filtrosExtras },
             });
 
             if (response.status === 200) return response.data;
