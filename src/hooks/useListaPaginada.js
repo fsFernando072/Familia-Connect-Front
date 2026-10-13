@@ -27,8 +27,6 @@ export function useListaPaginada({ listar, apagar, chaveBusca = "nome", obterId 
     const [itemParaApagar, setItemParaApagar] = useState(null);
     const [apagando, setApagando] = useState(false);
 
-    const filtrosChave = JSON.stringify(filtros);
-
     const buscaComAtraso = useDebounce(busca);
     const chaveFiltros = JSON.stringify(filtros);
 
@@ -57,7 +55,6 @@ export function useListaPaginada({ listar, apagar, chaveBusca = "nome", obterId 
     }
 
     // Ao mudar a busca ou a ordem, volta para a primeira página.
-    const [filtrosAnterior, setFiltrosAnterior] = useState(filtrosChave);
     const [buscaAnterior, setBuscaAnterior] = useState(buscaComAtraso);
     const [ordemAnterior, setOrdemAnterior] = useState(ordemCrescente);
     const [filtrosAnteriores, setFiltrosAnteriores] = useState(chaveFiltros);

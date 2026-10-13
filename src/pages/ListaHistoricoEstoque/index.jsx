@@ -27,7 +27,6 @@ import { pode } from "../../services/permissoes";
 function ListaHistoricoEstoque() {
     const navigate = useNavigate();
     const { permissoes } = useOutletContext();
-    const podeCadastrar = pode(permissoes, "HISTORICO_ESTOQUE", "cadastrar");
     const podeEditar = pode(permissoes, "HISTORICO_ESTOQUE", "editar");
     const podeExcluir = pode(permissoes, "HISTORICO_ESTOQUE", "excluir");
 

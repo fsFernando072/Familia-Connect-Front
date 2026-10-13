@@ -289,7 +289,7 @@ export function mensagemDeErro(response, erros = {}, msgErro) {
  * - paramBusca: nome do query param que a API espera                   (padrão = argBusca)
  * - filtros:    nomes de filtros extras repassados como query params (ex.: ["mes"])
  */
-export function criarServicoBase(endpoint, { singular, plural, argBusca = "nome", paramBusca = argBusca, filtros = [] }) {
+export function criarServicoBase(endpoint, { singular, plural, argBusca = "nome", paramBusca = argBusca}) {
     async function listar(opcoes = {}) {
         const { page = 0, size = 10, direcao = "asc", filtros = {} } = opcoes;
         const busca = opcoes[argBusca];
