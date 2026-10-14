@@ -58,7 +58,7 @@ function AppRoutes() {
                     <Route path="/historico-estoque/:id/editar-estoque" element={<EditarHistoricoEstoque />} />
                 
                     <Route path="/entrega" element={<Entrega />} />
-                    <Route path="/historico-entregas" element={<HistoricoEntregas />} />
+                    <Route path="/historico-entrega" element={<HistoricoEntregas />} />
                 </Route>
             </Routes>
         </BrowserRouter>
