@@ -1,7 +1,7 @@
 import { createPortal } from "react-dom";
 import { UploadCloud, Info } from "lucide-react";
 import BotaoSecundario from "../BotaoSecundario/BotaoSecundario";
-import { TAMANHO_MAXIMO_ARQUIVO_MB, LIMITE_IMPORTACOES_POR_HORA } from "../../services/ocrService";
+import { LIMITE_IMPORTACOES_POR_HORA } from "../../services/ocrService";
 
 // Renderizado via portal em document.body: veja o comentário em ModalRecorteImagem
 // sobre por que isso é necessário para `position: fixed` funcionar corretamente.
@@ -29,7 +29,7 @@ function ModalImportarFoto({ aberto, carregando = false, erro = "", onFechar, on
                 <div className="w-full flex items-start gap-2 bg-cifa-fundo border border-cifa-linha rounded-xl p-3 text-left">
                     <Info size={16} className="text-cifa-apagado shrink-0 mt-0.5" />
                     <p className="text-xs text-cifa-apagado">
-                        A foto deve ter no máximo {TAMANHO_MAXIMO_ARQUIVO_MB}MB e o limite é de {LIMITE_IMPORTACOES_POR_HORA} fotos importadas por hora.
+                        Após escolher a foto você poderá recortar só a ficha (do título até o fim da caixa). O limite é de {LIMITE_IMPORTACOES_POR_HORA} fotos importadas por hora.
                     </p>
                 </div>
 

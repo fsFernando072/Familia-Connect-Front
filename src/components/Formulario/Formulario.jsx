@@ -73,6 +73,7 @@ function renderCampo(campo) {
                     mostrar={campo.mostrar}
                     erro={campo.erro}
                     maxLength={campo.maxLength}
+                    disabled={campo.disabled}
                 />
             );
     }

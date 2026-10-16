@@ -21,6 +21,7 @@ function EditarFuncionario() {
     const [cpf, setCpf] = useState("");
     const [senha, setSenha] = useState("");
     const [senhaConfirmada, setSenhaConfirmada] = useState("");
+    const [alterarSenha, setAlterarSenha] = useState(false);
     const [cargoId, setCargoId] = useState("");
     const [foto, setFoto] = useState("");
     const [fotoInicial, setFotoInicial] = useState("");
@@ -52,8 +53,19 @@ function EditarFuncionario() {
         carregarDadosIniciais();
     }, [id]);
 
+    const handleAlternarSenha = (habilitada) => {
+        setAlterarSenha(habilitada);
+
+        if (!habilitada) {
+            setSenha("");
+            setSenhaConfirmada("");
+            setMostrarSenha(false);
+            setMostrarConfirmacaoSenha(false);
+        }
+    };
+
     const handleAtualizar = () => {
-        atualizarFuncionario(id, { nome, cpf: cpf.replace(/\D/g, ""), senha, senhaConfirmada, cargoId, foto }, navigate, setFeedback);
+        atualizarFuncionario(id, { nome, cpf: cpf.replace(/\D/g, ""), senha, senhaConfirmada, alterarSenha, cargoId, foto }, navigate, setFeedback);
     };
 
     const campos = [
@@ -77,16 +89,28 @@ function EditarFuncionario() {
             placeholder: "000.000.000-00",
         },
         {
+            id: "alterar_senha",
+            tipo: "custom",
+            coluna: 1,
+            render: () => (
+                <label className="flex items-center gap-2.5 cursor-pointer text-base text-cifa-navy">
+                    <input type="checkbox" checked={alterarSenha} onChange={(e) => handleAlternarSenha(e.target.checked)} className="w-4 h-4 accent-cifa-turquesa cursor-pointer" />
+                    Alterar senha
+                </label>
+            ),
+        },
+        {
             id: "senha",
             tipo: "texto",
             coluna: 1,
             label: "Senha do Funcionário",
+            disabled: !alterarSenha,
             type: mostrarSenha ? "text" : "password",
             value: senha,
             onChange: (e) => setSenha(e.target.value),
             maxLength: LIMITES.funcionario.senha.max,
             placeholder: "********",
-            toggle: () => setMostrarSenha((v) => !v),
+            toggle: alterarSenha ? () => setMostrarSenha((v) => !v) : undefined,
             mostrar: mostrarSenha,
         },
         {
@@ -94,12 +118,13 @@ function EditarFuncionario() {
             tipo: "texto",
             coluna: 1,
             label: "Confirmar Senha",
+            disabled: !alterarSenha,
             type: mostrarConfirmacaoSenha ? "text" : "password",
             value: senhaConfirmada,
             onChange: (e) => setSenhaConfirmada(e.target.value),
             maxLength: LIMITES.funcionario.senha.max,
             placeholder: "********",
-            toggle: () => setMostrarConfirmacaoSenha((v) => !v),
+            toggle: alterarSenha ? () => setMostrarConfirmacaoSenha((v) => !v) : undefined,
             mostrar: mostrarConfirmacaoSenha,
         },
         {

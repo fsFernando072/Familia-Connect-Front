@@ -4,7 +4,12 @@ import { mensagemDeErro } from "./servicoBase";
 export const TAMANHO_MAXIMO_ARQUIVO_MB = 1;
 export const LIMITE_IMPORTACOES_POR_HORA = 60;
 
-const TAMANHO_MAXIMO_ARQUIVO_BYTES = TAMANHO_MAXIMO_ARQUIVO_MB * 1024 * 1024;
+export const TAMANHO_MAXIMO_ARQUIVO_BYTES = TAMANHO_MAXIMO_ARQUIVO_MB * 1024 * 1024;
+
+// Padrão enviado ao back: recorte retangular 3:2 que pega do título "CADASTRO DE CESTA BASICA"
+// até o fim da caixa do formulário (proporção média das fichas preenchidas).
+export const PROPORCAO_RECORTE_FORMULARIO = 3 / 2;
+export const LARGURA_MAXIMA_FORMULARIO_PX = 1800;
 
 const MSG_FOTO_ILEGIVEL = "Não foi possível extrair os dados dessa foto. Tente outra imagem.";
 const MSG_FOTO_GRANDE = `A foto deve ter no máximo ${TAMANHO_MAXIMO_ARQUIVO_MB}MB.`;
@@ -28,7 +33,7 @@ export async function extrairDadosFamiliaPorFoto(arquivo) {
     }
 
     const formData = new FormData();
-    formData.append("arquivo", arquivo);
+    formData.append("arquivo", arquivo, "cadastro-cesta-basica.jpg");
 
     try {
         const response = await api.post("/ocr", formData);

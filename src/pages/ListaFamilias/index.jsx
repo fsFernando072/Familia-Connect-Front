@@ -13,10 +13,11 @@ import BotaoSecundario from "../../components/BotaoSecundario/BotaoSecundario";
 import Paginacao from "../../components/Paginacao/Paginacao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
 import ModalImportarFoto from "../../components/ModalImportarFoto/ModalImportarFoto";
+import ModalRecorteImagem from "../../components/ModalRecorteImagem/ModalRecorteImagem";
 import FotoAvatar from "../../components/FotoAvatar/FotoAvatar";
 import { useListaPaginada } from "../../hooks/useListaPaginada";
 import { listarFamilias, deletarFamilia } from "../../services/familiaService";
-import { extrairDadosFamiliaPorFoto } from "../../services/ocrService";
+import { extrairDadosFamiliaPorFoto, PROPORCAO_RECORTE_FORMULARIO, LARGURA_MAXIMA_FORMULARIO_PX, TAMANHO_MAXIMO_ARQUIVO_BYTES } from "../../services/ocrService";
 import { COR_PERIGO, COR_PETROLEO, COR_TURQUESA } from "../../utils/cores";
 import { pode } from "../../services/permissoes";
 
@@ -30,6 +31,7 @@ function ListaFamilias() {
     const [modalImportarAberto, setModalImportarAberto] = useState(false);
     const [importando, setImportando] = useState(false);
     const [erroImportacao, setErroImportacao] = useState("");
+    const [imagemParaRecorte, setImagemParaRecorte] = useState(null);
 
     const {
         itens,
@@ -70,11 +72,27 @@ function ListaFamilias() {
         setErroImportacao("");
     };
 
-    const handleSelecionarArquivoImportacao = async (arquivo) => {
+    const limparImagemParaRecorte = () => {
+        if (imagemParaRecorte) URL.revokeObjectURL(imagemParaRecorte);
+        setImagemParaRecorte(null);
+    };
+
+    // Escolheu a foto: em vez de enviar direto, abre o recorte retangular.
+    const handleSelecionarArquivoImportacao = (arquivo) => {
+        setErroImportacao("");
+        setImagemParaRecorte(URL.createObjectURL(arquivo));
+    };
+
+    // Cancelou o recorte: volta para o modal de importação.
+    const handleCancelarRecorte = () => limparImagemParaRecorte();
+
+    // Confirmou o recorte: envia o Blob já padronizado para o back.
+    const handleConfirmarRecorte = async (imagemRecortada) => {
+        limparImagemParaRecorte();
         setErroImportacao("");
         setImportando(true);
 
-        const resultado = await extrairDadosFamiliaPorFoto(arquivo);
+        const resultado = await extrairDadosFamiliaPorFoto(imagemRecortada);
 
         setImportando(false);
 
@@ -126,7 +144,21 @@ function ListaFamilias() {
 
             <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
 
-            <ModalImportarFoto aberto={modalImportarAberto} carregando={importando} erro={erroImportacao} onFechar={handleFecharImportar} onSelecionarArquivo={handleSelecionarArquivoImportacao} />
+            <ModalImportarFoto aberto={modalImportarAberto && !imagemParaRecorte} carregando={importando} erro={erroImportacao} onFechar={handleFecharImportar} onSelecionarArquivo={handleSelecionarArquivoImportacao} />
+
+            <ModalRecorteImagem
+                aberto={Boolean(imagemParaRecorte)}
+                imagemSrc={imagemParaRecorte}
+                aspect={PROPORCAO_RECORTE_FORMULARIO}
+                titulo="Recortar ficha"
+                descricao="Enquadre a ficha do título “CADASTRO DE CESTA BASICA” até o fim da caixa. Use o zoom e, se a foto estiver deitada, o botão Girar."
+                textoConfirmar="Enviar recorte"
+                permitirRotacao
+                larguraMaxima={LARGURA_MAXIMA_FORMULARIO_PX}
+                tamanhoMaximoBytes={TAMANHO_MAXIMO_ARQUIVO_BYTES}
+                onCancelar={handleCancelarRecorte}
+                onConfirmar={handleConfirmarRecorte}
+            />
 
             <ModalConfirmacao
                 aberto={Boolean(itemParaApagar)}

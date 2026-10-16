@@ -11,12 +11,12 @@ export const buscarFuncionarioPorId = base.buscarPorId;
 export const deletarFuncionario = base.deletar;
 
 // Mesmas regras para cadastrar e atualizar.
-function validarDadosFuncionario({ nome, cpf, senha, senhaConfirmada, cargoId }) {
+// alterarSenha = false (só na edição) ignora as regras de senha: a senha atual é mantida.
+function validarDadosFuncionario({ nome, cpf, senha, senhaConfirmada, cargoId, alterarSenha = true }) {
     const erroObrigatorios = validarObrigatorios({
         nome,
         CPF: cpf,
-        senha,
-        "confirmação da senha": senhaConfirmada,
+        ...(alterarSenha && { senha, "confirmação da senha": senhaConfirmada }),
         cargo: cargoId,
     });
     if (erroObrigatorios) return erroObrigatorios;
@@ -27,19 +27,21 @@ function validarDadosFuncionario({ nome, cpf, senha, senhaConfirmada, cargoId })
 
     const erroTamanho = validarTamanhos([
         { rotulo: "nome do funcionário", valor: nome, ...LIMITES.funcionario.nome },
-        { rotulo: "senha", valor: senha, ...LIMITES.funcionario.senha },
+        ...(alterarSenha ? [{ rotulo: "senha", valor: senha, ...LIMITES.funcionario.senha }] : []),
     ]);
     if (erroTamanho) return erroTamanho;
 
-    if (senha !== senhaConfirmada) {
+    if (alterarSenha && senha !== senhaConfirmada) {
         return "As senhas têm que ser iguais.";
     }
 
     return null;
 }
 
-function montarFormDataFuncionario({ nome, cpf, senha, cargoId, foto }) {
-    return montarFormData("funcionarioRequestDto", { nome, cpf, senha, cargoId }, foto);
+function montarFormDataFuncionario({ nome, cpf, senha, cargoId, foto, alterarSenha = true }) {
+    // Sem alterar a senha, o campo nem vai no JSON.
+    const dados = alterarSenha ? { nome, cpf, senha, cargoId } : { nome, cpf, cargoId };
+    return montarFormData("funcionarioRequestDto", dados, foto);
 }
 
 export function cadastrarFuncionario(funcionario, navigate, setFeedback) {
