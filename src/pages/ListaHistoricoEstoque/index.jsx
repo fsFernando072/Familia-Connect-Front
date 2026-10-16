@@ -10,7 +10,7 @@ import Paginacao from "../../components/Paginacao/Paginacao";
 import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao";
 import { useListaPaginada } from "../../hooks/useListaPaginada";
 import { listarHistoricoEstoque, deletarHistoricoEstoque } from "../../services/historicoEstoqueService";
-import { converterDataParaBr } from "../../utils/formatadores";
+import { converterDataParaBr, obterMesAtual } from "../../utils/formatadores";
 import { COR_PERIGO, COR_TURQUESA } from "../../utils/cores";
 import { useState } from "react";
 
@@ -19,7 +19,7 @@ const MESES = [
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
 ];
 const CLASSE_SELECT_MES =
-    "px-5 py-2.5 rounded-xl border border-cifa-linha font-bold text-base text-cifa-navy bg-white " +
+    "px-5 py-2.5 rounded-xl border border-cifa-linha text-base text-cifa-navy bg-white " +
     "hover:bg-cifa-suave/60 cursor-pointer transition duration-300 " +
     "focus:outline-none focus:border-cifa-menta focus:ring-4 focus:ring-cifa-menta/20";
 import { pode } from "../../services/permissoes";
@@ -30,8 +30,8 @@ function ListaHistoricoEstoque() {
     const podeEditar = pode(permissoes, "HISTORICO_ESTOQUE", "editar");
     const podeExcluir = pode(permissoes, "HISTORICO_ESTOQUE", "excluir");
 
-    const [mesSelecionado, setMesSelecionado] = useState("");
-
+    const somenteMes = obterMesAtual().substring(5, 7);
+    const [mesSelecionado, setMesSelecionado] = useState(somenteMes);
     
     const mes = mesSelecionado ? `${new Date().getFullYear()}-${mesSelecionado}` : undefined;
 
@@ -77,7 +77,7 @@ function ListaHistoricoEstoque() {
                     aria-label="Filtrar por mês"
                     className={CLASSE_SELECT_MES}
                     >
-                    <option value="">Mês</option>
+                    <option value="">Todos os meses</option>
                     {MESES.map((nome, i) => (
                         <option key={nome} value={String(i + 1).padStart(2, "0")}>
                             {nome}

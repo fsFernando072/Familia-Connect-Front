@@ -22,7 +22,7 @@ function Celula({ rotulo, children, className = "" }) {
     return (
         <div className={`min-w-0 ${className}`}>
             <span className="mb-0.5 block text-xs font-bold uppercase tracking-wide text-cifa-apagado md:hidden">{rotulo}</span>
-            <div className="break-words text-cifa-navy">{children || "-"}</div>
+            <div className="wrap-break-word text-cifa-navy">{children || "-"}</div>
         </div>
     );
 }
@@ -72,7 +72,7 @@ function HistoricoEntregas() {
                                 <ImagemLista tamanho="w-12 h-12">
                                     <FotoAvatar caminho={entrega.fotoFamilia} alt={`Foto da família ${entrega.nomeFamilia}`} Icone={Users} />
                                 </ImagemLista>
-                                <div className="min-w-0 break-words font-bold text-cifa-navy">{entrega.nomeFamilia}</div>
+                                <div className="min-w-0 wrap-break-word font-bold text-cifa-navy">{entrega.nomeFamilia}</div>
                             </div>
 
                             <Celula rotulo="Responsável">{entrega.nomeResponsavel}</Celula>

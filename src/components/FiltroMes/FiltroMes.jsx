@@ -1,5 +1,3 @@
-import { CalendarDays } from "lucide-react";
-
 const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
 const CLASSE_SELECT =
@@ -29,7 +27,6 @@ function FiltroMes({ valor, onChange, permitirTodos = false }) {
 
     return (
         <div className="flex items-center gap-2">
-            <CalendarDays size={18} className="text-cifa-apagado shrink-0" aria-hidden="true" />
             <select value={numeroMes} onChange={handleMes} aria-label="Mês" className={CLASSE_SELECT}>
                 {permitirTodos && <option value="">Todos os meses</option>}
                 {MESES.map((nome, indice) => (
