@@ -8,6 +8,44 @@ services:
       - "80:80"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      - grafana
     environment:
       - API_BASE_URL=${API_BASE_URL:-/api}
       - BACKEND_URL=${BACKEND_URL:-http://host.docker.internal:8080}
+      # Proxy /grafana/ no Nginx do front (só responde para quem está logado) e link do dashboard exibido na tela Dashboard.
+      - GRAFANA_URL=${GRAFANA_URL:-http://grafana:3000}
+      - GRAFANA_DASHBOARD_URL=${GRAFANA_DASHBOARD_URL:-/grafana/d/familia-connect/familia-connect-visao-geral?orgId=1}
+
+  # Não publica a porta 3000 de propósito: o Grafana só deve ser acessado por dentro do front (/grafana/),
+  # pois o acesso anônimo (Viewer) abaixo dispensa o login do próprio Grafana.
+  grafana:
+    image: grafana/grafana-oss:11.4.0
+    container_name: familia-connect-grafana
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost/grafana/}
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      - GF_USERS_DEFAULT_THEME=light
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      # Conexão com o MySQL do Família Connect (usuário somente-leitura: grafana/sql/usuario-somente-leitura.sql)
+      - GRAFANA_DB_HOST=${GRAFANA_DB_HOST:-host.docker.internal}
+      - GRAFANA_DB_PORT=${GRAFANA_DB_PORT:-3306}
+      - GRAFANA_DB_NAME=${GRAFANA_DB_NAME:-familia_connect}
+      - GRAFANA_DB_USER=${GRAFANA_DB_USER:-grafana_ro}
+      - GRAFANA_DB_PASSWORD=${GRAFANA_DB_PASSWORD:-}
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/etc/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+
+volumes:
+  grafana-data:

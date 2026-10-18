@@ -29,3 +29,5 @@ yarn-error.log*
 .env.*
 !.env.example
 *.zip
+# Provisionamento do Grafana (usado só pelo docker-compose)
+grafana/

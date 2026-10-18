@@ -1,0 +1,2195 @@
+{
+  "uid": "familia-connect",
+  "title": "Família Connect — Visão geral",
+  "tags": [
+    "familia-connect"
+  ],
+  "description": "Indicadores de famílias, entregas e estoque. Fonte: banco MySQL do Família Connect.",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "5m",
+  "timezone": "browser",
+  "time": {
+    "from": "now-6M",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "1m",
+      "5m",
+      "15m",
+      "1h"
+    ]
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [],
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "Visão geral",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Famílias cadastradas",
+      "description": "Total de famílias no sistema.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT COUNT(*) AS valor FROM familia"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#137d91",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Pessoas cadastradas",
+      "description": "Total de pessoas (responsáveis e dependentes) nas famílias cadastradas.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 4,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT COUNT(*) AS valor FROM pessoa"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#137d91",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Famílias com prioridade",
+      "description": "Famílias marcadas como prioritárias no cadastro.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT COUNT(*) AS valor FROM familia WHERE possui_prioridade = 1"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#f59e0b"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#f59e0b",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Famílias atendidas no mês",
+      "description": "Famílias que já receberam ao menos um item no mês atual.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT COUNT(DISTINCT p.familia_id) AS valor\nFROM entrega e\nJOIN pessoa p ON p.id = e.pessoa_id\nWHERE e.data_entrega BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE())"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#16a34a"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#16a34a",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Famílias pendentes no mês",
+      "description": "Famílias que ainda não receberam nenhuma entrega no mês atual (as mesmas da tela Entrega).",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT COUNT(*) AS valor\nFROM familia f\nWHERE NOT EXISTS (\n    SELECT 1 FROM entrega e\n    JOIN pessoa p ON p.id = e.pessoa_id\n    WHERE p.familia_id = f.id AND e.data_entrega BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE())\n)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#f59e0b"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#f59e0b",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 7,
+      "type": "gauge",
+      "title": "Cobertura do mês",
+      "description": "Percentual das famílias cadastradas que já foram atendidas no mês atual.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT COALESCE(ROUND(100 * COUNT(DISTINCT p.familia_id) / NULLIF((SELECT COUNT(*) FROM familia), 0), 1), 0) AS valor\nFROM entrega e\nJOIN pessoa p ON p.id = e.pessoa_id\nWHERE e.data_entrega BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE())"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#dc2626",
+                "value": null
+              },
+              {
+                "color": "#f59e0b",
+                "value": 40
+              },
+              {
+                "color": "#16a34a",
+                "value": 70
+              }
+            ]
+          },
+          "decimals": 1,
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "Itens entregues no mês",
+      "description": "Total de unidades entregues no mês atual (cada unidade é um registro de entrega).",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT COUNT(*) AS valor FROM entrega e WHERE e.data_entrega BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE())"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#137d91",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Média de itens por família",
+      "description": "Itens entregues no mês atual divididos pelas famílias atendidas no mês.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 4,
+        "y": 5,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT COALESCE(ROUND(COUNT(*) / NULLIF(COUNT(DISTINCT p.familia_id), 0), 1), 0) AS valor\nFROM entrega e\nJOIN pessoa p ON p.id = e.pessoa_id\nWHERE e.data_entrega BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE())"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#137d91",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 10,
+      "type": "stat",
+      "title": "Itens entregues no período",
+      "description": "Total de unidades entregues dentro do período escolhido no seletor de tempo.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 5,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT COUNT(*) AS valor FROM entrega e WHERE $__timeFilter(e.data_entrega)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#08425d"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#08425d",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 11,
+      "type": "stat",
+      "title": "Saldo de estoque no mês",
+      "description": "Unidades ainda disponíveis hoje: estoque cadastrado no mês menos o que já foi entregue, somando os produtos ativos.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 5,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT COALESCE(SUM(GREATEST(b.cadastrado - b.entregue, 0)), 0) AS valor FROM (\nSELECT pr.id, pr.nome, pr.categoria_id,\n       est.qtd AS cadastrado,\n       COALESCE(ent.qtd, 0) AS entregue\nFROM produto pr\nJOIN (SELECT produto_id, SUM(quantidade) AS qtd FROM historico_estoque\n      WHERE data_estoque BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE()) GROUP BY produto_id) est ON est.produto_id = pr.id\nLEFT JOIN (SELECT produto_id, COUNT(*) AS qtd FROM entrega\n           WHERE data_entrega BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE()) GROUP BY produto_id) ent ON ent.produto_id = pr.id\nWHERE pr.ativo = 1\n) b"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#137d91",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 12,
+      "type": "stat",
+      "title": "Produtos esgotados",
+      "description": "Produtos ativos cujo estoque cadastrado no mês já foi todo entregue.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 5,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT COUNT(*) AS valor FROM (\nSELECT pr.id, pr.nome, pr.categoria_id,\n       est.qtd AS cadastrado,\n       COALESCE(ent.qtd, 0) AS entregue\nFROM produto pr\nJOIN (SELECT produto_id, SUM(quantidade) AS qtd FROM historico_estoque\n      WHERE data_estoque BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE()) GROUP BY produto_id) est ON est.produto_id = pr.id\nLEFT JOIN (SELECT produto_id, COUNT(*) AS qtd FROM entrega\n           WHERE data_entrega BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE()) GROUP BY produto_id) ent ON ent.produto_id = pr.id\nWHERE pr.ativo = 1\n) b WHERE b.entregue >= b.cadastrado"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#16a34a",
+                "value": null
+              },
+              {
+                "color": "#dc2626",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 13,
+      "type": "stat",
+      "title": "Produtos com estoque baixo",
+      "description": "Produtos que já usaram 80% ou mais do estoque do mês, mas ainda não esgotaram.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 5,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT COUNT(*) AS valor FROM (\nSELECT pr.id, pr.nome, pr.categoria_id,\n       est.qtd AS cadastrado,\n       COALESCE(ent.qtd, 0) AS entregue\nFROM produto pr\nJOIN (SELECT produto_id, SUM(quantidade) AS qtd FROM historico_estoque\n      WHERE data_estoque BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE()) GROUP BY produto_id) est ON est.produto_id = pr.id\nLEFT JOIN (SELECT produto_id, COUNT(*) AS qtd FROM entrega\n           WHERE data_entrega BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE()) GROUP BY produto_id) ent ON ent.produto_id = pr.id\nWHERE pr.ativo = 1\n) b WHERE b.entregue < b.cadastrado AND b.entregue >= 0.8 * b.cadastrado"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#16a34a",
+                "value": null
+              },
+              {
+                "color": "#f59e0b",
+                "value": 1
+              },
+              {
+                "color": "#dc2626",
+                "value": 5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 14,
+      "type": "row",
+      "title": "Entregas",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 15,
+      "type": "timeseries",
+      "title": "Itens entregues e famílias atendidas por mês",
+      "description": "Barras: unidades entregues no mês. Linha: quantas famílias diferentes foram atendidas. Respeita o período do seletor (a partir do 1º dia do mês inicial).",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 16,
+        "h": 9
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "time_series",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT CAST(DATE_FORMAT(e.data_entrega, '%Y-%m-01') AS DATETIME) AS time,\n       COUNT(*) AS 'Itens entregues',\n       COUNT(DISTINCT p.familia_id) AS 'Famílias atendidas'\nFROM entrega e\nJOIN pessoa p ON p.id = e.pessoa_id\nWHERE e.data_entrega >= DATE_FORMAT($__timeFrom(), '%Y-%m-01') AND e.data_entrega <= $__timeTo()\nGROUP BY 1\nORDER BY 1"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "barAlignment": 0,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisPlacement": "auto",
+            "gradientMode": "none",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Itens entregues"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#137d91"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Famílias atendidas"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#44beb7"
+                }
+              },
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "custom.showPoints",
+                "value": "always"
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 7
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 16,
+      "type": "piechart",
+      "title": "Itens entregues por categoria",
+      "description": "Distribuição das unidades entregues no período, por categoria de produto.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 10,
+        "w": 8,
+        "h": 9
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT c.nome AS 'Categoria', COUNT(*) AS 'Itens'\nFROM entrega e\nJOIN produto pr ON pr.id = e.produto_id\nJOIN categoria c ON c.id = pr.categoria_id\nWHERE $__timeFilter(e.data_entrega)\nGROUP BY c.id, c.nome\nORDER BY 2 DESC"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "pieType": "donut",
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "reduceOptions": {
+          "values": true,
+          "calcs": [],
+          "fields": ""
+        }
+      }
+    },
+    {
+      "id": 17,
+      "type": "timeseries",
+      "title": "Itens entregues por dia",
+      "description": "Unidades entregues em cada dia do período. Ajuda a ver picos e dias sem atendimento.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 19,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "time_series",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT CAST(e.data_entrega AS DATETIME) AS time, COUNT(*) AS 'Itens entregues'\nFROM entrega e\nWHERE $__timeFilter(e.data_entrega)\nGROUP BY 1\nORDER BY 1"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "barAlignment": 0,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisPlacement": "auto",
+            "gradientMode": "none",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 18,
+      "type": "barchart",
+      "title": "Itens entregues por dia da semana",
+      "description": "Em quais dias da semana se concentram as entregas do período.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 19,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT ELT(d.dia, 'Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado') AS 'Dia da semana', d.itens AS 'Itens entregues'\nFROM (\n    SELECT DAYOFWEEK(e.data_entrega) AS dia, COUNT(*) AS itens\n    FROM entrega e\n    WHERE $__timeFilter(e.data_entrega)\n    GROUP BY DAYOFWEEK(e.data_entrega)\n) d\nORDER BY d.dia"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#08425d"
+          },
+          "custom": {
+            "fillOpacity": 85,
+            "lineWidth": 1,
+            "gradientMode": "none",
+            "axisPlacement": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "auto",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0,
+        "showValue": "auto",
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.9,
+        "barRadius": 0.1,
+        "fullHighlight": false,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 19,
+      "type": "bargauge",
+      "title": "Produtos mais entregues (top 10)",
+      "description": "Os 10 produtos com mais unidades entregues no período.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 27,
+        "w": 12,
+        "h": 9
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT pr.nome AS 'Produto', COUNT(*) AS 'Itens entregues'\nFROM entrega e\nJOIN produto pr ON pr.id = e.produto_id\nWHERE $__timeFilter(e.data_entrega)\nGROUP BY pr.id, pr.nome\nORDER BY 2 DESC\nLIMIT 10"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#137d91",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "auto",
+        "sizing": "auto",
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "reduceOptions": {
+          "values": true,
+          "calcs": [],
+          "fields": ""
+        }
+      }
+    },
+    {
+      "id": 20,
+      "type": "bargauge",
+      "title": "Entregas por funcionário (top 10)",
+      "description": "Quantas unidades cada funcionário registrou no período.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 27,
+        "w": 12,
+        "h": 9
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT fu.nome AS 'Funcionário', COUNT(*) AS 'Itens entregues'\nFROM entrega e\nJOIN funcionario fu ON fu.id = e.funcionario_id\nWHERE $__timeFilter(e.data_entrega)\nGROUP BY fu.id, fu.nome\nORDER BY 2 DESC\nLIMIT 10"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#44beb7"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#44beb7",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "auto",
+        "sizing": "auto",
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "reduceOptions": {
+          "values": true,
+          "calcs": [],
+          "fields": ""
+        }
+      }
+    },
+    {
+      "id": 21,
+      "type": "row",
+      "title": "Estoque do mês atual",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 36,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 22,
+      "type": "table",
+      "title": "Situação do estoque por produto",
+      "description": "Cadastrado = soma das entradas do mês. Entregue = unidades já entregues no mês. Os produtos mais próximos de acabar aparecem primeiro.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 37,
+        "w": 14,
+        "h": 10
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT b.nome AS 'Produto', c.nome AS 'Categoria',\n               b.cadastrado AS 'Cadastrado', b.entregue AS 'Entregue',\n               b.cadastrado - b.entregue AS 'Saldo',\n               ROUND(100 * b.entregue / NULLIF(b.cadastrado, 0), 0) AS '% usado'\n        FROM (\nSELECT pr.id, pr.nome, pr.categoria_id,\n       est.qtd AS cadastrado,\n       COALESCE(ent.qtd, 0) AS entregue\nFROM produto pr\nJOIN (SELECT produto_id, SUM(quantidade) AS qtd FROM historico_estoque\n      WHERE data_estoque BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE()) GROUP BY produto_id) est ON est.produto_id = pr.id\nLEFT JOIN (SELECT produto_id, COUNT(*) AS qtd FROM entrega\n           WHERE data_entrega BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE()) GROUP BY produto_id) ent ON ent.produto_id = pr.id\nWHERE pr.ativo = 1\n) b\n        JOIN categoria c ON c.id = b.categoria_id\n        ORDER BY 6 DESC, 1"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#137d91",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "% usado"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "basic"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "#16a34a",
+                      "value": null
+                    },
+                    {
+                      "color": "#f59e0b",
+                      "value": 80
+                    },
+                    {
+                      "color": "#dc2626",
+                      "value": 100
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Saldo"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "#dc2626",
+                      "value": null
+                    },
+                    {
+                      "color": "#16a34a",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": ""
+        },
+        "sortBy": []
+      }
+    },
+    {
+      "id": 23,
+      "type": "bargauge",
+      "title": "Saldo de estoque por categoria",
+      "description": "Unidades ainda disponíveis no mês atual, somadas por categoria.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 37,
+        "w": 10,
+        "h": 10
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT c.nome AS 'Categoria', SUM(GREATEST(b.cadastrado - b.entregue, 0)) AS 'Saldo'\n    FROM (\nSELECT pr.id, pr.nome, pr.categoria_id,\n       est.qtd AS cadastrado,\n       COALESCE(ent.qtd, 0) AS entregue\nFROM produto pr\nJOIN (SELECT produto_id, SUM(quantidade) AS qtd FROM historico_estoque\n      WHERE data_estoque BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE()) GROUP BY produto_id) est ON est.produto_id = pr.id\nLEFT JOIN (SELECT produto_id, COUNT(*) AS qtd FROM entrega\n           WHERE data_entrega BETWEEN DATE_FORMAT(CURDATE(), '%Y-%m-01') AND LAST_DAY(CURDATE()) GROUP BY produto_id) ent ON ent.produto_id = pr.id\nWHERE pr.ativo = 1\n) b\n    JOIN categoria c ON c.id = b.categoria_id\n    GROUP BY c.id, c.nome\n    ORDER BY 2 DESC"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#08425d"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#08425d",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "auto",
+        "sizing": "auto",
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "reduceOptions": {
+          "values": true,
+          "calcs": [],
+          "fields": ""
+        }
+      }
+    },
+    {
+      "id": 24,
+      "type": "timeseries",
+      "title": "Entradas de estoque x itens entregues por mês",
+      "description": "Barras: unidades cadastradas no estoque no mês. Linha: unidades entregues. Se a linha encosta nas barras, o estoque do mês foi quase todo consumido.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 47,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "time_series",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT m.mes AS time, SUM(m.entrada) AS 'Entradas de estoque', SUM(m.saida) AS 'Itens entregues'\nFROM (\n    SELECT CAST(DATE_FORMAT(h.data_estoque, '%Y-%m-01') AS DATETIME) AS mes, h.quantidade AS entrada, 0 AS saida\n    FROM historico_estoque h\n    WHERE h.data_estoque >= DATE_FORMAT($__timeFrom(), '%Y-%m-01') AND h.data_estoque <= $__timeTo()\n    UNION ALL\n    SELECT CAST(DATE_FORMAT(e.data_entrega, '%Y-%m-01') AS DATETIME) AS mes, 0 AS entrada, 1 AS saida\n    FROM entrega e\n    WHERE e.data_entrega >= DATE_FORMAT($__timeFrom(), '%Y-%m-01') AND e.data_entrega <= $__timeTo()\n) m\nGROUP BY m.mes\nORDER BY m.mes"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "barAlignment": 0,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisPlacement": "auto",
+            "gradientMode": "none",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Entradas de estoque"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#44beb7"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Itens entregues"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#08425d"
+                }
+              },
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "custom.showPoints",
+                "value": "always"
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 7
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 25,
+      "type": "row",
+      "title": "Perfil das famílias",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 55,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 26,
+      "type": "timeseries",
+      "title": "Novas famílias cadastradas por mês",
+      "description": "Famílias cadastradas em cada mês do período.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 56,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "time_series",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT CAST(DATE_FORMAT(f.data_cadastro, '%Y-%m-01') AS DATETIME) AS time, COUNT(*) AS 'Novas famílias'\nFROM familia f\nWHERE f.data_cadastro >= DATE_FORMAT($__timeFrom(), '%Y-%m-01') AND f.data_cadastro <= $__timeTo()\nGROUP BY 1\nORDER BY 1"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "barAlignment": 0,
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisPlacement": "auto",
+            "gradientMode": "none",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Novas famílias"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#44beb7"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 27,
+      "type": "barchart",
+      "title": "Famílias por tamanho",
+      "description": "Quantas famílias têm 1, 2, 3... pessoas cadastradas.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 56,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT CASE t.k WHEN 1 THEN '1 pessoa' WHEN 6 THEN '6 ou mais' ELSE CONCAT(t.k, ' pessoas') END AS 'Tamanho da família', t.total AS 'Famílias'\nFROM (\n    SELECT LEAST(n.qtd, 6) AS k, COUNT(*) AS total\n    FROM (SELECT familia_id, COUNT(*) AS qtd FROM pessoa GROUP BY familia_id) n\n    GROUP BY LEAST(n.qtd, 6)\n) t\nORDER BY t.k"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "custom": {
+            "fillOpacity": 85,
+            "lineWidth": 1,
+            "gradientMode": "none",
+            "axisPlacement": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "auto",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0,
+        "showValue": "auto",
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.9,
+        "barRadius": 0.1,
+        "fullHighlight": false,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 28,
+      "type": "barchart",
+      "title": "Pessoas por faixa etária",
+      "description": "Idade calculada pela data de nascimento, na data de hoje.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 64,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT x.faixa AS 'Faixa etária', COUNT(*) AS 'Pessoas'\nFROM (\n    SELECT CASE WHEN i.idade < 12 THEN '0 a 11 anos' WHEN i.idade < 18 THEN '12 a 17 anos' WHEN i.idade < 60 THEN '18 a 59 anos' ELSE '60 anos ou mais' END AS faixa,\n           CASE WHEN i.idade < 12 THEN 1 WHEN i.idade < 18 THEN 2 WHEN i.idade < 60 THEN 3 ELSE 4 END AS ordem\n    FROM (SELECT TIMESTAMPDIFF(YEAR, dt_nascimento, CURDATE()) AS idade FROM pessoa WHERE dt_nascimento IS NOT NULL) i\n) x\nGROUP BY x.ordem, x.faixa\nORDER BY x.ordem"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#08425d"
+          },
+          "custom": {
+            "fillOpacity": 85,
+            "lineWidth": 1,
+            "gradientMode": "none",
+            "axisPlacement": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "auto",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0,
+        "showValue": "auto",
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.9,
+        "barRadius": 0.1,
+        "fullHighlight": false,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 29,
+      "type": "piechart",
+      "title": "Pessoas por sexo",
+      "description": "Distribuição das pessoas cadastradas.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 64,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT CASE p.sexo WHEN 'MASCULINO' THEN 'Masculino' WHEN 'FEMININO' THEN 'Feminino' ELSE 'Outro' END AS 'Sexo', COUNT(*) AS 'Pessoas'\nFROM pessoa p\nGROUP BY p.sexo\nORDER BY 2 DESC"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "pieType": "donut",
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "reduceOptions": {
+          "values": true,
+          "calcs": [],
+          "fields": ""
+        }
+      }
+    },
+    {
+      "id": 30,
+      "type": "piechart",
+      "title": "Famílias com e sem prioridade",
+      "description": "Proporção de famílias marcadas como prioritárias.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 64,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT IF(f.possui_prioridade = 1, 'Com prioridade', 'Sem prioridade') AS 'Prioridade', COUNT(*) AS 'Famílias'\nFROM familia f\nGROUP BY f.possui_prioridade\nORDER BY 2 DESC"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Com prioridade"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#f59e0b"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sem prioridade"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#137d91"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "pieType": "donut",
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "reduceOptions": {
+          "values": true,
+          "calcs": [],
+          "fields": ""
+        }
+      }
+    },
+    {
+      "id": 31,
+      "type": "bargauge",
+      "title": "Bairros com mais famílias (top 10)",
+      "description": "Onde moram as famílias cadastradas.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 72,
+        "w": 12,
+        "h": 9
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT COALESCE(NULLIF(TRIM(en.bairro), ''), 'Não informado') AS 'Bairro', COUNT(*) AS 'Famílias'\nFROM familia f\nJOIN endereco en ON en.id = f.endereco_id\nGROUP BY 1\nORDER BY 2 DESC\nLIMIT 10"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#137d91",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "auto",
+        "sizing": "auto",
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "reduceOptions": {
+          "values": true,
+          "calcs": [],
+          "fields": ""
+        }
+      }
+    },
+    {
+      "id": 32,
+      "type": "bargauge",
+      "title": "Profissão dos responsáveis (top 10)",
+      "description": "Profissões mais comuns entre os responsáveis pelas famílias.",
+      "datasource": {
+        "type": "mysql",
+        "uid": "familia-connect-mysql"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 72,
+        "w": 12,
+        "h": 9
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "familia-connect-mysql"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT pf.nome AS 'Profissão', COUNT(*) AS 'Responsáveis'\nFROM pessoa p\nJOIN profissao pf ON pf.id = p.profissao_id\nWHERE p.is_responsavel = 1\nGROUP BY pf.id, pf.nome\nORDER BY 2 DESC\nLIMIT 10"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#44beb7"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#44beb7",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "auto",
+        "sizing": "auto",
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "reduceOptions": {
+          "values": true,
+          "calcs": [],
+          "fields": ""
+        }
+      }
+    }
+  ]
+}

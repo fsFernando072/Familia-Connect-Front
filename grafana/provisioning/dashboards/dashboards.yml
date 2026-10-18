@@ -1,0 +1,14 @@
+apiVersion: 1
+
+# Carrega os dashboards da pasta grafana/dashboards (montada em /etc/grafana/dashboards).
+# Para alterar um painel: edite o JSON (ou exporte do Grafana: Share > Export) e salve no repositório.
+providers:
+  - name: familia-connect
+    orgId: 1
+    folder: Família Connect
+    type: file
+    disableDeletion: true
+    allowUiUpdates: false
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/dashboards
