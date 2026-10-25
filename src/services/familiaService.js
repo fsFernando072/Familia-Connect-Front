@@ -31,6 +31,20 @@ export async function buscarIdFamiliaPorCarteirinha(idCarteirinha) {
     return null;
 }
 
+// GET /familias/responsaveis/{cpf} devolve o id da família cujo RESPONSÁVEL tem esse CPF.
+// Devolve o id, ou null se não existir responsável com o CPF ou a chamada falhar.
+export async function buscarIdFamiliaPorCpfResponsavel(cpf) {
+    try {
+        const response = await api.get(`/familias/responsaveis/${encodeURIComponent(somenteDigitos(cpf))}`);
+
+        if (response.status === 200 && response.data !== "" && response.data != null) return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar família pelo CPF do responsável:", error);
+    }
+
+    return null;
+}
+
 // Regras de tamanho de uma pessoa (responsável ou dependente), iguais ao PessoaRequestDto do back.
 // RG e telefone contam dígitos, sem máscara. Campos vazios são ignorados (a obrigatoriedade é checada antes).
 function validarTamanhosPessoa(pessoa, contexto) {

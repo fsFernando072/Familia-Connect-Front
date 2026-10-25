@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { QrCode, Users } from "lucide-react";
+import { IdCard, QrCode, Users } from "lucide-react";
 import ModalLeitorQRCode from "../../components/ModalLeitorQRCode/ModalLeitorQRCode";
+import ModalBuscaCpf from "../../components/ModalBuscaCpf/ModalBuscaCpf";
 import PaginaLista from "../../components/PaginaLista/PaginaLista";
 import ListaAcoes from "../../components/ListaAcoes/ListaAcoes";
 import ListaStatus from "../../components/ListaStatus/ListaStatus";
@@ -9,6 +10,7 @@ import ListaContainer from "../../components/ListaContainer/ListaContainer";
 import ImagemLista from "../../components/ImagemLista/ImagemLista";
 import LinhaInfo from "../../components/LinhaInfo/LinhaInfo";
 import Botao from "../../components/Botao/Botao";
+import BotaoSecundario from "../../components/BotaoSecundario/BotaoSecundario";
 import Paginacao from "../../components/Paginacao/Paginacao";
 import FotoAvatar from "../../components/FotoAvatar/FotoAvatar";
 import CartaoEntrega from "../../components/CartaoEntrega/CartaoEntrega";
@@ -16,7 +18,7 @@ import FiltroMes from "../../components/FiltroMes/FiltroMes";
 import { useListaPaginada } from "../../hooks/useListaPaginada";
 import { useFeedback } from "../../hooks/useFeedback";
 import { listarProdutos } from "../../services/produtoService";
-import { buscarFamiliaPorId, buscarIdFamiliaPorCarteirinha } from "../../services/familiaService";
+import { buscarFamiliaPorId, buscarIdFamiliaPorCarteirinha, buscarIdFamiliaPorCpfResponsavel } from "../../services/familiaService";
 import { cadastrarEntrega, listarFamiliasPendentesDeEntrega } from "../../services/entregaService";
 import { feedbackCarregando, feedbackErro } from "../../utils/feedback";
 import { obterMesAtual } from "../../utils/formatadores";
@@ -36,6 +38,7 @@ function Entrega() {
     const [enviando, setEnviando] = useState(false);
     const [mes, setMes] = useState(obterMesAtual());
     const [leitorAberto, setLeitorAberto] = useState(false);
+    const [buscaCpfAberta, setBuscaCpfAberta] = useState(false);
     // Família aberta pelo QR Code que ainda precisa ser enfocada na lista (a lista recarrega após o filtro).
     const idParaRolar = useRef(null);
 
@@ -74,25 +77,18 @@ function Entrega() {
         setMes(novoMes);
     };
 
-    const handleLeituraQRCode = async (idCarteirinha) => {
-        setLeitorAberto(false);
-        setFeedback(feedbackCarregando("Buscando família..."));
-
-        const idFamilia = await buscarIdFamiliaPorCarteirinha(idCarteirinha);
+    // Abre o cartão de entrega da família: devolve a mensagem de erro (string) ou null se deu certo.
+    const abrirEntregaDaFamilia = async (idFamilia, msgNaoEncontrada) => {
         const dados = idFamilia === null ? null : await buscarFamiliaPorId(idFamilia);
 
-        if (!dados) {
-            setFeedback(feedbackErro("Carteirinha não encontrada."));
-            return;
-        }
+        if (!dados) return msgNaoEncontrada;
 
         // Só dá para abrir o cartão se a família está na lista de pendentes do mês: confere antes de filtrar a lista.
         const nomeResponsavel = dados.responsavel?.nome ?? "";
         const pendentes = await listarFamiliasPendentesDeEntrega({ nomeResponsavel, mes, filtros: { mes }, size: TAMANHO_LISTA_PRODUTOS });
 
         if (!(pendentes.content || []).some((familia) => familia.idFamilia === idFamilia)) {
-            setFeedback(feedbackErro("Esta família já recebeu a entrega deste mês."));
-            return;
+            return "Esta família já recebeu a entrega deste mês.";
         }
 
         fecharFeedback();
@@ -100,6 +96,28 @@ function Entrega() {
         setBusca(nomeResponsavel);
         setIdFamiliaAberta(idFamilia);
         idParaRolar.current = idFamilia;
+
+        return null;
+    };
+
+    const handleLeituraQRCode = async (idCarteirinha) => {
+        setLeitorAberto(false);
+        setFeedback(feedbackCarregando("Buscando família..."));
+
+        const idFamilia = await buscarIdFamiliaPorCarteirinha(idCarteirinha);
+        const erro = await abrirEntregaDaFamilia(idFamilia, "Carteirinha não encontrada.");
+
+        if (erro) setFeedback(feedbackErro(erro));
+    };
+
+    // Plano B para carteirinha perdida: o erro volta para o próprio modal, para o CPF poder ser corrigido.
+    const handleBuscarPorCpf = async (cpf) => {
+        const idFamilia = await buscarIdFamiliaPorCpfResponsavel(cpf);
+        const erro = await abrirEntregaDaFamilia(idFamilia, "Nenhum responsável encontrado com este CPF.");
+
+        if (!erro) setBuscaCpfAberta(false);
+
+        return erro;
     };
 
     const handleConfirmar = async (familia, itensSelecionados) => {
@@ -121,11 +139,14 @@ function Entrega() {
                 <FiltroMes valor={mes} onChange={handleMudarMes} />
             </ListaAcoes>
 
-            <div className="mb-6">
+            <div className="mb-6 flex flex-wrap gap-3">
                 <Botao nome="Realizar Entrega" icone={QrCode} cor={COR_TURQUESA} acao={() => setLeitorAberto(true)} desabilitado={enviando || somenteConsulta} />
+                <BotaoSecundario nome="Perdi a carteirinha" icone={IdCard} acao={() => setBuscaCpfAberta(true)} desabilitado={enviando || somenteConsulta} />
             </div>
 
             <ModalLeitorQRCode aberto={leitorAberto} onLeitura={handleLeituraQRCode} onFechar={() => setLeitorAberto(false)} />
+
+            <ModalBuscaCpf aberto={buscaCpfAberta} onBuscar={handleBuscarPorCpf} onFechar={() => setBuscaCpfAberta(false)} />
 
             {somenteConsulta && <p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">Você está vendo outro mês. As entregas só podem ser registradas no mês atual.</p>}
 
