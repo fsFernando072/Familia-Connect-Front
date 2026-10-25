@@ -15,7 +15,9 @@ import ModalConfirmacao from "../../components/ModalConfirmacao/ModalConfirmacao
 import ModalImportarFoto from "../../components/ModalImportarFoto/ModalImportarFoto";
 import ModalRecorteImagem from "../../components/ModalRecorteImagem/ModalRecorteImagem";
 import FotoAvatar from "../../components/FotoAvatar/FotoAvatar";
+import NotificacoesCarteirinha from "../../components/NotificacoesCarteirinha/NotificacoesCarteirinha";
 import { useListaPaginada } from "../../hooks/useListaPaginada";
+import { useNotificacoesCarteirinha } from "../../hooks/useNotificacoesCarteirinha";
 import { listarFamilias, deletarFamilia } from "../../services/familiaService";
 import { extrairDadosFamiliaPorFoto, PROPORCAO_RECORTE_FORMULARIO, LARGURA_MAXIMA_FORMULARIO_PX, TAMANHO_MAXIMO_ARQUIVO_BYTES } from "../../services/ocrService";
 import { COR_PERIGO, COR_PETROLEO, COR_TURQUESA } from "../../utils/cores";
@@ -32,6 +34,7 @@ function ListaFamilias() {
     const [importando, setImportando] = useState(false);
     const [erroImportacao, setErroImportacao] = useState("");
     const [imagemParaRecorte, setImagemParaRecorte] = useState(null);
+    const { notificacoes, fechar: fecharNotificacao } = useNotificacoesCarteirinha();
 
     const {
         itens,
@@ -106,6 +109,8 @@ function ListaFamilias() {
 
     return (
         <PaginaLista nomeTela="Lista de Famílias" feedback={feedback} onFecharFeedback={fecharFeedback}>
+            <NotificacoesCarteirinha notificacoes={notificacoes} onFechar={fecharNotificacao} />
+
             <ListaAcoes
                 busca={busca}
                 onBuscaChange={(e) => setBusca(e.target.value)}

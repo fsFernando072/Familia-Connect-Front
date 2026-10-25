@@ -1,6 +1,7 @@
 import { somenteDigitos } from "../utils/mascaras";
 import { dataValida, nascimentoNoPassado, validarCpf } from "../utils/validadores";
 import { converterDataParaIso } from "../utils/formatadores";
+import { adicionarCarteirinhaPendente } from "../utils/carteirinhasPendentes";
 import api from "./apiClient";
 import { LIMITES } from "./limitesCampos";
 import { criarServicoBase, enviarComFeedback, mensagensCrud, montarFormData, validarObrigatorios, validarTamanhos } from "./servicoBase";
@@ -168,9 +169,26 @@ export function cadastrarFamilia(familia, navigate, setFeedback) {
         erros: {
             409: "Endereço ou pessoa (CPF) já cadastrados.",
         },
+        // Guarda o correlationId para a lista de famílias acompanhar o processamento da carteirinha.
+        aposSucesso: async (response) => {
+            adicionarCarteirinhaPendente(response.data?.processamentoCarteirinha?.correlationId);
+            return null;
+        },
         navigate,
         setFeedback,
     });
+}
+
+// GET /familias/buscar-status-carteirinha/{correlationId}
+// Devolve { status, dados } (status HTTP + corpo) ou null se a chamada falhar (ex.: sem conexão).
+export async function buscarStatusCarteirinha(correlationId) {
+    try {
+        const response = await api.get(`/familias/buscar-status-carteirinha/${encodeURIComponent(correlationId)}`);
+        return { status: response.status, dados: response.data };
+    } catch (error) {
+        console.error("Erro ao buscar o status da carteirinha:", error);
+        return null;
+    }
 }
 
 export function atualizarFamilia(id, familia, navigate, setFeedback) {
