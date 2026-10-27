@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import MenuLateral from "../MenuLateral/MenuLateral";
 import Header from "../Header/Header";
+import NotificacoesCarteirinha from "../NotificacoesCarteirinha/NotificacoesCarteirinha";
+import { useNotificacoesCarteirinha } from "../../hooks/useNotificacoesCarteirinha";
 import { buscarMeuAcesso } from "../../services/permissoes";
 import { rotaPermitida } from "../../routes/permissoesRotas";
 
@@ -12,6 +14,12 @@ function LayoutPrincipal() {
     const { pathname } = useLocation();
     const [menuAberto, setMenuAberto] = useState(false);
     const [acesso, setAcesso] = useState(undefined); // undefined = carregando, null = não logado
+    const [conclusaoCarteirinha, setConclusaoCarteirinha] = useState(null);
+
+    // Fica aqui (e não em cada tela) para o acompanhamento da carteirinha continuar ao trocar de página.
+    const { notificacoes, fechar: fecharNotificacao, acompanhar: acompanharCarteirinha } = useNotificacoesCarteirinha({
+        aoConcluir: (tipo) => setConclusaoCarteirinha({ tipo, em: Date.now() }),
+    });
 
     useEffect(() => {
         let ativo = true;
@@ -54,12 +62,14 @@ function LayoutPrincipal() {
                 <Header onAbrirMenu={() => setMenuAberto(true)} />
                 <main className="flex-1 overflow-x-hidden">
                     {rotaPermitida(permissoes, pathname) ? (
-                        <Outlet context={{ permissoes }} />
+                        <Outlet context={{ permissoes, acompanharCarteirinha, conclusaoCarteirinha }} />
                     ) : (
                         <p className="mt-16 px-4 text-center text-lg text-cifa-apagado">Você não tem permissão para acessar esta página.</p>
                     )}
                 </main>
             </div>
+
+            <NotificacoesCarteirinha notificacoes={notificacoes} onFechar={fecharNotificacao} />
         </div>
     );
 }

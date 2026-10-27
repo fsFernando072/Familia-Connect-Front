@@ -16,7 +16,7 @@ import ListaContainer from "../../components/ListaContainer/ListaContainer";
 import ListaStatus from "../../components/ListaStatus/ListaStatus";
 import { useFeedback } from "../../hooks/useFeedback";
 import { buscarFamiliaPorId, solicitarCriacaoCarteirinha, verificarCarteirinhaFamilia } from "../../services/familiaService";
-import { feedbackCarregando, feedbackErro, feedbackSucesso } from "../../utils/feedback";
+import { feedbackCarregando, feedbackErro } from "../../utils/feedback";
 import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep } from "../../utils/mascaras";
 import { converterDataParaBr } from "../../utils/formatadores";
 import { COR_TURQUESA } from "../../utils/cores";
@@ -30,7 +30,7 @@ const ABAS = [
 function DetalhesFamilia() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { permissoes } = useOutletContext();
+    const { permissoes, acompanharCarteirinha, conclusaoCarteirinha } = useOutletContext();
     const { feedback, setFeedback, fecharFeedback } = useFeedback();
 
     const [familia, setFamilia] = useState(null);
@@ -38,7 +38,7 @@ function DetalhesFamilia() {
     const [abaAtiva, setAbaAtiva] = useState("dados");
     const [possuiCarteirinha, setPossuiCarteirinha] = useState(false);
     const [verificandoCarteirinha, setVerificandoCarteirinha] = useState(true);
-    const [criandoCarteirinha, setCriandoCarteirinha] = useState(false);
+    const [inicioCriacao, setInicioCriacao] = useState(null);
 
     useEffect(() => {
         async function carregarFamilia() {
@@ -69,19 +69,24 @@ function DetalhesFamilia() {
         };
     }, [id, setFeedback]);
 
+    // O acompanhamento roda no layout; aqui só se compara a conclusão com o momento em que o pedido foi feito.
+    const concluiuDepoisDoPedido = Boolean(inicioCriacao && conclusaoCarteirinha && conclusaoCarteirinha.em >= inicioCriacao);
+    const criandoCarteirinha = Boolean(inicioCriacao) && !concluiuDepoisDoPedido;
+    const temCarteirinha = possuiCarteirinha || (concluiuDepoisDoPedido && conclusaoCarteirinha.tipo === "sucesso");
+
     async function criarCarteirinha() {
-        setCriandoCarteirinha(true);
+        setInicioCriacao(Date.now());
         setFeedback(feedbackCarregando("Solicitando criação da carteirinha..."));
 
         const correlationId = await solicitarCriacaoCarteirinha(id);
         if (!correlationId) {
             setFeedback(feedbackErro("Não foi possível solicitar a criação da carteirinha."));
-        } else {
-            // TODO: acompanhar o status (correlationId) com a lógica de notificação do cadastro.
-            setFeedback(feedbackSucesso("Criação da carteirinha solicitada."));
+            setInicioCriacao(null);
+            return;
         }
 
-        setCriandoCarteirinha(false);
+        fecharFeedback();
+        acompanharCarteirinha(correlationId);
     }
 
     const responsavel = familia?.responsavel;
@@ -108,7 +113,7 @@ function DetalhesFamilia() {
                 {abaAtiva === "carteirinha" && (
                     <>
                         <CartaoSecao titulo="Situação da Carteirinha" Icone={IdCard}>
-                            <StatusCarteirinha possuiCarteirinha={possuiCarteirinha} carregando={verificandoCarteirinha} criando={criandoCarteirinha} aoCriar={criarCarteirinha} />
+                            <StatusCarteirinha possuiCarteirinha={temCarteirinha} carregando={verificandoCarteirinha} criando={criandoCarteirinha} aoCriar={criarCarteirinha} />
                         </CartaoSecao>
 
                         <CartaoSecao titulo="Modelo Visual da Carteirinha" Icone={IdCard}                         extra={<span className="inline-flex items-center px-4 py-1.5 rounded-full bg-amber-400 text-amber-950 text-sm font-black tracking-wide uppercase shadow-sm animate-pulse">Apenas modelo</span>}>
