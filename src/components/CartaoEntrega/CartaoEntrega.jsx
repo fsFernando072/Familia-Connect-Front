@@ -7,8 +7,9 @@ import { COR_TURQUESA } from "../../utils/cores";
 
 // Cartão aberto de uma família: cabeçalho (nome, selo, responsável) + painel para escolher os itens
 // e confirmar a entrega. A escolha de itens fica aqui dentro: ao cancelar/fechar, ela é descartada.
-function CartaoEntrega({ familia, produtos, enviando, onCancelar, onConfirmar }) {
-    const [quantidades, setQuantidades] = useState({});
+// quantidadesIniciais: { [idProduto]: quantidade } já marcadas ao abrir o cartão (ex.: cesta básica ao ler o QR Code).
+function CartaoEntrega({ familia, produtos, enviando, quantidadesIniciais = {}, onCancelar, onConfirmar }) {
+    const [quantidades, setQuantidades] = useState(quantidadesIniciais);
 
     const alterarQuantidade = (idProduto, quantidade) => setQuantidades((atual) => ({ ...atual, [idProduto]: Math.max(0, quantidade) }));
 

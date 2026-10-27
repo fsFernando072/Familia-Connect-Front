@@ -1,6 +1,7 @@
 import { somenteDigitos } from "../utils/mascaras";
 import { dataValida, nascimentoNoPassado, validarCpf } from "../utils/validadores";
 import { converterDataParaIso } from "../utils/formatadores";
+import { adicionarCarteirinhaPendente } from "../utils/carteirinhasPendentes";
 import api from "./apiClient";
 import { LIMITES } from "./limitesCampos";
 import { criarServicoBase, enviarComFeedback, mensagensCrud, montarFormData, validarObrigatorios, validarTamanhos } from "./servicoBase";
@@ -15,6 +16,63 @@ const textos = mensagensCrud("família", "f");
 export const listarFamilias = base.listar;
 export const buscarFamiliaPorId = base.buscarPorId;
 export const deletarFamilia = base.deletar;
+
+// GET /familias/carteirinhas/{idCarteirinha} devolve apenas o id (Integer) da família dona da carteirinha.
+// Devolve o id, ou null se a carteirinha não existir ou a chamada falhar.
+export async function buscarIdFamiliaPorCarteirinha(idCarteirinha) {
+    try {
+        const response = await api.get(`/familias/carteirinhas/${encodeURIComponent(idCarteirinha)}`);
+
+        if (response.status === 200 && response.data !== "" && response.data != null) return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar família pela carteirinha:", error);
+    }
+
+    return null;
+}
+
+// GET /familias/{id}/carteirinhas devolve o id da carteirinha (200) ou 404 se a família não tem.
+// Devolve { possui, erro }: erro = true quando a consulta falhou (diferente de "não possui").
+export async function verificarCarteirinhaFamilia(idFamilia) {
+    try {
+        const response = await api.get(`/familias/${idFamilia}/carteirinhas`);
+
+        if (response.status === 200 && response.data !== "" && response.data != null) return { possui: true, erro: false };
+        if (response.status === 404) return { possui: false, erro: false };
+    } catch (error) {
+        console.error("Erro ao verificar carteirinha da família:", error);
+    }
+
+    return { possui: false, erro: true };
+}
+
+// POST /familias/{id}/carteirinhas/ inicia a geração (assíncrona) e devolve { status, correlationId }.
+// Devolve o correlationId, ou null se falhou.
+export async function solicitarCriacaoCarteirinha(idFamilia) {
+    try {
+        const response = await api.post(`/familias/${idFamilia}/carteirinhas/`);
+
+        if (response.status === 200 && response.data?.correlationId) return response.data.correlationId;
+    } catch (error) {
+        console.error("Erro ao solicitar criação da carteirinha:", error);
+    }
+
+    return null;
+}
+
+// GET /familias/responsaveis/{cpf} devolve o id da família cujo RESPONSÁVEL tem esse CPF.
+// Devolve o id, ou null se não existir responsável com o CPF ou a chamada falhar.
+export async function buscarIdFamiliaPorCpfResponsavel(cpf) {
+    try {
+        const response = await api.get(`/familias/responsaveis/${encodeURIComponent(somenteDigitos(cpf))}`);
+
+        if (response.status === 200 && response.data !== "" && response.data != null) return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar família pelo CPF do responsável:", error);
+    }
+
+    return null;
+}
 
 // Regras de tamanho de uma pessoa (responsável ou dependente), iguais ao PessoaRequestDto do back.
 // RG e telefone contam dígitos, sem máscara. Campos vazios são ignorados (a obrigatoriedade é checada antes).
@@ -154,9 +212,27 @@ export function cadastrarFamilia(familia, navigate, setFeedback) {
         erros: {
             409: "Endereço ou pessoa (CPF) já cadastrados.",
         },
+        // Guarda o correlationId para a lista de famílias acompanhar o processamento da carteirinha.
+        aposSucesso: async (response) => {
+            const correlationId = response.data?.correlationId ?? response.data?.processamentoCarteirinha?.correlationId;
+            adicionarCarteirinhaPendente(correlationId);
+            return null;
+        },
         navigate,
         setFeedback,
     });
+}
+
+// GET /familias/buscar-status-carteirinha/{correlationId}
+// Devolve { status, dados } (status HTTP + corpo) ou null se a chamada falhar (ex.: sem conexão).
+export async function buscarStatusCarteirinha(correlationId) {
+    try {
+        const response = await api.get(`/familias/buscar-status-carteirinha/${encodeURIComponent(correlationId)}`);
+        return { status: response.status, dados: response.data };
+    } catch (error) {
+        console.error("Erro ao buscar o status da carteirinha:", error);
+        return null;
+    }
 }
 
 export function atualizarFamilia(id, familia, navigate, setFeedback) {
