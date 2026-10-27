@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useOutletContext } from "react-router-dom";
-import { User, MapPin, Users, Pencil } from "lucide-react";
+import { User, MapPin, Users, Pencil, IdCard, FileText, TriangleAlert } from "lucide-react";
+import AbasDetalhes from "../../components/AbasDetalhes/AbasDetalhes";
+import CarteirinhaFamilia from "../../components/CarteirinhaFamilia/CarteirinhaFamilia";
+import StatusCarteirinha from "../../components/StatusCarteirinha/StatusCarteirinha";
+import { obterUltimoSobrenome } from "../../utils/nomes";
 import PaginaFormulario from "../../components/PaginaFormulario/PaginaFormulario";
 import Botao from "../../components/Botao/Botao";
 import FotoAvatar from "../../components/FotoAvatar/FotoAvatar";
@@ -11,20 +15,30 @@ import Selo from "../../components/Selo/Selo";
 import ListaContainer from "../../components/ListaContainer/ListaContainer";
 import ListaStatus from "../../components/ListaStatus/ListaStatus";
 import { useFeedback } from "../../hooks/useFeedback";
-import { buscarFamiliaPorId } from "../../services/familiaService";
+import { buscarFamiliaPorId, solicitarCriacaoCarteirinha, verificarCarteirinhaFamilia } from "../../services/familiaService";
+import { feedbackCarregando, feedbackErro, feedbackSucesso } from "../../utils/feedback";
 import { mascaraCpf, mascaraRg, mascaraTelefone, mascaraCep } from "../../utils/mascaras";
 import { converterDataParaBr } from "../../utils/formatadores";
 import { COR_TURQUESA } from "../../utils/cores";
 import { pode } from "../../services/permissoes";
 
+const ABAS = [
+    { id: "dados", titulo: "Dados da Família", Icone: FileText },
+    { id: "carteirinha", titulo: "Carteirinha", Icone: IdCard },
+];
+
 function DetalhesFamilia() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { permissoes } = useOutletContext();
-    const { feedback, fecharFeedback } = useFeedback();
+    const { feedback, setFeedback, fecharFeedback } = useFeedback();
 
     const [familia, setFamilia] = useState(null);
     const [carregando, setCarregando] = useState(true);
+    const [abaAtiva, setAbaAtiva] = useState("dados");
+    const [possuiCarteirinha, setPossuiCarteirinha] = useState(false);
+    const [verificandoCarteirinha, setVerificandoCarteirinha] = useState(true);
+    const [criandoCarteirinha, setCriandoCarteirinha] = useState(false);
 
     useEffect(() => {
         async function carregarFamilia() {
@@ -35,6 +49,40 @@ function DetalhesFamilia() {
         }
         carregarFamilia();
     }, [id]);
+
+    useEffect(() => {
+        let cancelado = false;
+
+        async function verificar() {
+            setVerificandoCarteirinha(true);
+            const { possui, erro } = await verificarCarteirinhaFamilia(id);
+            if (cancelado) return;
+
+            setPossuiCarteirinha(possui);
+            if (erro) setFeedback(feedbackErro("Não foi possível verificar a carteirinha da família."));
+            setVerificandoCarteirinha(false);
+        }
+        verificar();
+
+        return () => {
+            cancelado = true;
+        };
+    }, [id, setFeedback]);
+
+    async function criarCarteirinha() {
+        setCriandoCarteirinha(true);
+        setFeedback(feedbackCarregando("Solicitando criação da carteirinha..."));
+
+        const correlationId = await solicitarCriacaoCarteirinha(id);
+        if (!correlationId) {
+            setFeedback(feedbackErro("Não foi possível solicitar a criação da carteirinha."));
+        } else {
+            // TODO: acompanhar o status (correlationId) com a lógica de notificação do cadastro.
+            setFeedback(feedbackSucesso("Criação da carteirinha solicitada."));
+        }
+
+        setCriandoCarteirinha(false);
+    }
 
     const responsavel = familia?.responsavel;
     const endereco = familia?.endereco;
@@ -55,6 +103,32 @@ function DetalhesFamilia() {
             onFecharFeedback={fecharFeedback}
         >
             <ListaContainer gap="gap-6">
+                <AbasDetalhes abas={ABAS} abaAtiva={abaAtiva} aoMudar={setAbaAtiva} />
+
+                {abaAtiva === "carteirinha" && (
+                    <>
+                        <CartaoSecao titulo="Situação da Carteirinha" Icone={IdCard}>
+                            <StatusCarteirinha possuiCarteirinha={possuiCarteirinha} carregando={verificandoCarteirinha} criando={criandoCarteirinha} aoCriar={criarCarteirinha} />
+                        </CartaoSecao>
+
+                        <CartaoSecao titulo="Modelo Visual da Carteirinha" Icone={IdCard}                         extra={<span className="inline-flex items-center px-4 py-1.5 rounded-full bg-amber-400 text-amber-950 text-sm font-black tracking-wide uppercase shadow-sm animate-pulse">Apenas modelo</span>}>
+                                                    <div className="mb-4 flex items-center gap-3 rounded-xl border-2 border-amber-400 bg-amber-50 px-4 py-3 text-amber-900">
+                                                        <TriangleAlert size={22} className="shrink-0" />
+                                                        <p className="text-base font-bold">ATENÇÃO: este é apenas um modelo visual da carteirinha. Não é a carteirinha emitida.</p>
+                                                    </div>
+                            <CarteirinhaFamilia
+                                nomeFamilia={obterUltimoSobrenome(responsavel?.nome)}
+                                nomeResponsavel={responsavel?.nome}
+                                cpf={responsavel?.cpf ? mascaraCpf(responsavel.cpf) : ""}
+                                telefone={responsavel?.telefone ? mascaraTelefone(responsavel.telefone) : ""}
+                                fotoFamilia={familia?.fotoFamilia}
+                            />
+                        </CartaoSecao>
+                    </>
+                )}
+
+                {abaAtiva === "dados" && (
+                <>
                 <CartaoSecao titulo="Dados do Responsável" Icone={User} extra={<Selo texto="Cadastro Ativo" />}>
                     <div className="flex flex-col sm:flex-row items-start gap-6">
                         <ImagemLista tamanho="w-28 h-28">
@@ -117,6 +191,8 @@ function DetalhesFamilia() {
                         </div>
                     )}
                 </CartaoSecao>
+                </>
+                )}
             </ListaContainer>
         </PaginaFormulario>
     );

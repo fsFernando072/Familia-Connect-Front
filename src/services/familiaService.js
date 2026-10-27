@@ -30,6 +30,35 @@ export async function buscarIdFamiliaPorCarteirinha(idCarteirinha) {
     return null;
 }
 
+// GET /familias/{id}/carteirinhas devolve o id da carteirinha (200) ou 404 se a família não tem.
+// Devolve { possui, erro }: erro = true quando a consulta falhou (diferente de "não possui").
+export async function verificarCarteirinhaFamilia(idFamilia) {
+    try {
+        const response = await api.get(`/familias/${idFamilia}/carteirinhas`);
+
+        if (response.status === 200 && response.data !== "" && response.data != null) return { possui: true, erro: false };
+        if (response.status === 404) return { possui: false, erro: false };
+    } catch (error) {
+        console.error("Erro ao verificar carteirinha da família:", error);
+    }
+
+    return { possui: false, erro: true };
+}
+
+// POST /familias/{id}/carteirinhas/ inicia a geração (assíncrona) e devolve { status, correlationId }.
+// Devolve o correlationId, ou null se falhou.
+export async function solicitarCriacaoCarteirinha(idFamilia) {
+    try {
+        const response = await api.post(`/familias/${idFamilia}/carteirinhas/`);
+
+        if (response.status === 200 && response.data?.correlationId) return response.data.correlationId;
+    } catch (error) {
+        console.error("Erro ao solicitar criação da carteirinha:", error);
+    }
+
+    return null;
+}
+
 // Regras de tamanho de uma pessoa (responsável ou dependente), iguais ao PessoaRequestDto do back.
 // RG e telefone contam dígitos, sem máscara. Campos vazios são ignorados (a obrigatoriedade é checada antes).
 function validarTamanhosPessoa(pessoa, contexto) {
