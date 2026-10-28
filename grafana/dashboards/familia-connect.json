@@ -16,7 +16,7 @@
     "to": "now"
   },
   "timepicker": {
-   "hidden": true
+    "hidden": true
   },
   "templating": {
     "list": []
@@ -453,6 +453,14 @@
                   "mode": "fixed",
                   "fixedColor": "#137d91"
                 }
+              }, 
+              {
+                "id": "custom.fillOpacity",
+                "value": 33
+              },
+              {
+                "id": "custom.barWidthFactor",
+                "value": 0.09
               }
             ]
           },
@@ -466,7 +474,7 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#44beb7"
+                  "fixedColor": "#E38702"
                 }
               },
               {
@@ -507,16 +515,16 @@
     },
     {
       "id": 31,
-      "type": "bargauge",
+      "type": "barchart",
       "title": "Bairros com mais famílias (top 10)",
       "description": "Onde moram as famílias cadastradas.",
       "datasource": {
         "type": "yesoreyeram-infinity-datasource",
         "uid": "familia-connect-api"
       },
-       "gridPos": {
+      "gridPos": {
         "x": 12,
-        "y": 14,
+        "y": 5,
         "w": 12,
         "h": 9
       },
@@ -545,7 +553,19 @@
                 "value": "${__to}"
               }
             ]
-          }
+          },
+          "columns": [
+            {
+              "selector": "Bairro",
+              "text": "Bairro",
+              "type": "string"
+            },
+            {
+              "selector": "Famílias",
+              "text": "Famílias",
+              "type": "number"
+            }
+          ]
         }
       ],
       "fieldConfig": {
@@ -571,23 +591,25 @@
       },
       "options": {
         "orientation": "horizontal",
-        "displayMode": "gradient",
-        "showUnfilled": true,
-        "valueMode": "color",
-        "namePlacement": "auto",
-        "sizing": "auto",
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "reduceOptions": {
-          "values": true,
-          "calcs": [],
-          "fields": ""
+        "xField": "Bairro",
+        "showValue": "always",
+        "barWidth": 0.65,
+        "groupWidth": 0.7,
+        "stacking": "none",
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
         }
       }
     },
     {
       "id": 19,
-      "type": "bargauge",
+      "type": "barchart",
       "title": "Produtos mais entregues (top 10)",
       "description": "Os 10 produtos com mais unidades entregues no período.",
       "datasource": {
@@ -625,7 +647,19 @@
                 "value": "${__to}"
               }
             ]
-          }
+          },
+          "columns": [
+            {
+              "selector": "Produto",
+              "text": "Produto",
+              "type": "string"
+            },
+            {
+              "selector": "Itens entregues",
+              "text": "Itens entregues",
+              "type": "number"
+            }
+          ]
         }
       ],
       "fieldConfig": {
@@ -651,23 +685,25 @@
       },
       "options": {
         "orientation": "horizontal",
-        "displayMode": "gradient",
-        "showUnfilled": true,
-        "valueMode": "color",
-        "namePlacement": "auto",
-        "sizing": "auto",
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "reduceOptions": {
-          "values": true,
-          "calcs": [],
-          "fields": ""
+        "xField": "Produto",
+        "showValue": "always",
+        "barWidth": 0.65,
+        "groupWidth": 0.7,
+        "stacking": "none",
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
         }
       }
     },
     {
       "id": 109,
-      "type": "bargauge",
+      "type": "barchart",
       "title": "Famílias atendidas x sem atendimento",
       "description": "Famílias com e sem entregas registradas no período escolhido.",
       "datasource": {
@@ -676,7 +712,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 5,
+        "y": 14,
         "w": 12,
         "h": 9
       },
@@ -705,7 +741,19 @@
                 "value": "${__to}"
               }
             ]
-          }
+          },
+          "columns": [
+            {
+              "selector": "Situação",
+              "text": "Situação",
+              "type": "string"
+            },
+            {
+              "selector": "Famílias",
+              "text": "Famílias",
+              "type": "number"
+            }
+          ]
         }
       ],
       "fieldConfig": {
@@ -731,17 +779,19 @@
       },
       "options": {
         "orientation": "horizontal",
-        "displayMode": "gradient",
-        "showUnfilled": true,
-        "valueMode": "color",
-        "namePlacement": "auto",
-        "sizing": "auto",
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "reduceOptions": {
-          "values": true,
-          "calcs": [],
-          "fields": ""
+        "xField": "Situação",
+        "showValue": "always",
+        "barWidth": 0.65,
+        "groupWidth": 0.7,
+        "stacking": "none",
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
         }
       }
     }

@@ -38,7 +38,7 @@
       "gridPos": {
         "x": 0,
         "y": 0,
-        "w": 8,
+        "w": 6,
         "h": 5
       },
       "targets": [
@@ -117,9 +117,9 @@
         "uid": "familia-connect-api"
       },
       "gridPos": {
-        "x": 8,
+        "x": 6,
         "y": 0,
-        "w": 8,
+        "w": 6,
         "h": 5
       },
       "targets": [
@@ -198,9 +198,9 @@
         "uid": "familia-connect-api"
       },
       "gridPos": {
-        "x": 16,
+        "x": 12,
         "y": 0,
-        "w": 8,
+        "w": 6,
         "h": 5
       },
       "targets": [
@@ -270,9 +270,90 @@
       }
     },
     {
+      "id": 203,
+      "type": "stat",
+      "title": "Famílias prioritárias sem atendimento no período",
+      "description": "Famílias sinalizadas como prioritárias sem registro de entrega no intervalo selecionado.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "familia-connect-api"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "familia-connect-api"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/113",
+          "root_selector": "$",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#137d91",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
       "id": 204,
       "type": "barchart",
-      "title": "Meses desde a última entrega por família",
+      "title": "Famílias há mais tempo sem entrega (meses)",
       "description": "Até 5 famílias com entregas anteriores, ordenadas pelo maior intervalo desde a última entrega. Meses aproximados (dias / 30,44). Famílias que nunca receberam entregas aparecem na tabela de prioridades quando aplicável.",
       "datasource": {
         "type": "yesoreyeram-infinity-datasource",
@@ -368,7 +449,7 @@
     },
     {
       "id": 205,
-      "type": "bargauge",
+      "type": "barchart",
       "title": "Itens entregues por funcionário",
       "description": "Quantidade de itens registrados por funcionário no período selecionado.",
       "datasource": {
@@ -406,7 +487,19 @@
                 "value": "${__to}"
               }
             ]
-          }
+          },
+          "columns": [
+            {
+              "selector": "Funcionário",
+              "text": "Funcionário",
+              "type": "string"
+            },
+            {
+              "selector": "Itens entregues",
+              "text": "Itens entregues",
+              "type": "number"
+            }
+          ]
         }
       ],
       "fieldConfig": {
@@ -432,17 +525,19 @@
       },
       "options": {
         "orientation": "horizontal",
-        "displayMode": "gradient",
-        "showUnfilled": true,
-        "valueMode": "color",
-        "namePlacement": "auto",
-        "sizing": "auto",
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "reduceOptions": {
-          "values": true,
-          "calcs": [],
-          "fields": ""
+        "xField": "Funcionário",
+        "showValue": "always",
+        "barWidth": 0.65,
+        "groupWidth": 0.7,
+        "stacking": "none",
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
         }
       }
     },
