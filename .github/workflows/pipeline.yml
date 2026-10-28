@@ -75,7 +75,7 @@ jobs:
         run: docker build -t ${GRAFANA_IMAGE}:test ./grafana
 
       - name: Smoke test
-        run: ./grafana/smoke-test.sh ${GRAFANA_IMAGE}:test
+        run: bash ./grafana/smoke-test.sh ${GRAFANA_IMAGE}:test
 
       - name: Login to Docker Hub
         if: github.event_name == 'workflow_dispatch'
