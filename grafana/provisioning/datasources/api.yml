@@ -1,0 +1,14 @@
+apiVersion: 1
+datasources:
+  - name: Família Connect (API)
+    uid: familia-connect-api
+    type: yesoreyeram-infinity-datasource
+    access: proxy
+    isDefault: true
+    editable: false
+    jsonData:
+      allowedHosts:
+        - ${GRAFANA_BACKEND_URL}
+      httpHeaderName1: X-Grafana-Token
+    secureJsonData:
+      httpHeaderValue1: ${GRAFANA_API_TOKEN}

@@ -20,7 +20,7 @@ services:
   # Não publica a porta 3000 de propósito: o Grafana só deve ser acessado por dentro do front (/grafana/),
   # pois o acesso anônimo (Viewer) abaixo dispensa o login do próprio Grafana.
   grafana:
-    image: grafana/grafana-oss:11.4.0
+    image:  grafana/grafana-oss:12.3.3
     container_name: familia-connect-grafana
     restart: always
     extra_hosts:
@@ -36,12 +36,9 @@ services:
       - GF_USERS_DEFAULT_THEME=light
       - GF_ANALYTICS_REPORTING_ENABLED=false
       - GF_ANALYTICS_CHECK_FOR_UPDATES=false
-      # Conexão com o MySQL do Família Connect (usuário somente-leitura: grafana/sql/usuario-somente-leitura.sql)
-      - GRAFANA_DB_HOST=${GRAFANA_DB_HOST:-host.docker.internal}
-      - GRAFANA_DB_PORT=${GRAFANA_DB_PORT:-3306}
-      - GRAFANA_DB_NAME=${GRAFANA_DB_NAME:-familia_connect}
-      - GRAFANA_DB_USER=${GRAFANA_DB_USER:-grafana_ro}
-      - GRAFANA_DB_PASSWORD=${GRAFANA_DB_PASSWORD:-}
+      - GF_INSTALL_PLUGINS=yesoreyeram-infinity-datasource
+      - GRAFANA_API_TOKEN=${GRAFANA_API_TOKEN:?Configure GRAFANA_API_TOKEN}
+      - GRAFANA_BACKEND_URL=${GRAFANA_BACKEND_URL:-http://host.docker.internal:8080}
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/etc/grafana/dashboards:ro

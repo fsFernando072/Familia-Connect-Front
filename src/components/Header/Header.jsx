@@ -15,7 +15,14 @@ function Header({ onAbrirMenu }) {
                 </button>
                 <p className="truncate text-lg text-cifa-apagado">Central de operações</p>
             </div>
-            
+
+            <button
+                type="button"
+                aria-label="Notificações"
+                className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-cifa-apagado transition hover:bg-cifa-suave hover:text-cifa-navy"
+            >
+                <Bell size={22} />
+            </button>
         </header>
     );
 }

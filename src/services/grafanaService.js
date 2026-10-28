@@ -29,7 +29,7 @@ export const PERIODOS_DASHBOARD = [
  *
  * Devolve null se a URL não estiver configurada ou for inválida (só aceita http/https).
  */
-export function montarUrlDashboard(periodo = "", embutido = true) {
+export function montarUrlDashboard(periodo = "", embutido = true, visao = "macro", familiaId = "") {
     if (!GRAFANA_DASHBOARD_URL) return null;
 
     try {
@@ -37,6 +37,14 @@ export function montarUrlDashboard(periodo = "", embutido = true) {
 
         if (url.protocol !== "http:" && url.protocol !== "https:") return null;
 
+        if (visao === "micro") {
+            // Mesmo Grafana e mesma origem; apenas o UID muda.
+            url.pathname = url.pathname.replace(/\/d\/[^/]+\/[^/]+/, familiaId
+                ? "/d/familia-connect-micro/familia-connect-visao-micro"
+                : "/d/familia-connect-micro-geral/familia-connect-visao-micro-geral");
+            if (familiaId) url.searchParams.set("var-var_familiaId", String(familiaId));
+            else url.searchParams.delete("var-var_familiaId");
+        }
         if (periodo) {
             url.searchParams.set("from", periodo);
             url.searchParams.set("to", "now");
