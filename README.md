@@ -112,6 +112,85 @@ docker-compose up --build
 
 ---
 
+## 📊 Dashboard (Grafana)
+
+A tela **Dashboard** (`/dashboard`, `src/pages/Dashboard`) embute um painel do **Grafana** via `iframe`, no mesmo layout das demais telas (menu lateral, breadcrumb, cartão). Os gráficos e consultas são montados no próprio Grafana; o front só cuida do enquadramento, do seletor de período e dos botões **Atualizar** / **Abrir no Grafana**. O acesso segue a permissão `DASHBOARD` do cargo (a mesma que já controla o item do menu).
+
+### Variáveis
+
+| Variável | Onde é usada | Obrigatória | Descrição |
+|---|---|---|---|
+| `GRAFANA_DASHBOARD_URL` | Container (runtime) | ✅ Sim, para a tela funcionar | Link do dashboard no Grafana (Share → Link). Pode ser relativo (`/grafana/d/abc123/familia-connect?orgId=1`) ou absoluto. Vai para `window.__ENV__.GRAFANA_DASHBOARD_URL` |
+| `VITE_GRAFANA_DASHBOARD_URL` | Dev local (`npm run dev`) | ❌ Não | Equivalente da anterior no `.env` do Vite. Só vale se `window.__ENV__.GRAFANA_DASHBOARD_URL` estiver vazio |
+| `GRAFANA_URL` | Container (runtime) | ❌ Não | Endereço interno do Grafana (ex.: `http://grafana:3000`, sem barra no final). Se definido, o Nginx expõe o Grafana em `/grafana/` na mesma origem do front |
+
+Sem `GRAFANA_DASHBOARD_URL`, a tela mostra o aviso "Dashboard indisponível" em vez do painel.
+
+O front acrescenta ao link `kiosk` (esconde o menu do Grafana) e `theme=light`; ao escolher um período no seletor, acrescenta também `from=<período>&to=now`. "Padrão do painel" não altera o período salvo no dashboard.
+
+### Dashboard pronto (provisionado)
+
+O repositório já traz o dashboard **"Família Connect — Visão geral"** e a conexão com o banco, que o Grafana carrega sozinho ao subir (pasta `grafana/`):
+
+```
+grafana/
+├── dashboards/familia-connect.json                 # o dashboard (28 painéis)
+├── provisioning/datasources/mysql.yml              # conexão com o MySQL (via variáveis de ambiente)
+├── provisioning/dashboards/dashboards.yml          # manda o Grafana carregar a pasta acima
+└── sql/usuario-somente-leitura.sql                 # cria o usuário de leitura do Grafana no MySQL
+```
+
+**Como subir**
+
+1. No MySQL do Família Connect, rode `grafana/sql/usuario-somente-leitura.sql` (troque `NOME_DO_BANCO` e a senha). O usuário só enxerga as colunas usadas pelos painéis: **sem CPF, RG, telefone, nome das pessoas atendidas ou senhas**, e sem permissão de escrita.
+2. Copie `.env.example` para `.env` e preencha `GRAFANA_DB_*` e `GRAFANA_ADMIN_PASSWORD`.
+3. `docker-compose up -d`. O compose já sobe o Grafana, liga o proxy `/grafana/` e aponta a tela Dashboard para o painel.
+
+> O dashboard é somente leitura na interface (`allowUiUpdates: false`): para alterar um painel, edite `familia-connect.json` (ou exporte do Grafana em *Share → Export*) e commite. O Grafana recarrega o arquivo em até 30 s.
+
+**O que o dashboard mostra**
+
+| Seção | Indicadores |
+|---|---|
+| Visão geral (KPIs) | famílias cadastradas · pessoas cadastradas · famílias com prioridade · famílias atendidas no mês · famílias pendentes no mês · cobertura do mês (%) · itens entregues no mês · média de itens por família · itens entregues no período · saldo de estoque do mês · produtos esgotados · produtos com estoque baixo (≥ 80% usado) |
+| Entregas | itens entregues e famílias atendidas por mês · itens por categoria · itens por dia · itens por dia da semana · produtos mais entregues (top 10) · entregas por funcionário (top 10) |
+| Estoque do mês atual | tabela por produto (cadastrado, entregue, saldo e % usado, os mais críticos primeiro) · saldo por categoria · entradas de estoque × itens entregues por mês |
+| Perfil das famílias | novas famílias por mês · famílias por tamanho · pessoas por faixa etária · pessoas por sexo · famílias com/sem prioridade · bairros com mais famílias · profissão dos responsáveis |
+
+Regras usadas (as mesmas do back-end): cada unidade entregue é uma linha em `entrega`; o estoque é **mensal** (soma de `historico_estoque.quantidade` no mês) e o saldo é esse total menos as entregas do mês; "família pendente" é a que não tem nenhuma entrega no mês corrente. Os painéis marcados "do mês" ignoram o seletor de tempo; os demais respeitam o período (padrão: últimos 6 meses). As consultas assumem o nome das tabelas/colunas gerado pelo Hibernate (`snake_case`, ex.: `historico_estoque.data_estoque`). Se o seu banco usar nomes diferentes, ajuste o JSON.
+
+### Opção recomendada: Grafana atrás do Nginx do front (`/grafana/`)
+
+Com `GRAFANA_URL` definido, o `entrypoint.sh` gera o proxy `/grafana/` no Nginx. Assim o `iframe` fica na mesma origem do sistema (sem problemas de cookie `SameSite`/CORS) e **o Grafana só responde para quem está logado**: antes de cada requisição o Nginx consulta `GET /api/funcionarios/me` no back com o cookie do usuário e devolve `401` se a sessão não for válida.
+
+```bash
+docker run -p 80:80 \
+  -e BACKEND_URL=http://back:8080 \
+  -e GRAFANA_URL=http://grafana:3000 \
+  -e GRAFANA_DASHBOARD_URL=/grafana/d/abc123/familia-connect?orgId=1 \
+  familia-connect-front
+```
+
+Se você usa o seu próprio Grafana em vez do que vem no `docker-compose.yml`, configure nele (variáveis de ambiente do container):
+
+```env
+GF_SERVER_ROOT_URL=https://SEU-FRONT/grafana/
+GF_SERVER_SERVE_FROM_SUB_PATH=true
+GF_SECURITY_ALLOW_EMBEDDING=true
+GF_AUTH_ANONYMOUS_ENABLED=true
+GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+```
+
+> ⚠️ Com acesso anônimo ligado, **não exponha a porta do Grafana publicamente**: ele deve ser alcançável apenas pelo container do front (rede interna), que é quem aplica a checagem de login. O controle é por sessão válida; o nível de permissão `DASHBOARD` continua sendo aplicado só na interface (como no restante do front).
+>
+> ℹ️ O Nginx resolve o endereço do `GRAFANA_URL` ao iniciar: se o host não existir na rede, o container do front não sobe. Se não quiser usar o proxy, deixe `GRAFANA_URL` vazio.
+
+### Alternativa: Grafana em outro domínio
+
+Defina só `GRAFANA_DASHBOARD_URL` com a URL absoluta. O Grafana precisa permitir `iframe` (`GF_SECURITY_ALLOW_EMBEDDING=true`) e o usuário precisa conseguir abrir o painel sem tela de login dentro do `iframe` (acesso anônimo `Viewer`, ou HTTPS com `GF_SECURITY_COOKIE_SAMESITE=none` e `GF_SECURITY_COOKIE_SECURE=true`). Nesse modo o Grafana não passa pela checagem de login do sistema.
+
+---
+
 ## 🚀 Como Iniciar
 
 ### 1. Clone o repositório

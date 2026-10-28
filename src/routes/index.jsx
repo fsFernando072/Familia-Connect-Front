@@ -23,6 +23,7 @@ import CadastroHistoricoEstoque from "../pages/CadastroHistoricoEstoque";
 import EditarHistoricoEstoque from "../pages/EditarHistoricoEstoque";
 import HistoricoEntregas from '../pages/HistoricoEntregas';
 import Entrega from "../pages/Entrega";
+import Dashboard from "../pages/Dashboard";
 
 function AppRoutes() {
     return (
@@ -59,6 +60,8 @@ function AppRoutes() {
                 
                     <Route path="/entrega" element={<Entrega />} />
                     <Route path="/historico-entrega" element={<HistoricoEntregas />} />
+
+                    <Route path="/dashboard" element={<Dashboard />} />
                 </Route>
             </Routes>
         </BrowserRouter>

@@ -7,4 +7,5 @@
 // import.meta.env.VITE_API_BASE_URL (ou no default hardcoded).
 window.__ENV__ = {
   API_BASE_URL: "",
+  GRAFANA_DASHBOARD_URL: "",
 };

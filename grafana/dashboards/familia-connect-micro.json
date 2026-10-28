@@ -1,0 +1,441 @@
+{
+  "uid": "familia-connect-micro",
+  "title": "Família Connect | Visão Micro",
+  "tags": [
+    "familia-connect"
+  ],
+  "description": "Acompanhamento individual de famílias.",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "5m",
+  "timezone": "browser",
+  "time": {
+    "from": "now-6M",
+    "to": "now"
+  },
+  "timepicker": {
+   "hidden": true 
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "var_familiaId",
+        "type": "textbox",
+        "label": "ID da família",
+        "query": "1",
+        "current": {
+          "text": "1",
+          "value": "1"
+        },
+        "hide": 2,
+        "skipUrlSync": false
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [],
+  "panels": [
+    {
+      "id": 101,
+      "type": "stat",
+      "title": "Itens recebidos no período",
+      "description": "Itens registrados para esta família no período.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "familia-connect-api"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 8,
+        "h": 6
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "familia-connect-api"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/101",
+          "root_selector": "$",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "familiaId",
+                "value": "${var_familiaId}"
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#137d91",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+            "text": {
+        "titleSize": 80
+      },
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 103,
+      "type": "stat",
+      "title": "Pessoas na família",
+      "description": "Número de pessoas vinculadas à família.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "familia-connect-api"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 0,
+        "w": 8,
+        "h": 6
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "familia-connect-api"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/103",
+          "root_selector": "$",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "familiaId",
+                "value": "${var_familiaId}"
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#f59e0b"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#f59e0b",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 104,
+      "type": "stat",
+      "title": "Dias desde a última entrega",
+      "description": "Dias desde a entrega mais recente; vazio se não houve entrega.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "familia-connect-api"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 0,
+        "w": 8,
+        "h": 6
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "familia-connect-api"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/104",
+          "root_selector": "$",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "familiaId",
+                "value": "${var_familiaId}"
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "noValue": "Sem entregas",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#16a34a"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#16a34a",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 106,
+      "type": "barchart",
+      "title": "Produtos recebidos",
+      "description": "Produtos mais recebidos no período.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "familia-connect-api"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 6,
+        "w": 12,
+        "h": 10
+      }, 
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "familia-connect-api"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/106",
+          "root_selector": "$",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "familiaId",
+                "value": "${var_familiaId}"
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#137d91"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#137d91",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+        "options": {
+    "orientation": "horizontal",
+    "xField": "Produto",
+    "showValue": "always",
+    "barWidth": 0.6,
+    "groupWidth": 0.7,
+    "stacking": "none",
+    "legend": {
+      "displayMode": "hidden",
+      "placement": "bottom",
+      "showLegend": false
+    },
+    "tooltip": {
+      "mode": "single",
+      "sort": "none"
+    }
+  }
+    },
+    {
+      "id": 107,
+      "type": "table",
+      "title": "Últimas entregas",
+      "description": "Itens, datas e funcionários das entregas recentes.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "familia-connect-api"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 6,
+        "w": 12,
+        "h": 10
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "familia-connect-api"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/107",
+          "root_selector": "$",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "familiaId",
+                "value": "${var_familiaId}"
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    }
+  ]
+}
