@@ -126,7 +126,7 @@ function DetalhesFamilia() {
                                 nomeResponsavel={responsavel?.nome}
                                 cpf={responsavel?.cpf ? mascaraCpf(responsavel.cpf) : ""}
                                 telefone={responsavel?.telefone ? mascaraTelefone(responsavel.telefone) : ""}
-                                fotoFamilia={familia?.fotoFamilia}
+                                quantidadeMembros={1 + dependentes.length}
                             />
                         </CartaoSecao>
                     </>
