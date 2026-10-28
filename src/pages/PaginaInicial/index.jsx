@@ -1,14 +1,8 @@
 import { Link, useOutletContext } from "react-router-dom";
-import { ChevronRight, FolderHeart, ClipboardClock, Boxes } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { atalhosPaginaInicial } from "../../routes/navegacaoPrincipal";
 import { itemVisivel } from "../../routes/permissoesRotas";
 
-// Cartões de resumo (linha logo abaixo do destaque).
-const resumos = [
-    { rotulo: "Famílias atendidas", descricao: "Consulte a lista completa", rota: "/familias", Icone: FolderHeart },
-    { rotulo: "Entregas registradas", descricao: "Acompanhe o histórico", rota: "/historico-entrega", Icone: ClipboardClock },
-    { rotulo: "Itens em estoque", descricao: "Visualize os produtos", rota: "/produtos", Icone: Boxes },
-];
 
 // Cor do quadrado que envolve o ícone de cada atalho.
 const CORES_ICONE = {
@@ -24,7 +18,6 @@ const FUNDO_DESTAQUE = {
 function PaginaInicial() {
     const { permissoes } = useOutletContext();
     const atalhos = atalhosPaginaInicial.filter(({ rota }) => itemVisivel(permissoes, rota));
-    const cartoesResumo = resumos.filter(({ rota }) => itemVisivel(permissoes, rota));
 
     return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-10 flex flex-col gap-8 sm:gap-10">
@@ -51,20 +44,6 @@ function PaginaInicial() {
                         )}
                     </div>
                 </div>
-            </section>
-
-            {/* Resumo */}
-            <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
-                {cartoesResumo.map(({ rotulo, descricao, rota, Icone }) => (
-                    <Link key={rota} to={rota} className="group rounded-2xl border border-cifa-linha bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-cifa-menta hover:shadow-md">
-                        <div className="flex items-center justify-between gap-3">
-                            <p className="text-sm font-medium uppercase tracking-wide text-cifa-apagado">{rotulo}</p>
-                            <Icone size={22} className="shrink-0 text-cifa-turquesa" />
-                        </div>
-                        <p className="mt-5 text-3xl font-extrabold tracking-tight text-cifa-navy">Consultar</p>
-                        <p className="mt-3 text-lg text-cifa-apagado">{descricao}</p>
-                    </Link>
-                ))}
             </section>
 
             {/* Acesso rápido */}

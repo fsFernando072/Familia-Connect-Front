@@ -2,14 +2,12 @@ import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import api from "../../services/apiClient";
 import { pode } from "../../services/permissoes";
-import { ExternalLink, LayoutDashboard, Loader2, RefreshCw, TriangleAlert } from "lucide-react";
+import { LayoutDashboard, Loader2, RefreshCw, TriangleAlert } from "lucide-react";
 import CabecalhoPagina from "../../components/CabecalhoPagina/CabecalhoPagina";
 import CartaoSecao from "../../components/CartaoSecao/CartaoSecao";
-import Botao from "../../components/Botao/Botao";
 import BotaoSecundario from "../../components/BotaoSecundario/BotaoSecundario";
 import { CLASSE_INPUT, CLASSE_LABEL } from "../../components/estilosCampo";
 import { PERIODOS_DASHBOARD, montarUrlDashboard } from "../../services/grafanaService";
-import { COR_TURQUESA } from "../../utils/cores";
 
 // O Grafana precisa de scripts e da própria origem para funcionar; o sandbox só impede que o painel navegue a janela do sistema.
 const PERMISSOES_IFRAME = "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads";
@@ -30,7 +28,6 @@ function Dashboard() {
     const [carregado, setCarregado] = useState(false);
 
     const urlEmbutida = montarUrlDashboard(periodo, true, visao, familiaId);
-    const urlCompleta = montarUrlDashboard(periodo, false, visao, familiaId);
     const configurado = Boolean(urlEmbutida);
 
     const buscarFamilias = async () => {
@@ -57,8 +54,6 @@ function Dashboard() {
         setRecarga((valorAtual) => valorAtual + 1);
     };
 
-    const handleAbrirNoGrafana = () => window.open(urlCompleta, "_blank", "noopener,noreferrer");
-
     return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
             <CabecalhoPagina nomeTela="Dashboard" />
@@ -67,7 +62,7 @@ function Dashboard() {
                 {[{ id: "macro", titulo: "Visão Macro" }, { id: "micro", titulo: "Visão Micro" }].map(({ id, titulo }) => (
                     <button key={id} type="button" role="tab" aria-selected={visao === id}
                         onClick={() => { setVisao(id); setCarregado(false); }}
-                        className={`rounded-lg px-5 py-3 font-bold transition ${visao === id ? "bg-cifa-petroleo text-white" : "bg-cifa-suave text-cifa-navy hover:brightness-95"}`}>
+                        className={`rounded-lg px-5 py-3 font-bold transition cursor-pointer ${visao === id ? "bg-cifa-petroleo text-white" : "bg-cifa-suave text-cifa-navy hover:brightness-95"}`}>
                         {titulo}
                     </button>
                 ))}
@@ -78,16 +73,16 @@ function Dashboard() {
                     <label htmlFor="busca-familia-dashboard" className={CLASSE_LABEL}>Buscar família pelo nome do responsável</label>
                     <div className="mt-2 flex flex-wrap gap-2">
                         <input id="busca-familia-dashboard" className={`${CLASSE_INPUT} flex-1`} value={buscaFamilia} onChange={e => setBuscaFamilia(e.target.value)} onKeyDown={e => { if (e.key === "Enter") buscarFamilias(); }} placeholder="Nome do responsável" />
-                        <button type="button" onClick={buscarFamilias} disabled={buscando} className="rounded-lg bg-cifa-petroleo px-4 py-2 font-bold text-white">{buscando ? "Buscando..." : "Buscar"}</button>
+                        <button type="button" onClick={buscarFamilias} disabled={buscando} className="rounded-lg bg-cifa-petroleo px-4 py-2 font-bold text-white cursor-pointer">{buscando ? "Buscando..." : "Buscar"}</button>
                     </div>
                     {erroBusca && <p role="status" className="mt-2 text-sm text-cifa-apagado">{erroBusca}</p>}
                     {familias.length > 0 && <div className="mt-3"><label htmlFor="familia-dashboard" className={CLASSE_LABEL}>Família</label>
-                        <select id="familia-dashboard" className={CLASSE_INPUT} value={familiaId} onChange={e => {setFamiliaId(e.target.value);setCarregado(false);}}>
+                        <select id="familia-dashboard" className={`${CLASSE_INPUT} cursor-pointer`} value={familiaId} onChange={e => {setFamiliaId(e.target.value);setCarregado(false);}}>
                             <option value="">Todas as famílias — visão operacional geral</option>
                             {familias.map(f => <option key={f.idFamilia} value={f.idFamilia}>{f.nomeResponsavel || `Família ${f.idFamilia}`} (#{f.idFamilia})</option>)}
                         </select></div>}
-                    {familiaId && <button type="button" onClick={() => { setFamiliaId(""); setCarregado(false); }} className="mt-3 mr-4 text-sm font-bold text-cifa-petroleo underline">Voltar à visão geral</button>}
-                    {familiaId && pode(permissoes, "FAMILIAS", "listar") && <button type="button" onClick={() => navigate(`/familias/${familiaId}`)} className="mt-3 text-sm font-bold text-cifa-petroleo underline">Abrir cadastro da família selecionada</button>}
+                    {familiaId && <button type="button" onClick={() => { setFamiliaId(""); setCarregado(false); }} className="mt-3 mr-4 text-sm font-bold text-cifa-petroleo underline cursor-pointer">Voltar à visão geral</button>}
+                    {familiaId && pode(permissoes, "FAMILIAS", "listar") && <button type="button" onClick={() => navigate(`/familias/${familiaId}`)} className="mt-3 text-sm font-bold text-cifa-petroleo underline cursor-pointer">Abrir cadastro da família selecionada</button>}
                 </div>
             )}
             <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -106,7 +101,6 @@ function Dashboard() {
 
                 <div className="flex flex-wrap gap-3">
                     <BotaoSecundario nome="Atualizar" icone={RefreshCw} acao={handleAtualizar} desabilitado={!configurado} />
-                    <Botao nome="Abrir no Grafana" icone={ExternalLink} cor={COR_TURQUESA} acao={handleAbrirNoGrafana} desabilitado={!configurado} />
                 </div>
             </div>
 
@@ -142,7 +136,6 @@ function Dashboard() {
                 )}
             </CartaoSecao>
 
-            {configurado && <p className="mt-4 text-sm text-cifa-apagado">O painel não apareceu ou pediu login? Use “Abrir no Grafana” para ver o dashboard em uma nova aba.</p>}
         </div>
     );
 }
