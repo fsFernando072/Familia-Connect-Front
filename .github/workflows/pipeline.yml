@@ -8,9 +8,13 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Versão da imagem Docker (ex: 1.0, 1.1, 2.0)'
+        description: 'Versão das imagens Docker (ex: 1.0, 1.1, 2.0)'
         required: true
         default: '1.0'
+
+env:
+  FRONT_IMAGE: fsfernando072/familia-connect-front
+  GRAFANA_IMAGE: fsfernando072/familia-connect-grafana
 
 jobs:
   build:
@@ -36,7 +40,7 @@ jobs:
       - name: Build project
         run: npm run build
 
-  docker:
+  docker-front:
     runs-on: ubuntu-latest
     needs: build
     if: github.event_name == 'workflow_dispatch'
@@ -55,7 +59,36 @@ jobs:
         run: |
           VERSION=${{ github.event.inputs.version }}
           echo "Building image with tag ${VERSION}"
-          docker build -t fsfernando072/familia-connect-front:${VERSION} .
-          docker push fsfernando072/familia-connect-front:${VERSION}
-          docker tag fsfernando072/familia-connect-front:${VERSION} fsfernando072/familia-connect-front:latest
-          docker push fsfernando072/familia-connect-front:latest
+          docker build -t ${FRONT_IMAGE}:${VERSION} .
+          docker push ${FRONT_IMAGE}:${VERSION}
+          docker tag ${FRONT_IMAGE}:${VERSION} ${FRONT_IMAGE}:latest
+          docker push ${FRONT_IMAGE}:latest
+
+  grafana:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Grafana image
+        run: docker build -t ${GRAFANA_IMAGE}:test ./grafana
+
+      - name: Smoke test
+        run: ./grafana/smoke-test.sh ${GRAFANA_IMAGE}:test
+
+      - name: Login to Docker Hub
+        if: github.event_name == 'workflow_dispatch'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push Grafana image
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          docker tag ${GRAFANA_IMAGE}:test ${GRAFANA_IMAGE}:${VERSION}
+          docker tag ${GRAFANA_IMAGE}:test ${GRAFANA_IMAGE}:latest
+          docker push ${GRAFANA_IMAGE}:${VERSION}
+          docker push ${GRAFANA_IMAGE}:latest
