@@ -514,9 +514,9 @@
         "type": "yesoreyeram-infinity-datasource",
         "uid": "familia-connect-api"
       },
-      "gridPos": {
+       "gridPos": {
         "x": 12,
-        "y": 5,
+        "y": 14,
         "w": 12,
         "h": 9
       },
@@ -676,7 +676,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 14,
+        "y": 5,
         "w": 12,
         "h": 9
       },
