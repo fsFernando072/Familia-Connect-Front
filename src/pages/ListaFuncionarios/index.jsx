@@ -80,6 +80,7 @@ function ListaFuncionarios() {
                     >
                         <LinhaInfo rotulo="Nome" valor={funcionario.nome} />
                         <LinhaInfo rotulo="CPF" valor={funcionario.cpf && mascaraCpf(funcionario.cpf)} />
+                        <LinhaInfo rotulo="E-mail" valor={funcionario.email} />
                         <LinhaInfo rotulo="Cargo" valor={funcionario.cargo?.nome} />
                     </ListaItem>
                 ))}

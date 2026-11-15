@@ -12,14 +12,23 @@ export const deletarFuncionario = base.deletar;
 
 // Mesmas regras para cadastrar e atualizar.
 // alterarSenha = false (só na edição) ignora as regras de senha: a senha atual é mantida.
-function validarDadosFuncionario({ nome, cpf, senha, senhaConfirmada, cargoId, alterarSenha = true }) {
+function validarDadosFuncionario({ nome, cpf, email, senha, senhaConfirmada, cargoId, alterarSenha = true }) {
     const erroObrigatorios = validarObrigatorios({
         nome,
         CPF: cpf,
+        email,
         ...(alterarSenha && { senha, "confirmação da senha": senhaConfirmada }),
         cargo: cargoId,
     });
     if (erroObrigatorios) return erroObrigatorios;
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || "")) {
+        return "O e-mail do funcionário é inválido.";
+    }
+
+    if (email.length > 254) {
+        return "O e-mail deve ter no máximo 254 caracteres.";
+    }
 
     if (!validarCpf(cpf)) {
         return "O CPF do funcionário é inválido.";
@@ -38,9 +47,9 @@ function validarDadosFuncionario({ nome, cpf, senha, senhaConfirmada, cargoId, a
     return null;
 }
 
-function montarFormDataFuncionario({ nome, cpf, senha, cargoId, foto, alterarSenha = true }) {
+function montarFormDataFuncionario({ nome, cpf, email, senha, cargoId, foto, alterarSenha = true }) {
     // Sem alterar a senha, o campo nem vai no JSON.
-    const dados = alterarSenha ? { nome, cpf, senha, cargoId } : { nome, cpf, cargoId };
+    const dados = alterarSenha ? { nome, cpf, email: email.trim().toLowerCase(), senha, cargoId } : { nome, cpf, email: email.trim().toLowerCase(), cargoId };
     return montarFormData("funcionarioRequestDto", dados, foto);
 }
 
@@ -51,6 +60,7 @@ export function cadastrarFuncionario(funcionario, navigate, setFeedback) {
         requisicao: () => api.post("/funcionarios", montarFormDataFuncionario(funcionario)),
         erros: {
             404: "Cargo informado não foi encontrado.",
+            409: "Já existe um funcionário cadastrado com este e-mail ou CPF.",
         },
         navigate,
         setFeedback,
@@ -64,6 +74,7 @@ export function atualizarFuncionario(id, funcionario, navigate, setFeedback) {
         requisicao: () => api.put(`/funcionarios/${id}`, montarFormDataFuncionario(funcionario)),
         erros: {
             404: "Funcionário ou cargo não encontrado.",
+            409: "Já existe um funcionário cadastrado com este e-mail ou CPF.",
         },
         navigate,
         setFeedback,

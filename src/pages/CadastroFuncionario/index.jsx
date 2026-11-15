@@ -15,6 +15,7 @@ function CadastroFuncionario() {
 
     const [nome, setNome] = useState("");
     const [cpf, setCpf] = useState("");
+    const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [senhaConfirmada, setSenhaConfirmada] = useState("");
     const [cargoId, setCargoId] = useState("");
@@ -32,7 +33,7 @@ function CadastroFuncionario() {
     }, []);
 
     const handleCadastrar = () => {
-        cadastrarFuncionario({ nome, cpf: cpf.replace(/\D/g, ""), senha, senhaConfirmada, cargoId, foto }, navigate, setFeedback);
+        cadastrarFuncionario({ nome, cpf: cpf.replace(/\D/g, ""), email, senha, senhaConfirmada, cargoId, foto }, navigate, setFeedback);
     };
 
     const campos = [
@@ -54,6 +55,17 @@ function CadastroFuncionario() {
             value: cpf,
             onChange: (e) => setCpf(mascaraCpf(e.target.value)),
             placeholder: "000.000.000-00",
+        },
+        {
+            id: "email",
+            tipo: "texto",
+            coluna: 1,
+            label: "E-mail do Funcionário",
+            type: "email",
+            value: email,
+            onChange: (e) => setEmail(e.target.value),
+            maxLength: 254,
+            placeholder: "nome@exemplo.com",
         },
         {
             id: "senha",

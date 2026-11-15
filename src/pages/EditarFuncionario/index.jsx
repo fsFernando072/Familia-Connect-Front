@@ -19,6 +19,7 @@ function EditarFuncionario() {
 
     const [nome, setNome] = useState("");
     const [cpf, setCpf] = useState("");
+    const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [senhaConfirmada, setSenhaConfirmada] = useState("");
     const [alterarSenha, setAlterarSenha] = useState(false);
@@ -45,6 +46,7 @@ function EditarFuncionario() {
 
             setNome(funcionario.nome || "");
             setCpf(funcionario.cpf ? mascaraCpf(funcionario.cpf) : "");
+            setEmail(funcionario.email || "");
             setCargoId(funcionario.cargo?.id ? String(funcionario.cargo.id) : "");
             setFotoInicial(funcionario.fotoFuncionario || "");
 
@@ -65,7 +67,7 @@ function EditarFuncionario() {
     };
 
     const handleAtualizar = () => {
-        atualizarFuncionario(id, { nome, cpf: cpf.replace(/\D/g, ""), senha, senhaConfirmada, alterarSenha, cargoId, foto }, navigate, setFeedback);
+        atualizarFuncionario(id, { nome, cpf: cpf.replace(/\D/g, ""), email, senha, senhaConfirmada, alterarSenha, cargoId, foto }, navigate, setFeedback);
     };
 
     const campos = [
@@ -87,6 +89,17 @@ function EditarFuncionario() {
             value: cpf,
             onChange: (e) => setCpf(mascaraCpf(e.target.value)),
             placeholder: "000.000.000-00",
+        },
+        {
+            id: "email",
+            tipo: "texto",
+            coluna: 1,
+            label: "E-mail do Funcionário",
+            type: "email",
+            value: email,
+            onChange: (e) => setEmail(e.target.value),
+            maxLength: 254,
+            placeholder: "nome@exemplo.com",
         },
         {
             id: "alterar_senha",
