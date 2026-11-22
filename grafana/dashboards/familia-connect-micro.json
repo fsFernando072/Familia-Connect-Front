@@ -16,7 +16,7 @@
     "to": "now"
   },
   "timepicker": {
-   "hidden": true 
+    "hidden": true
   },
   "templating": {
     "list": [
@@ -40,10 +40,10 @@
   "links": [],
   "panels": [
     {
-      "id": 101,
+      "id": 16,
       "type": "stat",
       "title": "Itens recebidos no período",
-      "description": "Itens registrados para esta família no período.",
+      "description": "Itens registrados para esta família no período. Cor cinza indica zero; azul indica valor positivo, sem avaliação de desempenho.",
       "datasource": {
         "type": "yesoreyeram-infinity-datasource",
         "uid": "familia-connect-api"
@@ -65,7 +65,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/101",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/15",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -92,15 +92,18 @@
           "mappings": [],
           "noValue": "0",
           "color": {
-            "mode": "fixed",
-            "fixedColor": "#137d91"
+            "mode": "thresholds"
           },
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#137d91",
+                "color": "#94A3B8",
                 "value": null
+              },
+              {
+                "color": "#137D91",
+                "value": 1
               }
             ]
           }
@@ -108,9 +111,9 @@
         "overrides": []
       },
       "options": {
-            "text": {
-        "titleSize": 80
-      },
+        "text": {
+          "titleSize": 80
+        },
         "reduceOptions": {
           "values": false,
           "calcs": [
@@ -128,10 +131,10 @@
       }
     },
     {
-      "id": 103,
+      "id": 17,
       "type": "stat",
       "title": "Pessoas na família",
-      "description": "Número de pessoas vinculadas à família.",
+      "description": "Número de pessoas vinculadas à família. Cor cinza indica zero; azul indica valor positivo, sem avaliação de desempenho.",
       "datasource": {
         "type": "yesoreyeram-infinity-datasource",
         "uid": "familia-connect-api"
@@ -153,7 +156,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/103",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/16",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -180,15 +183,18 @@
           "mappings": [],
           "noValue": "0",
           "color": {
-            "mode": "fixed",
-            "fixedColor": "#f59e0b"
+            "mode": "thresholds"
           },
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#f59e0b",
+                "color": "#94A3B8",
                 "value": null
+              },
+              {
+                "color": "#137D91",
+                "value": 1
               }
             ]
           }
@@ -213,7 +219,7 @@
       }
     },
     {
-      "id": 104,
+      "id": 18,
       "type": "stat",
       "title": "Dias desde a última entrega",
       "description": "Dias desde a entrega mais recente; vazio se não houve entrega.",
@@ -238,7 +244,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/104",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/17",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -264,15 +270,22 @@
           "mappings": [],
           "noValue": "Sem entregas",
           "color": {
-            "mode": "fixed",
-            "fixedColor": "#16a34a"
+            "mode": "thresholds"
           },
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#16a34a",
+                "color": "#16A34A",
                 "value": null
+              },
+              {
+                "color": "#F59E0B",
+                "value": 31
+              },
+              {
+                "color": "#DC2626",
+                "value": 91
               }
             ]
           }
@@ -297,7 +310,7 @@
       }
     },
     {
-      "id": 106,
+      "id": 19,
       "type": "barchart",
       "title": "Produtos recebidos",
       "description": "Produtos mais recebidos no período.",
@@ -310,7 +323,7 @@
         "y": 6,
         "w": 12,
         "h": 10
-      }, 
+      },
       "targets": [
         {
           "refId": "A",
@@ -322,7 +335,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/106",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/18",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -364,26 +377,26 @@
         },
         "overrides": []
       },
-        "options": {
-    "orientation": "horizontal",
-    "xField": "Produto",
-    "showValue": "always",
-    "barWidth": 0.6,
-    "groupWidth": 0.7,
-    "stacking": "none",
-    "legend": {
-      "displayMode": "hidden",
-      "placement": "bottom",
-      "showLegend": false
-    },
-    "tooltip": {
-      "mode": "single",
-      "sort": "none"
-    }
-  }
+      "options": {
+        "orientation": "horizontal",
+        "xField": "Produto",
+        "showValue": "always",
+        "barWidth": 0.6,
+        "groupWidth": 0.7,
+        "stacking": "none",
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      }
     },
     {
-      "id": 107,
+      "id": 20,
       "type": "table",
       "title": "Últimas entregas",
       "description": "Itens, datas e funcionários das entregas recentes.",
@@ -408,7 +421,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/107",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/19",
           "root_selector": "$",
           "url_options": {
             "method": "GET",

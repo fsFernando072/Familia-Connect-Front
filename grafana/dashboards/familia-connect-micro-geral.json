@@ -27,10 +27,10 @@
   "links": [],
   "panels": [
     {
-      "id": 200,
+      "id": 9,
       "type": "stat",
       "title": "Famílias sem entrega no período",
-      "description": "Famílias sem registros de entrega no período selecionado.",
+      "description": "Famílias sem registros de entrega no período selecionado. Limites de alerta por quantidade são provisórios e devem ser validados com a ONG.",
       "datasource": {
         "type": "yesoreyeram-infinity-datasource",
         "uid": "familia-connect-api"
@@ -52,7 +52,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/108",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/9",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -75,15 +75,22 @@
           "mappings": [],
           "noValue": "0",
           "color": {
-            "mode": "fixed",
-            "fixedColor": "#137d91"
+            "mode": "thresholds"
           },
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#137d91",
+                "color": "#16A34A",
                 "value": null
+              },
+              {
+                "color": "#F59E0B",
+                "value": 1
+              },
+              {
+                "color": "#DC2626",
+                "value": 3
               }
             ]
           }
@@ -108,10 +115,10 @@
       }
     },
     {
-      "id": 201,
+      "id": 10,
       "type": "stat",
       "title": "Famílias com prioridade",
-      "description": "Famílias sinalizadas como prioritárias no cadastro.",
+      "description": "Famílias sinalizadas como prioritárias no cadastro. Cor cinza indica zero; azul indica valor positivo, sem avaliação de desempenho.",
       "datasource": {
         "type": "yesoreyeram-infinity-datasource",
         "uid": "familia-connect-api"
@@ -133,7 +140,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/4",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/10",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -156,15 +163,18 @@
           "mappings": [],
           "noValue": "0",
           "color": {
-            "mode": "fixed",
-            "fixedColor": "#137d91"
+            "mode": "thresholds"
           },
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#137d91",
+                "color": "#94A3B8",
                 "value": null
+              },
+              {
+                "color": "#137D91",
+                "value": 1
               }
             ]
           }
@@ -189,10 +199,10 @@
       }
     },
     {
-      "id": 202,
+      "id": 11,
       "type": "stat",
       "title": "Itens entregues no período",
-      "description": "Quantidade de itens de entrega registrados no período.",
+      "description": "Quantidade de itens de entrega registrados no período. Cor cinza indica zero; azul indica valor positivo, sem avaliação de desempenho.",
       "datasource": {
         "type": "yesoreyeram-infinity-datasource",
         "uid": "familia-connect-api"
@@ -214,7 +224,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/8",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/3",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -237,15 +247,18 @@
           "mappings": [],
           "noValue": "0",
           "color": {
-            "mode": "fixed",
-            "fixedColor": "#137d91"
+            "mode": "thresholds"
           },
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#137d91",
+                "color": "#94A3B8",
                 "value": null
+              },
+              {
+                "color": "#137D91",
+                "value": 1
               }
             ]
           }
@@ -270,10 +283,10 @@
       }
     },
     {
-      "id": 203,
+      "id": 12,
       "type": "stat",
       "title": "Famílias prioritárias sem atendimento no período",
-      "description": "Famílias sinalizadas como prioritárias sem registro de entrega no intervalo selecionado.",
+      "description": "Famílias sinalizadas como prioritárias sem registro de entrega no intervalo selecionado. Alerta inicial por quantidade: 0 verde, 1–2 amarelo, 3 ou mais vermelho. Limites provisórios, validar com a ONG.",
       "datasource": {
         "type": "yesoreyeram-infinity-datasource",
         "uid": "familia-connect-api"
@@ -295,7 +308,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/113",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/11",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -318,18 +331,26 @@
           "mappings": [],
           "noValue": "0",
           "color": {
-            "mode": "fixed",
-            "fixedColor": "#137d91"
+            "mode": "thresholds"
           },
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#137d91",
+                "color": "#16A34A",
                 "value": null
+              },
+              {
+                "color": "#F59E0B",
+                "value": 1
+              },
+              {
+                "color": "#DC2626",
+                "value": 3
               }
             ]
-          }
+          },
+          "decimals": 0
         },
         "overrides": []
       },
@@ -351,7 +372,7 @@
       }
     },
     {
-      "id": 204,
+      "id": 13,
       "type": "barchart",
       "title": "Famílias há mais tempo sem entrega (meses)",
       "description": "Até 5 famílias com entregas anteriores, ordenadas pelo maior intervalo desde a última entrega. Meses aproximados (dias / 30,44). Famílias que nunca receberam entregas aparecem na tabela de prioridades quando aplicável.",
@@ -376,7 +397,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/110",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/12",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -409,17 +430,24 @@
         "defaults": {
           "unit": "suffix: meses",
           "min": 0,
-          "decimals": 1,
+          "decimals": 0,
           "color": {
-            "mode": "fixed",
-            "fixedColor": "#137d91"
+            "mode": "thresholds"
           },
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#137d91",
+                "color": "#16a34a",
                 "value": null
+              },
+              {
+                "color": "#f59e0b",
+                "value": 2
+              },
+              {
+                "color": "#dc2626",
+                "value": 4
               }
             ]
           },
@@ -448,7 +476,7 @@
       }
     },
     {
-      "id": 205,
+      "id": 14,
       "type": "barchart",
       "title": "Itens entregues por funcionário",
       "description": "Quantidade de itens registrados por funcionário no período selecionado.",
@@ -473,7 +501,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/20",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/13",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -542,7 +570,7 @@
       }
     },
     {
-      "id": 206,
+      "id": 15,
       "type": "table",
       "title": "Famílias prioritárias — acompanhamento",
       "description": "Identifica as famílias prioritárias, sua última entrega e se foram atendidas no período. Famílias nunca atendidas também são incluídas.",
@@ -567,7 +595,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/112",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/14",
           "root_selector": "$",
           "url_options": {
             "method": "GET",

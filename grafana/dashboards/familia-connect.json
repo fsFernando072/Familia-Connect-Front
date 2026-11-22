@@ -27,16 +27,100 @@
   "links": [],
   "panels": [
     {
-      "id": 2,
+      "id": 1,
       "type": "stat",
       "title": "Famílias cadastradas",
-      "description": "Total de famílias no sistema.",
+      "description": "Total de famílias no sistema. Cor cinza indica zero; azul indica valor positivo, sem avaliação de desempenho.",
       "datasource": {
         "type": "yesoreyeram-infinity-datasource",
         "uid": "familia-connect-api"
       },
       "gridPos": {
         "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "familia-connect-api"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/1",
+          "root_selector": "$",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "mappings": [],
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#94A3B8",
+                "value": null
+              },
+              {
+                "color": "#137D91",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "orientation": "auto",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "showPercentChange": false
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Famílias atendidas no período",
+      "description": "Famílias que já receberam ao menos um item no mês atual. Cor cinza indica zero; azul indica valor positivo, sem avaliação de desempenho.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "familia-connect-api"
+      },
+      "gridPos": {
+        "x": 6,
         "y": 0,
         "w": 6,
         "h": 5
@@ -75,96 +159,18 @@
           "mappings": [],
           "noValue": "0",
           "color": {
-            "mode": "fixed",
-            "fixedColor": "#137d91"
+            "mode": "thresholds"
           },
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#137d91",
+                "color": "#94A3B8",
                 "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": ""
-        },
-        "orientation": "auto",
-        "textMode": "value",
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "wideLayout": true,
-        "showPercentChange": false
-      }
-    },
-    {
-      "id": 5,
-      "type": "stat",
-      "title": "Famílias atendidas no período",
-      "description": "Famílias que já receberam ao menos um item no mês atual.",
-      "datasource": {
-        "type": "yesoreyeram-infinity-datasource",
-        "uid": "familia-connect-api"
-      },
-      "gridPos": {
-        "x": 6,
-        "y": 0,
-        "w": 6,
-        "h": 5
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "familia-connect-api"
-          },
-          "type": "json",
-          "source": "url",
-          "format": "table",
-          "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/5",
-          "root_selector": "$",
-          "url_options": {
-            "method": "GET",
-            "params": [
-              {
-                "key": "from",
-                "value": "${__from}"
               },
               {
-                "key": "to",
-                "value": "${__to}"
-              }
-            ]
-          }
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "none",
-          "mappings": [],
-          "noValue": "0",
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "#16a34a"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#16a34a",
-                "value": null
+                "color": "#137D91",
+                "value": 1
               }
             ]
           }
@@ -189,10 +195,10 @@
       }
     },
     {
-      "id": 8,
+      "id": 3,
       "type": "stat",
       "title": "Itens entregues no período",
-      "description": "Total de unidades entregues no mês atual (cada unidade é um registro de entrega).",
+      "description": "Total de unidades entregues no mês atual (cada unidade é um registro de entrega). Cor cinza indica zero; azul indica valor positivo, sem avaliação de desempenho.",
       "datasource": {
         "type": "yesoreyeram-infinity-datasource",
         "uid": "familia-connect-api"
@@ -214,7 +220,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/8",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/3",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -237,15 +243,18 @@
           "mappings": [],
           "noValue": "0",
           "color": {
-            "mode": "fixed",
-            "fixedColor": "#137d91"
+            "mode": "thresholds"
           },
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#137d91",
+                "color": "#94A3B8",
                 "value": null
+              },
+              {
+                "color": "#137D91",
+                "value": 1
               }
             ]
           }
@@ -270,7 +279,7 @@
       }
     },
     {
-      "id": 7,
+      "id": 4,
       "type": "gauge",
       "title": "Taxa de atendimento no período",
       "description": "Percentual das famílias cadastradas que já foram atendidas no mês atual.",
@@ -295,7 +304,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/7",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/4",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -324,15 +333,15 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#dc2626",
+                "color": "#DC2626",
                 "value": null
               },
               {
-                "color": "#f59e0b",
+                "color": "#F59E0B",
                 "value": 40
               },
               {
-                "color": "#16a34a",
+                "color": "#16A34A",
                 "value": 70
               }
             ]
@@ -357,7 +366,7 @@
       }
     },
     {
-      "id": 15,
+      "id": 5,
       "type": "timeseries",
       "title": "Evolução mensal de entregas e famílias atendidas",
       "description": "Barras: unidades entregues no mês. Linha: quantas famílias diferentes foram atendidas. Respeita o período do seletor (a partir do 1º dia do mês inicial).",
@@ -382,7 +391,7 @@
           "source": "url",
           "format": "timeseries",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/15",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/5",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -453,7 +462,7 @@
                   "mode": "fixed",
                   "fixedColor": "#137d91"
                 }
-              }, 
+              },
               {
                 "id": "custom.fillOpacity",
                 "value": 33
@@ -514,7 +523,7 @@
       }
     },
     {
-      "id": 31,
+      "id": 6,
       "type": "barchart",
       "title": "Bairros com mais famílias (top 10)",
       "description": "Onde moram as famílias cadastradas.",
@@ -539,7 +548,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/31",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/6",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -608,7 +617,7 @@
       }
     },
     {
-      "id": 19,
+      "id": 7,
       "type": "barchart",
       "title": "Produtos mais entregues (top 10)",
       "description": "Os 10 produtos com mais unidades entregues no período.",
@@ -633,7 +642,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/19",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/7",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -702,10 +711,10 @@
       }
     },
     {
-      "id": 109,
+      "id": 8,
       "type": "barchart",
       "title": "Famílias atendidas x sem atendimento",
-      "description": "Famílias com e sem entregas registradas no período escolhido.",
+      "description": "Famílias com e sem entregas registradas no período escolhido. Verde: famílias atendidas; vermelho: famílias sem atendimento. As cores representam categorias, não quantidade.",
       "datasource": {
         "type": "yesoreyeram-infinity-datasource",
         "uid": "familia-connect-api"
@@ -727,7 +736,7 @@
           "source": "url",
           "format": "table",
           "parser": "backend",
-          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/109",
+          "url": "http://host.docker.internal:8080/api/integracoes/grafana/paineis/8",
           "root_selector": "$",
           "url_options": {
             "method": "GET",
@@ -762,8 +771,7 @@
           "min": 0,
           "decimals": 0,
           "color": {
-            "mode": "fixed",
-            "fixedColor": "#137d91"
+            "mode": "palette-classic"
           },
           "thresholds": {
             "mode": "absolute",
@@ -773,7 +781,30 @@
                 "value": null
               }
             ]
-          }
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "Atendidas": {
+                  "color": "#16A34A",
+                  "index": 0
+                },
+                "Sem atendimento": {
+                  "color": "#DC2626",
+                  "index": 1
+                },
+                "Não atendidas": {
+                  "color": "#DC2626",
+                  "index": 2
+                },
+                "Com atendimento": {
+                  "color": "#16A34A",
+                  "index": 3
+                }
+              }
+            }
+          ]
         },
         "overrides": []
       },
@@ -792,7 +823,8 @@
         "tooltip": {
           "mode": "single",
           "sort": "none"
-        }
+        },
+        "colorByField": "Situação"
       }
     }
   ]
