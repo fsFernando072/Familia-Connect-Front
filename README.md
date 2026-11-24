@@ -6,7 +6,17 @@
 
 ## 📋 Sobre o Projeto
 
-Este repositório contém o frontend do **Família Connect**, responsável por toda a interface de interação dos funcionários com o sistema. A aplicação consome a API REST do backend (Spring Boot) e o microsserviço de OCR (FastAPI), oferecendo telas de cadastro, listagem e gestão de famílias, pessoas, funcionários e entregas.
+Este repositório contém o frontend do **Família Connect**, responsável por toda a interface de interação dos funcionários com o sistema. A aplicação consome a API REST do backend (Spring Boot) e o microsserviço de OCR (FastAPI), oferecendo telas de cadastro, listagem e gestão de famílias, funcionários, cargos, produtos, estoque e entregas, além de um dashboard de indicadores (Grafana).
+
+### Principais funcionalidades
+
+- **Login e permissões por cargo** — cada cargo define, por página, um nível de acesso (`VISUALIZACAO`, `LISTAS_CADASTROS` ou `ADMINISTRADOR`). Menu, rotas e botões se adaptam ao que o usuário pode fazer (a segurança de fato é garantida pelo backend, que responde `403`).
+- **Famílias** — cadastro, edição e detalhes, com foto (importação e recorte de imagem) e leitura de documentos via OCR.
+- **Carteirinha da família** — gerada de forma assíncrona pelo backend; o front acompanha o processamento e exibe notificações de sucesso ou erro, mesmo após recarregar a página.
+- **Entregas** — a entrega é iniciada lendo o **QR Code da carteirinha** pela câmera ou, no caso de carteirinha perdida, buscando o responsável pelo **CPF**.
+- **Produtos, categorias e estoque** — cadastros e histórico mensal de estoque.
+- **Histórico de entregas** — consulta com filtro por mês e paginação.
+- **Dashboard** — painéis do Grafana embutidos (visão macro e visão micro por família).
 
 ---
 
@@ -14,14 +24,17 @@ Este repositório contém o frontend do **Família Connect**, responsável por t
 
 | Tecnologia | Versão | Descrição |
 |---|---|---|
-| React | 19.2.6 | Biblioteca principal de UI |
-| Vite | 8.0.12 | Bundler e servidor de desenvolvimento |
-| React Router DOM | 7.15.1 | Roteamento entre páginas |
-| Tailwind CSS | 4.3.0 | Estilização utilitária |
-| Chart.js | 4.5.1 | Biblioteca de gráficos |
-| React Chart.js 2 | 5.3.1 | Wrapper React para Chart.js |
-| Recharts | 3.8.1 | Componentes de gráficos para React |
-| ESLint | 10.3.0 | Análise estática de código |
+| React | ^19.2.6 | Biblioteca principal de UI |
+| Vite | ^8.0.12 | Bundler e servidor de desenvolvimento |
+| React Router DOM | ^7.15.1 | Roteamento entre páginas |
+| Tailwind CSS | ^4.3.0 | Estilização utilitária |
+| Axios | ^1.19.0 | Cliente HTTP para o backend e o OCR |
+| Lucide React | ^1.17.0 | Ícones |
+| React Easy Crop | ^6.2.3 | Recorte de foto no cadastro de famílias |
+| @yudiel/react-qr-scanner | ^2.6.0 | Leitura do QR Code da carteirinha pela câmera |
+| ESLint | ^10.3.0 | Análise estática de código |
+| Nginx | alpine | Serve o build e faz proxy de `/api/` e `/grafana/` em produção |
+| Grafana OSS + plugin Infinity | 12.3.3 | Dashboards embutidos na tela Dashboard |
 
 ---
 
@@ -31,33 +44,47 @@ Este repositório contém o frontend do **Família Connect**, responsável por t
 Familia-Connect-Front/
 │
 ├── .github/
-│   └── workflows/            # Pipeline de CI/CD
+│   └── workflows/
+│       └── pipeline.yml       # CI (lint + build) e CD (imagens Docker do front e do Grafana)
 │
-├── src/
-│   ├── assets/                # Imagens e ícones
-│   ├── components/            # Componentes reutilizáveis (botões, inputs, cards...)
-│   ├── hooks/                 # Hooks customizados (ex.: useDebounce)
-│   ├── pages/                 # Páginas da aplicação (uma por rota)
-│   ├── routes/
-│   │   └── nomesRotas.js      # Mapeamento de rotas para nomes/títulos exibidos
-│   ├── services/               # Chamadas à API (Axios)
-│   ├── utils/                  # Formatadores, máscaras e validadores
-│   ├── App.jsx                 # Componente raiz
-│   ├── App.module.css
-│   ├── index.css
-│   ├── main.jsx                # Ponto de entrada da aplicação
-│   └── routes.jsx              # Definição das rotas (React Router)
+├── grafana/                   # Imagem do Grafana com dashboards e datasource provisionados
+│   ├── dashboards/            # familia-connect.json (macro), familia-connect-micro.json e familia-connect-micro-geral.json
+│   ├── provisioning/
+│   │   ├── dashboards/        # dashboards.yml: manda o Grafana carregar a pasta dashboards/
+│   │   └── datasources/       # api.yml: datasource Infinity apontando para a API do backend
+│   ├── Dockerfile             # Grafana OSS + plugin Infinity + provisionamento
+│   ├── smoke-test.sh          # Sobe a imagem e confere saúde, plugin, datasource e dashboards
+│   └── INTEGRACAO-API.md      # Como o Grafana conversa com a API (token, segurança, limitações)
 │
 ├── public/
 │   └── env-config.js          # Config de runtime (window.__ENV__), reescrito pelo entrypoint.sh no container
 │
+├── src/
+│   ├── assets/                # Imagens, logos e ícones da página inicial
+│   ├── components/            # Componentes reutilizáveis (botões, campos, modais, cartões, layout...)
+│   ├── hooks/                 # Hooks customizados (useDebounce, useFeedback, useListaPaginada, useNotificacoesCarteirinha...)
+│   ├── pages/                 # Páginas da aplicação (uma pasta por tela: Lista*, Cadastro*, Editar*, Entrega, Dashboard...)
+│   ├── routes/
+│   │   ├── index.jsx              # Definição das rotas (React Router)
+│   │   ├── navegacaoPrincipal.js  # Itens do menu lateral e atalhos da página inicial
+│   │   ├── nomesRotas.js          # Mapeamento de rotas para nomes/títulos exibidos
+│   │   └── permissoesRotas.js     # Regras que ligam rota → página de permissão → ação
+│   ├── services/              # Chamadas à API (apiClient, serviços por entidade, permissões, OCR, Grafana)
+│   ├── utils/                 # Formatadores, máscaras, validadores, recorte de imagem, sessão...
+│   ├── App.jsx                # Componente raiz
+│   ├── App.module.css
+│   ├── index.css
+│   └── main.jsx               # Ponto de entrada da aplicação
+│
 ├── index.html                 # HTML base
-├── vite.config.js             # Configuração do Vite
+├── vite.config.js             # Configuração do Vite (inclui proxy de /grafana em desenvolvimento)
 ├── eslint.config.js           # Configuração do ESLint
-├── nginx.conf                 # Configuração do Nginx (servir o build em produção)
-├── entrypoint.sh              # Gera env-config.js a partir de API_BASE_URL antes de subir o nginx
-├── Dockerfile
-├── docker-compose.yml
+├── nginx.conf                 # Template do Nginx (servir o build, proxy de /api/ e include do proxy do Grafana)
+├── entrypoint.sh              # Gera env-config.js e a configuração do Nginx a partir das variáveis do container
+├── Dockerfile                 # Build (Node 24) + imagem final (Nginx)
+├── docker-compose.yml         # Sobe o front e o Grafana
+├── .env.example               # Modelo das variáveis de ambiente
+├── AGENTS.md                  # Guia rápido do projeto para agentes de código
 ├── package.json
 └── .gitignore
 ```
@@ -66,8 +93,9 @@ Familia-Connect-Front/
 
 ## ⚙️ Pré-requisitos
 
-- [Node.js 18+](https://nodejs.org/)
+- [Node.js 18+](https://nodejs.org/) (o Dockerfile e o CI usam Node 24)
 - [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
+- [Docker](https://www.docker.com/) e Docker Compose (para rodar a imagem e o Grafana)
 - Backend do Família Connect rodando localmente ou em nuvem
 
 ---
@@ -76,7 +104,7 @@ Familia-Connect-Front/
 
 ### Desenvolvimento local (`npm run dev` / `npm run build` sem Docker)
 
-Crie um arquivo `.env` na raiz do projeto com base no exemplo abaixo:
+Crie um arquivo `.env` na raiz do projeto (há um modelo em `.env.example`). Para rodar só o front, basta:
 
 ```env
 VITE_API_BASE_URL=http://localhost:8080/api
@@ -85,93 +113,90 @@ VITE_API_BASE_URL=http://localhost:8080/api
 | Variável | Obrigatória | Padrão | Descrição |
 |---|---|---|---|
 | `VITE_API_BASE_URL` | ❌ Não | `http://localhost:8080/api` | URL base da API do backend (Spring Boot) consumida pelo `apiClient` (Axios) |
+| `VITE_GRAFANA_DASHBOARD_URL` | ❌ Não | — | Link do dashboard do Grafana na tela Dashboard (ver seção abaixo) |
+| `GRAFANA_DEV_URL` | ❌ Não | `http://localhost:80` | Destino do proxy `/grafana` do Vite em desenvolvimento |
 
-Por ser uma variável do Vite (prefixo `VITE_`), esse valor é embutido no bundle em tempo de build — útil localmente, mas não é o que roda em produção (ver abaixo).
+Por serem variáveis do Vite, os valores `VITE_*` são embutidos no bundle em tempo de build — úteis localmente, mas não são o que roda em produção (ver abaixo).
 
 ### 🐳 Produção / Docker — configuração em runtime
 
-Em produção o `apiClient` **não depende mais de uma variável de build do Vite**. O `index.html` carrega um arquivo `public/env-config.js`, que expõe `window.__ENV__.API_BASE_URL`; o `apiClient` lê esse valor primeiro (e só cai para `VITE_API_BASE_URL`/default se ele não existir).
+Em produção o `apiClient` **não depende de uma variável de build do Vite**. O `index.html` carrega `public/env-config.js`, que expõe `window.__ENV__`; o `entrypoint.sh` **reescreve esse arquivo a cada início do container** com base nas variáveis de ambiente. Assim, dá para trocar a URL da API (ou do dashboard) só reiniciando o container, **sem rebuildar a imagem**.
 
-Esse arquivo é **gerado pelo `entrypoint.sh` a cada início do container**, a partir da variável de ambiente `API_BASE_URL` — ou seja, dá para trocar a URL da API só reiniciando o container com outro valor, **sem precisar rebuildar a imagem**.
+| Variável | Obrigatória | Padrão no `docker-compose.yml` | Descrição |
+|---|---|---|---|
+| `BACKEND_URL` | ✅ Sim (o container não sobe sem ela) | `http://host.docker.internal:8080` | Endereço interno do backend. O Nginx encaminha `/api/` para ele |
+| `API_BASE_URL` | ❌ Não | `/api` | URL que o navegador usa para chamar a API (`window.__ENV__.API_BASE_URL`). Com o proxy do Nginx, o padrão `/api` já funciona |
+| `GRAFANA_URL` | ❌ Não | `http://grafana:3000` | Endereço interno do Grafana. Se definido, o Nginx expõe o Grafana em `/grafana/` na mesma origem do front |
+| `GRAFANA_DASHBOARD_URL` | ✅ Para a tela Dashboard funcionar | `/grafana/d/familia-connect/familia-connect-visao-geral?orgId=1` | Link do dashboard exibido na tela Dashboard (`window.__ENV__.GRAFANA_DASHBOARD_URL`) |
 
-| Variável | Onde é usada | Obrigatória | Padrão | Descrição |
-|---|---|---|---|---|
-| `API_BASE_URL` | Container (runtime) | ❌ Não | `` (vazio, cai no default do `apiClient`) | URL base da API repassada para `window.__ENV__.API_BASE_URL` pelo `entrypoint.sh` |
+> A ordem de prioridade no `apiClient` é: `window.__ENV__.API_BASE_URL` (runtime/Docker) → `import.meta.env.VITE_API_BASE_URL` (build local) → `http://localhost:8080/api` (default).
 
 ```bash
-docker run -e API_BASE_URL=https://api.seudominio.com -p 80:80 familia-connect-front
+docker run -p 80:80 \
+  -e BACKEND_URL=http://back:8080 \
+  familia-connect-front
 ```
 
-Ou, com Docker Compose, defina `API_BASE_URL` no `.env` da raiz do projeto — o `docker-compose.yml` já repassa essa variável para o container automaticamente:
+Com Docker Compose (sobe o front **e** o Grafana), copie `.env.example` para `.env`, preencha os valores e rode:
 
 ```bash
 docker-compose up --build
 ```
 
-> A ordem de prioridade no `apiClient` é: `window.__ENV__.API_BASE_URL` (runtime/Docker) → `import.meta.env.VITE_API_BASE_URL` (build local) → `http://localhost:8080/api` (default).
+As variáveis lidas pelo Compose a partir do `.env` são:
+
+| Variável | Obrigatória | Descrição |
+|---|---|---|
+| `GRAFANA_API_TOKEN` | ✅ Sim (o Compose não sobe sem ela) | Segredo compartilhado entre o Grafana e o backend (`GRAFANA_API_TOKEN` também no Spring Boot). **Nunca** use prefixo `VITE_` nem exponha no navegador |
+| `GRAFANA_ADMIN_PASSWORD` | Recomendada | Senha do usuário admin do Grafana (padrão do compose: `admin`) |
+| `GRAFANA_BACKEND_URL` | ❌ Não | Endereço do backend visto **de dentro do container do Grafana** (padrão: `http://host.docker.internal:8080`) |
+| `GRAFANA_ROOT_URL` | ❌ Não | URL pública do Grafana sob `/grafana/` (padrão: `http://localhost/grafana/`) |
+| `BACKEND_URL`, `API_BASE_URL`, `GRAFANA_URL`, `GRAFANA_DASHBOARD_URL` | ❌ Não | Descritas na tabela anterior |
 
 ---
 
 ## 📊 Dashboard (Grafana)
 
-A tela **Dashboard** (`/dashboard`, `src/pages/Dashboard`) embute um painel do **Grafana** via `iframe`, no mesmo layout das demais telas (menu lateral, breadcrumb, cartão). Os gráficos e consultas são montados no próprio Grafana; o front só cuida do enquadramento, do seletor de período e dos botões **Atualizar** / **Abrir no Grafana**. O acesso segue a permissão `DASHBOARD` do cargo (a mesma que já controla o item do menu).
+A tela **Dashboard** (`/dashboard`, `src/pages/Dashboard`) embute painéis do **Grafana** via `iframe`, no mesmo layout das demais telas (menu lateral, breadcrumb, cartão). Os gráficos e consultas são montados no próprio Grafana; o front cuida do enquadramento, da escolha da visão, do seletor de período e dos botões **Atualizar** / **Abrir no Grafana**. O acesso segue a permissão `DASHBOARD` do cargo (a mesma que controla o item do menu).
 
-### Variáveis
+A tela tem duas visões:
 
-| Variável | Onde é usada | Obrigatória | Descrição |
-|---|---|---|---|
-| `GRAFANA_DASHBOARD_URL` | Container (runtime) | ✅ Sim, para a tela funcionar | Link do dashboard no Grafana (Share → Link). Pode ser relativo (`/grafana/d/abc123/familia-connect?orgId=1`) ou absoluto. Vai para `window.__ENV__.GRAFANA_DASHBOARD_URL` |
-| `VITE_GRAFANA_DASHBOARD_URL` | Dev local (`npm run dev`) | ❌ Não | Equivalente da anterior no `.env` do Vite. Só vale se `window.__ENV__.GRAFANA_DASHBOARD_URL` estiver vazio |
-| `GRAFANA_URL` | Container (runtime) | ❌ Não | Endereço interno do Grafana (ex.: `http://grafana:3000`, sem barra no final). Se definido, o Nginx expõe o Grafana em `/grafana/` na mesma origem do front |
+- **Visão Macro** — panorama geral do atendimento, cobertura e distribuição de recursos.
+- **Visão Micro** — acompanhamento de famílias prioritárias e do histórico de uma família. Sem família selecionada, mostra a visão micro geral; ao buscar uma família pelo nome do responsável e selecioná-la, o front troca para o dashboard individual e passa o id pela variável `var_familiaId`.
 
-Sem `GRAFANA_DASHBOARD_URL`, a tela mostra o aviso "Dashboard indisponível" em vez do painel.
+O front acrescenta ao link `kiosk` (esconde o menu do Grafana) e `theme=light`; ao escolher um período no seletor, acrescenta também `from=<período>&to=now`. "Padrão do painel" não altera o período salvo no dashboard. Sem `GRAFANA_DASHBOARD_URL`, a tela mostra o aviso "Dashboard indisponível" em vez do painel.
 
-O front acrescenta ao link `kiosk` (esconde o menu do Grafana) e `theme=light`; ao escolher um período no seletor, acrescenta também `from=<período>&to=now`. "Padrão do painel" não altera o período salvo no dashboard.
+### Como funciona a integração: Grafana → API → MySQL
 
-### Dashboard pronto (provisionado)
+O Grafana **não acessa o banco diretamente**. Ele usa o plugin **Infinity** para chamar a API do backend, que executa consultas SQL fixas (no `GrafanaMetricasController`) com o datasource da própria aplicação. A cada chamada o Grafana envia o cabeçalho `X-Grafana-Token`, preenchido no servidor a partir de `GRAFANA_API_TOKEN` (`grafana/provisioning/datasources/api.yml`). O token protege apenas a API de métricas — não a interface do Grafana.
 
-O repositório já traz o dashboard **"Família Connect — Visão geral"** e a conexão com o banco, que o Grafana carrega sozinho ao subir (pasta `grafana/`):
+Mais detalhes (e limitações conhecidas) em [`grafana/INTEGRACAO-API.md`](grafana/INTEGRACAO-API.md).
 
-```
-grafana/
-├── dashboards/familia-connect.json                 # o dashboard (28 painéis)
-├── provisioning/datasources/mysql.yml              # conexão com o MySQL (via variáveis de ambiente)
-├── provisioning/dashboards/dashboards.yml          # manda o Grafana carregar a pasta acima
-└── sql/usuario-somente-leitura.sql                 # cria o usuário de leitura do Grafana no MySQL
-```
+### Dashboards provisionados
 
-**Como subir**
+A imagem do Grafana (`grafana/Dockerfile`) já embute os dashboards e o datasource, carregados automaticamente ao subir:
 
-1. No MySQL do Família Connect, rode `grafana/sql/usuario-somente-leitura.sql` (troque `NOME_DO_BANCO` e a senha). O usuário só enxerga as colunas usadas pelos painéis: **sem CPF, RG, telefone, nome das pessoas atendidas ou senhas**, e sem permissão de escrita.
-2. Copie `.env.example` para `.env` e preencha `GRAFANA_DB_*` e `GRAFANA_ADMIN_PASSWORD`.
-3. `docker-compose up -d`. O compose já sobe o Grafana, liga o proxy `/grafana/` e aponta a tela Dashboard para o painel.
+| Dashboard | UID | Painéis |
+|---|---|---|
+| Família Connect \| Visão Macro | `familia-connect` | famílias cadastradas · famílias atendidas no período · itens entregues no período · taxa de atendimento · evolução mensal de entregas e famílias atendidas · bairros com mais famílias (top 10) · produtos mais entregues (top 10) · famílias atendidas × sem atendimento |
+| Família Connect — Visão Micro Geral | `familia-connect-micro-geral` | famílias sem entrega no período · famílias com prioridade · itens entregues no período · famílias prioritárias sem atendimento · famílias há mais tempo sem entrega (meses) · itens entregues por funcionário · acompanhamento das famílias prioritárias |
+| Família Connect \| Visão Micro | `familia-connect-micro` | (variável `var_familiaId`) itens recebidos no período · pessoas na família · dias desde a última entrega · produtos recebidos · últimas entregas |
 
-> O dashboard é somente leitura na interface (`allowUiUpdates: false`): para alterar um painel, edite `familia-connect.json` (ou exporte do Grafana em *Share → Export*) e commite. O Grafana recarrega o arquivo em até 30 s.
+> Os dashboards são somente leitura na interface (`allowUiUpdates: false`): para alterar um painel, edite o JSON em `grafana/dashboards/` (ou exporte do Grafana em *Share → Export*) e faça o commit. O Grafana recarrega os arquivos em até 30 s.
 
-**O que o dashboard mostra**
+### Proxy do Grafana atrás do Nginx do front (`/grafana/`)
 
-| Seção | Indicadores |
-|---|---|
-| Visão geral (KPIs) | famílias cadastradas · pessoas cadastradas · famílias com prioridade · famílias atendidas no mês · famílias pendentes no mês · cobertura do mês (%) · itens entregues no mês · média de itens por família · itens entregues no período · saldo de estoque do mês · produtos esgotados · produtos com estoque baixo (≥ 80% usado) |
-| Entregas | itens entregues e famílias atendidas por mês · itens por categoria · itens por dia · itens por dia da semana · produtos mais entregues (top 10) · entregas por funcionário (top 10) |
-| Estoque do mês atual | tabela por produto (cadastrado, entregue, saldo e % usado, os mais críticos primeiro) · saldo por categoria · entradas de estoque × itens entregues por mês |
-| Perfil das famílias | novas famílias por mês · famílias por tamanho · pessoas por faixa etária · pessoas por sexo · famílias com/sem prioridade · bairros com mais famílias · profissão dos responsáveis |
-
-Regras usadas (as mesmas do back-end): cada unidade entregue é uma linha em `entrega`; o estoque é **mensal** (soma de `historico_estoque.quantidade` no mês) e o saldo é esse total menos as entregas do mês; "família pendente" é a que não tem nenhuma entrega no mês corrente. Os painéis marcados "do mês" ignoram o seletor de tempo; os demais respeitam o período (padrão: últimos 6 meses). As consultas assumem o nome das tabelas/colunas gerado pelo Hibernate (`snake_case`, ex.: `historico_estoque.data_estoque`). Se o seu banco usar nomes diferentes, ajuste o JSON.
-
-### Opção recomendada: Grafana atrás do Nginx do front (`/grafana/`)
-
-Com `GRAFANA_URL` definido, o `entrypoint.sh` gera o proxy `/grafana/` no Nginx. Assim o `iframe` fica na mesma origem do sistema (sem problemas de cookie `SameSite`/CORS) e **o Grafana só responde para quem está logado**: antes de cada requisição o Nginx consulta `GET /api/funcionarios/me` no back com o cookie do usuário e devolve `401` se a sessão não for válida.
+Com `GRAFANA_URL` definido, o `entrypoint.sh` gera o proxy `/grafana/` no Nginx. Assim o `iframe` fica na mesma origem do sistema (sem problemas de cookie `SameSite`/CORS). Antes de cada requisição, o Nginx consulta `GET /api/funcionarios/me` no backend (`auth_request`) e devolve `401` se a sessão não for válida.
 
 ```bash
 docker run -p 80:80 \
   -e BACKEND_URL=http://back:8080 \
   -e GRAFANA_URL=http://grafana:3000 \
-  -e GRAFANA_DASHBOARD_URL=/grafana/d/abc123/familia-connect?orgId=1 \
+  -e GRAFANA_DASHBOARD_URL=/grafana/d/familia-connect/familia-connect-visao-geral?orgId=1 \
   familia-connect-front
 ```
 
-Se você usa o seu próprio Grafana em vez do que vem no `docker-compose.yml`, configure nele (variáveis de ambiente do container):
+Se você usa o seu próprio Grafana em vez do que vem no `docker-compose.yml`, ele precisa de:
 
 ```env
 GF_SERVER_ROOT_URL=https://SEU-FRONT/grafana/
@@ -181,13 +206,30 @@ GF_AUTH_ANONYMOUS_ENABLED=true
 GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
 ```
 
-> ⚠️ Com acesso anônimo ligado, **não exponha a porta do Grafana publicamente**: ele deve ser alcançável apenas pelo container do front (rede interna), que é quem aplica a checagem de login. O controle é por sessão válida; o nível de permissão `DASHBOARD` continua sendo aplicado só na interface (como no restante do front).
+além do plugin `yesoreyeram-infinity-datasource` e do datasource provisionado (use `grafana/provisioning` como base).
+
+> ⚠️ Com acesso anônimo ligado, **não exponha a porta do Grafana publicamente**: ele deve ser alcançável apenas pelo container do front (rede interna). O `docker-compose.yml` já não publica a porta 3000 por esse motivo.
 >
-> ℹ️ O Nginx resolve o endereço do `GRAFANA_URL` ao iniciar: se o host não existir na rede, o container do front não sobe. Se não quiser usar o proxy, deixe `GRAFANA_URL` vazio.
+> ⚠️ **Valide a proteção do iframe antes de ir para produção.** O `auth_request` depende de o Nginx receber a credencial de sessão do usuário na requisição do iframe; se o backend usar JWT guardado fora de cookie, esse mecanismo pode não autenticar corretamente (ver `grafana/INTEGRACAO-API.md`).
+>
+> ℹ️ O Nginx resolve o endereço de `GRAFANA_URL` ao iniciar: se o host não existir na rede, o container do front não sobe. Se não quiser usar o proxy, deixe `GRAFANA_URL` vazio.
 
 ### Alternativa: Grafana em outro domínio
 
 Defina só `GRAFANA_DASHBOARD_URL` com a URL absoluta. O Grafana precisa permitir `iframe` (`GF_SECURITY_ALLOW_EMBEDDING=true`) e o usuário precisa conseguir abrir o painel sem tela de login dentro do `iframe` (acesso anônimo `Viewer`, ou HTTPS com `GF_SECURITY_COOKIE_SAMESITE=none` e `GF_SECURITY_COOKIE_SECURE=true`). Nesse modo o Grafana não passa pela checagem de login do sistema.
+
+### Desenvolvimento com o Vite
+
+Para usar o Dashboard em `http://localhost:5173/dashboard`, suba o Compose (Grafana na porta 80) e rode `npm run dev`: o `vite.config.js` encaminha `/grafana` para `GRAFANA_DEV_URL` (padrão `http://localhost:80`).
+
+### Teste da imagem do Grafana
+
+```bash
+docker build -t familia-connect-grafana:test ./grafana
+./grafana/smoke-test.sh familia-connect-grafana:test
+```
+
+O script sobe a imagem e confere saúde do Grafana, plugin Infinity, datasource, carregamento de todos os dashboards e acesso anônimo. O mesmo teste roda no CI.
 
 ---
 
@@ -214,6 +256,8 @@ npm run dev
 
 A aplicação estará disponível em: **http://localhost:5173**
 
+> O backend precisa estar rodando (padrão `http://localhost:8080`). Para usar o OCR, o serviço FastAPI também deve estar no ar.
+
 ---
 
 ## 📦 Scripts Disponíveis
@@ -237,6 +281,8 @@ Este frontend depende dos seguintes repositórios do projeto:
 | OCR (FastAPI) | [Familia-Connect-OCR](https://github.com/fsFernando072/Familia-Connect-OCR) | 8000 |
 | Banco de Dados (MySQL) | [Familia-Connect-BD](https://github.com/fsFernando072/Familia-Connect-BD) | 3306 |
 
+O front chama o backend (autenticação por sessão com `withCredentials`) e envia imagens de documentos para o endpoint `/ocr`. O Grafana consome o backend pelas rotas de métricas, usando `GRAFANA_API_TOKEN`.
+
 ---
 
 ## 🤝 Contribuindo
@@ -251,14 +297,15 @@ Este frontend depende dos seguintes repositórios do projeto:
 
 ## 🤖 CI/CD
 
-O workflow em `.github/workflows/pipeline.yml` roda no GitHub Actions:
+O workflow em `.github/workflows/pipeline.yml` roda no GitHub Actions e tem três jobs:
 
-- **CI** — a cada `push` ou `pull request` para `main`: instala as dependências (Node.js 24), roda `npm run lint` e depois `npm run build` para validar que o projeto builda sem erros.
-- **CD** — disparado manualmente (`workflow_dispatch`, com a versão da imagem como parâmetro), após o CI passar: builda a imagem Docker e publica no Docker Hub, taggeada com a versão informada e também como `latest`.
+- **`build` (CI)** — a cada `push` ou `pull request` para `main` (e também no disparo manual): instala as dependências (Node.js 24), roda `npm run lint` e depois `npm run build`.
+- **`docker-front` (CD)** — disparado manualmente (`workflow_dispatch`, com a versão da imagem como parâmetro), após o `build` passar: builda a imagem Docker do front e publica no Docker Hub (`fsfernando072/familia-connect-front`), taggeada com a versão informada e também como `latest`.
+- **`grafana`** — builda a imagem do Grafana (`./grafana`) e roda o `smoke-test.sh` a cada execução do workflow; no disparo manual, publica também no Docker Hub (`fsfernando072/familia-connect-grafana`) com a versão informada e `latest`.
 
 > Requer os secrets `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN` configurados no ambiente `development` do repositório.
 >
-> Como a URL da API agora é resolvida em **runtime** (via `API_BASE_URL` + `entrypoint.sh`), a mesma imagem publicada pelo CD serve para qualquer ambiente — basta variar `API_BASE_URL` no `docker run`/`docker-compose.yml` de cada ambiente, sem precisar rebuildar ou ajustar o workflow.
+> Como a URL da API é resolvida em **runtime** (via `API_BASE_URL`/`BACKEND_URL` + `entrypoint.sh`), a mesma imagem publicada pelo CD serve para qualquer ambiente — basta variar as variáveis no `docker run`/`docker-compose.yml` de cada ambiente, sem rebuildar a imagem.
 
 ---
 
